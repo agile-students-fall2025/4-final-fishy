@@ -1,19 +1,17 @@
-# Project Repository
+# TripMate UX Design
 
-This repository will be used for team projects.
+## App Map
+![App Map](app-map.png)
 
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
+**Description:**  
+The App Map below shows the hierarchical structure of the TripMate mobile application.
 
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
+- **Level 1 – Home Screen (Main Hub):** Central dashboard with an interactive map and navigation tabs.
+- **Level 2 – Feature Screens:** Dedicated pages for Hotels, Budget Tracker, Weather, and Trip Planner.
+- **Level 3 – Sub-Screens / Dynamic Views:** Overlays and popups such as Filter Screen, Add Expense Overlay, Forecast View, and Add Destination Form.
 
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
+---
 
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
+## Wireframes (Coming Next)
 
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
 
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
-
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
-
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
