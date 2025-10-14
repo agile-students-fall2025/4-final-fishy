@@ -10,7 +10,7 @@ The App Map below shows the hierarchical structure of the TripMate mobile applic
 - **Level 2 – Feature Screens:** Dedicated pages for Hotels, Budget Tracker, Weather, and Trip Planner.
 - **Level 3 – Sub-Screens / Dynamic Views:** Overlays and popups such as Filter Screen, Add Expense Overlay, Forecast View, and Add Destination Form.
   
-Source File: [TripMate-App-Map.fig](ux-design/TripMate-App-Map.fig)
+### Source File: [TripMate-App-Map.fig](ux-design/TripMate-App-Map.fig)
 ---
 
 ## Wireframes (Coming Next)
