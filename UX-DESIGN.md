@@ -1,8 +1,17 @@
-# User Experience Design
+# TripMate UX Design
 
-This repository contains instructions and files for two assignments that together comprise the user experience design phase of a web app.
+## App Map
+![App Map](ux-design/app-map.png)
 
-Replace the contents of this file with the completed assignments, as described in:
+**Description:**  
+The App Map below shows the hierarchical structure of the TripMate mobile application.
 
-- [app map & wireframe instructions](instructions-0a-app-map-wireframes.md).
-- [prototype instructions](instructions-0b-prototyping.md)
+- **Level 1 – Home Screen (Main Hub):** Central dashboard with an interactive map and navigation tabs.
+- **Level 2 – Feature Screens:** Dedicated pages for Hotels, Budget Tracker, Weather, and Trip Planner.
+- **Level 3 – Sub-Screens / Dynamic Views:** Overlays and popups such as Filter Screen, Add Expense Overlay, Forecast View, and Add Destination Form.
+
+---
+
+## Wireframes (Coming Next)
+Once wireframe PNGs are exported from Figma, they’ll be added to this section and stored in `/ux-design/`.
+
