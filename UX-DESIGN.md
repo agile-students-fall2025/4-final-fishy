@@ -20,4 +20,4 @@ Once wireframe PNGs are exported from Figma, they’ll be added to this section 
 ![](ux-design/Wireframe.png)
 
 ## Prototype
-![Prototype Link](https://www.figma.com/proto/l6AJqNSxcxSOIPM1qC86hL/fishy-wireframes?node-id=0-1&t=R60ftcSBIwoWmyux-1)
+[View Figma Prototype](https://www.figma.com/proto/l6AJqNSxcxSOIPM1qC86hL/fishy-wireframes?node-id=1-2&p=f&t=8RGrhXE3V84Rqgrf-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=1%3A2)
