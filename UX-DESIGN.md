@@ -16,3 +16,8 @@ The App Map below shows the hierarchical structure of the TripMate mobile applic
 ## Wireframes (Coming Next)
 Once wireframe PNGs are exported from Figma, they’ll be added to this section and stored in `/ux-design/`.
 
+## WireFrame
+
+
+## Prototype
+![Prototype Link](https://www.figma.com/proto/l6AJqNSxcxSOIPM1qC86hL/fishy-wireframes?node-id=0-1&t=R60ftcSBIwoWmyux-1)
