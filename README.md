@@ -1,19 +1,74 @@
-# Project Repository
+# TripMate – Your Smart Travel Companion
 
-This repository will be used for team projects.
+### Product Vision Statement
 
-Several sets of instructions are included in this repository. They should each be treated as separate assignments with their own due dates and sets of requirements.
+TripMate simplifies travel planning by bringing **hotels, food, transport, weather, and budgeting** into a single interactive map.  
+No more switching between five apps — plan, explore, and track your trips in one place.
 
-1. See the [App Map & Wireframes](instructions-0a-app-map-wireframes.md) and [Prototyping](./instructions-0b-prototyping.md) instructions for the requirements of the initial user experience design of the app.
+---
 
-1. Delete the contents of this file and replace with the contents of a proper README.md, as described in the [project setup instructions](./instructions-0c-project-setup.md)
+## Project Overview
 
-1. See the [Sprint Planning instructions](instructions-0d-sprint-planning.md) for the requirements of Sprint Planning for each Sprint.
+**TripMate** is a full-stack web application that helps travelers:
 
-1. See the [Front-End Development instructions](./instructions-1-front-end.md) for the requirements of the initial Front-End Development.
+- Plan trips day-by-day
+- Visualize destinations on a map
+- Track budgets and expenses
+- Preview weather forecasts
+- (Bonus) Save photos and memories on a “Memory Map”
 
-1. See the [Back-End Development instructions](./instructions-2-back-end.md) for the requirements of the initial Back-End Development.
+---
 
-1. See the [Database Integration instructions](./instructions-3-database.md) for the requirements of integrating a database into the back-end.
+## Team
 
-1. See the [Deployment instructions](./instructions-4-deployment.md) for the requirements of deploying an app.
+* [Juno Cheung](https://github.com/avacheungx)
+* [Jessy Wang](https://github.com/jwang9500)
+* [Ahmmed Razee](https://github.com/ErazeerHead04)
+* [Sejona Sujit Das](https://github.com/sejonasdas) 
+* [Amy Liao](https://github.com/agile-students-fall2025/4-final-fishy/commits?author=Amyliao0) 
+
+## How TripMate Started
+
+TripMate began during our Agile Development course as a project to practice **Scrum methodology** and full-stack collaboration.  
+The concept evolved from early brainstorming around travel apps and personal trackers — we chose TripMate to combine both ideas.
+
+We’re currently in **Sprint 0**, focusing on research, wireframes, and environment setup.
+
+## Tech Stack
+
+**Frontend:** React.js
+
+**Backend:** Node.js + Express  
+
+**Database:** MongoDB  
+
+**APIs:** Google Maps, OpenWeather, Currency API  
+
+**Version Control:** Git + GitHub Project Boards  
+
+## How to Contribute
+
+We welcome collaboration! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for full details on:
+
+- Team norms and coding conventions
+- Branch and PR workflow
+- How to set up your local environment
+- How to submit and review pull requests
+
+## Build & Run Instructions (to be updated)
+
+Once development begins:
+
+```bash
+# Clone the repo
+git clone https://github.com/agile-students-fall2025/4-final-fishy.git
+cd 4-final-fishy
+
+# Install dependencies
+npm install
+
+# Start the backend
+npm run dev
+
+# Start the frontend
+npm start
