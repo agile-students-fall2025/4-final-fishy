@@ -44,7 +44,7 @@ We follow a **Feature Branch Workflow** to ensure clean collaboration and organi
    cd 4-final-fishy
    ```
 2. **Create a new branch**
-   ```bash
+    ```bash
 git checkout -b feature/your-feature-name
     ```
 
@@ -55,9 +55,9 @@ git commit -m "feat: add budget tracker feature"
     ```
 
 4. **Push your branch:**
-  ```bash
+    ```bash
 git push origin feature/your-feature-name
-  ```
+    ```
 
 5. **Open a Pull Request (PR) into dev**
 
