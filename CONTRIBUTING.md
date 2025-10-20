@@ -14,7 +14,7 @@ We believe in:
 
 | Role | Member | Responsibilities |
 |------|---------|------------------|
-| **Product Owner/ Developer** | Juno Cheung | Defines product vision, prioritizes backlog items, and ensures the project aligns with user needs |
+| **Product Owner / Developer** | Juno Cheung | Defines product vision, prioritizes backlog items, and ensures the project aligns with user needs |
 | **Scrum Master / Developer** | Amy Liao | Facilitates sprints, meetings, and manages GitHub Project Board |
 | **Developer** | Jessy Wang | Works on feature development, testing, and ensuring UI/UX consistency |
 | **Developer** | Sejona Sujit Das | Builds and maintains core functionalities, APIs, and data handling features |
