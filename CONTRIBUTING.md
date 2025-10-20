@@ -14,10 +14,12 @@ We believe in:
 
 | Role | Member | Responsibilities |
 |------|---------|------------------|
-| **Scrum Master** | Juno Cheung | Facilitates sprints, meetings, and manages GitHub Project Board |
-| **Frontend Developers** | Amy Liao, Jessy Wang | Build UI components, integrate APIs, ensure responsive design |
-| **Backend Developers** | Sejona Sujit Das, Ahmmed Razee | Develop API endpoints, manage server and database logic |
-| **All Members** | Everyone | Participate in code reviews, testing, and sprint retrospectives |
+| **Product Owner/ Developer** | Juno Cheung | Defines product vision, prioritizes backlog items, and ensures the project aligns with user needs |
+| **Scrum Master / Developer** | Amy Liao | Facilitates sprints, meetings, and manages GitHub Project Board |
+| **Developer** | Jessy Wang | Works on feature development, testing, and ensuring UI/UX consistency |
+| **Developer** | Sejona Sujit Das | Builds and maintains core functionalities, APIs, and data handling features |
+| **Developer** | Ahmmed Razee | Develops, debugs, and optimizes system components to ensure smooth operation |
+| **All Members (Developers)** | Everyone | Participate in code reviews, documentation, and sprint retrospectives |
 
 **Meeting Schedule:**  
 - Weekly sprint meetings 
