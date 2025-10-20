@@ -65,6 +65,58 @@ git push origin feature/your-feature-name
 
 6. **After approval, the Scrum Master merges the PR into dev.**
 
+ ## Local Development Setup
+
+Follow these steps to set up your local environment:
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/agile-students-fall2025/4-final-fishy.git
+cd 4-final-fishy
+```
+### 2. Install dependencies
+```bash
+npm install
+```
+### 3. Set up Environment Variables
+
+Create a .env file in the project root directory and include the following:
+```bash
+MONGO_URI=<your_mongodb_connection>
+WEATHER_API_KEY=<your_api_key>
+MAPS_API_KEY=<your_api_key>
+CURRENCY_API_KEY=<your_api_key>
+```
+### 4. Run the backend
+```bash
+npm run dev
+```
+### 5. Run the frontend
+```bash
+npm start
+```
+
+## Building and Testing
+
+Once development reaches the testing phase, all contributors must verify their code before merging.
+
+## Building
+```bash
+# Build the production version of the frontend
+npm run build
+```
+## Testing (to be updated)
+
+- Unit testing will be implemented using Jest and Mocha.
+
+- Before merging, run:
+```bash
+npm test
+```
+Ensure that:
+- All existing tests pass.
+- New features include their own test cases.
+
 ## Contribution Rules
 
 Before contributing, please make sure to:
