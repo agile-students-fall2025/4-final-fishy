@@ -45,18 +45,18 @@ We follow a **Feature Branch Workflow** to ensure clean collaboration and organi
    ```
 2. **Create a new branch**
     ```bash
-git checkout -b feature/your-feature-name
+    git checkout -b feature/your-feature-name
     ```
 
 3. **Make your changes and commit frequently:**
     ```bash
-git add .
-git commit -m "feat: add budget tracker feature"
+    git add .
+    git commit -m "feat: add budget tracker feature"
     ```
 
 4. **Push your branch:**
     ```bash
-git push origin feature/your-feature-name
+    git push origin feature/your-feature-name
     ```
 
 5. **Open a Pull Request (PR) into dev**
