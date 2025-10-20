@@ -20,7 +20,7 @@ We believe in:
 | **All Members** | Everyone | Participate in code reviews, testing, and sprint retrospectives |
 
 **Meeting Schedule:**  
-- Weekly sprint meetings (every Monday)  
+- Weekly sprint meetings 
 - Daily async check-ins via GitHub or group chat  
 
 ---
