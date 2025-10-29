@@ -909,3 +909,101 @@
   place-items: center;
   z-index: 2000;
 }
+
+/* === Budget Overview Modal enhancements === */
+.tm-modal-lg {
+  width: min(860px, 94vw);
+  max-height: 86vh;                /* modal scroll cap */
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+}
+
+.tm-modal-body {
+  overflow: auto;                  /* modal content scrolls */
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+/* Header styles */
+.budget-ov__header { align-items: start; }
+.budget-ov__title { margin: 0 0 .25rem; }
+.budget-ov__meta { opacity: .9; display: flex; gap: .5rem; flex-wrap: wrap; }
+.budget-ov__meta .dot { opacity: .6; }
+
+/* Progress */
+.budget-ov__progress { margin: .5rem 0 1rem; }
+.budget-ov__bar { height: 10px; background: rgba(255,255,255,.35); border-radius: 999px; overflow: hidden; }
+.budget-ov__fill { height: 100%; background: #6f84ff; box-shadow: 0 4px 12px rgba(111,132,255,.45) inset; }
+.budget-ov__chips { margin-top: .6rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+.chip {
+  background: rgba(0,0,0,.28);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.45);
+  padding: .4rem .7rem;
+  border-radius: 999px;
+  font-size: .9rem;
+}
+
+/* Sections */
+.budget-ov__section { margin: 1.2rem 0; }
+.budget-ov__section-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: .7rem;
+}
+.budget-ov__actions { display: flex; gap: .5rem; }
+
+.budget-ov__kv {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem 1rem;
+}
+.budget-ov__kv span { opacity: .85; display:block; font-size:.9rem; }
+.budget-ov__kv strong { font-weight:700; }
+
+.budget-ov__form input,
+.budget-ov__form select { background: rgba(255,255,255,.22); }
+
+/* Add form */
+.budget-ov__add .tm-form-row { margin-bottom: .5rem; }
+.budget-ov__add-actions { display: flex; justify-content: flex-end; }
+
+/* Expenses table with its own scroll */
+.expenses-table-wrap {
+  max-height: 280px;      /* table scroll area */
+  overflow: auto;
+  margin-top: .6rem;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 12px;
+  background: rgba(255,255,255,.1);
+}
+.expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+}
+.expenses-table th,
+.expenses-table td {
+  padding: .6rem .7rem;
+  border-bottom: 1px solid rgba(255,255,255,.18);
+}
+.expenses-table thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(25,25,35,.35);
+  backdrop-filter: blur(6px);
+}
+.expenses-table td.right { text-align: right; }
+.muted { opacity: .8; }
+.mono { font-variant-numeric: tabular-nums; }
+.ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tm-btn.danger {
+  background: #e25b5b;
+  border: none;
+  box-shadow: 0 10px 20px rgba(226,91,91,.3);
+}
+.tm-btn.danger:hover { filter: brightness(.95); }
+
+@media (max-width: 700px) {
+  .budget-ov__kv { grid-template-columns: 1fr; }
+  .expenses-table th, .expenses-table td { padding: .55rem .6rem; }
+}
