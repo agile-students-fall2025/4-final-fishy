@@ -7,9 +7,16 @@ import MapPage from './pages/MapPage';
 import BudgetPage from './pages/BudgetPage';
 import WeatherPage from './pages/WeatherPage';
 import { BudgetProvider } from './context/BudgetContext';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (userData) => {
+    setUser(userData);
+    setCurrentPage('profile');
+  };
 
   const renderPage = () => {
     switch (currentPage) {
@@ -23,6 +30,8 @@ function App() {
         return <BudgetPage />;
       case 'weather':
         return <WeatherPage />;
+      case 'login':
+        return <LoginPage onLogin={handleLogin} />;
       default:
         return <HomePage />;
     }
