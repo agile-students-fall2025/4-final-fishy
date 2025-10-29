@@ -552,3 +552,139 @@
     min-width: auto;
   }
 }
+
+/* === MapPage Styles Added === */
+
+.map-page {
+  color: white;
+}
+
+.add-destination {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.destination-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.destination-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.add-destination-btn {
+  background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.add-destination-btn:hover {
+  background: #5a6fd8;
+}
+
+.map-container {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  height: 400px;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.destination-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.destination-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.destination-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.destination-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.destination-header h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.destination-tasks {
+  margin-top: 1rem;
+}
+
+.destination-tasks ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1rem;
+}
+
+.destination-tasks li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.no-tasks {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.task-input {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.task-input input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.task-input button {
+  background: #667eea;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.task-input button:hover {
+  background: #5a6fd8;
+}
+
+.no-data {
+  text-align: center;
+  opacity: 0.8;
+}
