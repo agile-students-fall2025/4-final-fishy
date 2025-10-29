@@ -6,6 +6,7 @@ import TripPlanningPage from './pages/TripPlanningPage';
 import MapPage from './pages/MapPage';
 import BudgetPage from './pages/BudgetPage';
 import WeatherPage from './pages/WeatherPage';
+import { BudgetProvider } from './context/BudgetContext';
 import LoginPage from './pages/LoginPage';
 
 function App() {
@@ -37,12 +38,15 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-      <main className="main-content">
+    <BudgetProvider>
+      <div className="App">
+        <Navigation
+          currentPage={currentPage}
+          onNavigate={setCurrentPage}
+        />
         {renderPage()}
-      </main>
-    </div>
+      </div>
+    </BudgetProvider>
   );
 }
 
