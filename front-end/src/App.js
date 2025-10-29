@@ -7,6 +7,8 @@ import MapPage from './pages/MapPage';
 import BudgetPage from './pages/BudgetPage';
 import WeatherPage from './pages/WeatherPage';
 
+import { TripProvider } from './context/TripContext';
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
