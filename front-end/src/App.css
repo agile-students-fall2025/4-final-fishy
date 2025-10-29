@@ -66,6 +66,64 @@
   font-size: 1.2rem;
 }
 
+/*Account Button*/
+.account-container {
+  position: relative;
+  display: flex;
+}
+
+.account-container .nav-item {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.account-container .nav-item:hover {
+  background: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25);
+  transform: translateY(-2px);
+  color: #667eea;
+}
+
+.account-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+  padding: 0.5rem 0;
+  z-index: 10;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.account-dropdown .dropdown-item {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.9rem;
+  color: #444;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.account-dropdown .dropdown-item:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+  transform: translateX(2px);
+}
+
 /* Main Content */
 .main-content {
   padding: 2rem;
@@ -494,6 +552,309 @@
     min-width: auto;
   }
 }
+/* ===== Budget Page ===== */
+.container { width: min(1100px, 92vw); margin: 0 auto; }
+
+.budget-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 2rem 0 1.25rem;
+  color: #fff;
+}
+.budget-toolbar h2 { font-size: 2.1rem; font-weight: 700; letter-spacing: .2px; }
+
+.new-budget-btn { border-radius: 999px; padding: .8rem 1.2rem; }
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.budget-card {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1rem;
+  color: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.budget-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 12px 25px rgba(0,0,0,.18);
+}
+
+.budget-card-top { display: flex; align-items: center; gap: .9rem; }
+.budget-avatar {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: grid; place-items: center; font-size: 1.25rem;
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28);
+}
+.budget-meta { display: grid; }
+.budget-title { margin: 0; font-size: 1.15rem; font-weight: 700; }
+.budget-subtle { margin: .25rem 0 0; opacity: .95; }
+
+.budget-card-actions { margin-top: 1rem; }
+
+.tm-btn {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  padding: .7rem 1rem; border-radius: 12px; cursor: pointer;
+  transition: all .18s ease;
+}
+.tm-btn:hover { transform: translateY(-2px); background: rgba(255,255,255,0.18); }
+.tm-btn.primary { background: #667eea; border-color: transparent; box-shadow: 0 10px 20px rgba(102,126,234,.35); }
+.tm-btn.primary:hover { background: #5a6fd8; }
+.tm-btn.ghost { background: transparent; }
+
+/* Empty state */
+.budget-empty {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem; color: #fff; text-align: center;
+}
+
+/* Modal */
+.tm-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: grid; place-items: center; z-index: 200; }
+.tm-modal {
+  width: min(520px, 92vw);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.28);
+  backdrop-filter: blur(12px);
+  border-radius: 18px; padding: 1rem 1rem 1.25rem; color: #fff;
+}
+.tm-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 0 .25rem .6rem; }
+.tm-modal-close { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+.tm-form { display: grid; gap: 1rem; margin-top: .25rem; }
+.tm-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.tm-form label span { display: block; font-size: .9rem; opacity: .95; margin-bottom: .35rem; }
+.tm-form input, .tm-form select {
+  width: 100%; padding: .7rem .85rem; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.10); color: #fff; outline: none;
+}
+.tm-modal-actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: .25rem; }
+
+@media (max-width: 768px) {
+  .tm-form-row { grid-template-columns: 1fr; }
+}
+/* === BUDGET PAGE — FINAL OVERRIDES (high specificity) === */
+.main-content .budget-grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.6rem; }
+
+.main-content .budget-card {
+  border-radius: 22px;
+  background: rgba(255,255,255,0.30);              /* more opaque */
+  border: 1px solid rgba(255,255,255,0.58);
+  backdrop-filter: blur(18px);
+  min-height: 190px;
+}
+
+.main-content .budget-card-body { padding: 1.6rem 1.7rem; display: flex; flex-direction: column; height: 100%; }
+.main-content .budget-card-top { display: flex; align-items: center; gap: 1.1rem; }
+.main-content .budget-avatar {
+  width: 54px; height: 54px; border-radius: 16px;
+  background: rgba(255,255,255,0.26); border: 1px solid rgba(255,255,255,0.52);
+  display: grid; place-items: center;
+}
+.main-content .budget-title { margin: 0; font-size: 1.38rem; font-weight: 800; }
+.main-content .budget-subtle { margin: .35rem 0 0; opacity: .97; }
+.main-content .budget-dates { margin: 1.05rem 0 .2rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+.main-content .badge {
+  font-size: .86rem; padding: .40rem .68rem; border-radius: 999px;
+  background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.42); color: #f4f7ff;
+}
+/* push the Open button further down */
+.main-content .budget-card-actions { margin-top: auto; padding-top: 1.3rem; }
+
+/* Buttons */
+.main-content .tm-btn { background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.42); }
+.main-content .tm-btn.primary { background: #6f84ff; border-color: transparent; box-shadow: 0 12px 24px rgba(111,132,255,.36); }
+
+/* Modal — make it clearly more opaque */
+.tm-modal-overlay { background: rgba(0,0,0,.60); }
+.tm-modal.tm-modal--opaque {
+  background: rgba(255,255,255,0.34);              /* was ~0.20–0.22 */
+  border: 1px solid rgba(255,255,255,0.62);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 38px 72px rgba(0,0,0,.42);
+}
+.tm-modal .tm-form input,
+.tm-modal .tm-form select {
+  background: rgba(255,255,255,0.26);
+  border: 1px solid rgba(255,255,255,0.54);
+  color: #fff;
+}
+/* === BUDGET PAGE – spacing / opacity overrides === */
+.container { width: min(1180px, 92vw); margin: 0 auto; }
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.8rem; /* more space between cards */
+}
+
+.budget-card {
+  border-radius: 22px;
+  background: rgba(255,255,255,0.30);           /* more opaque */
+  border: 1px solid rgba(255,255,255,0.60);
+  backdrop-filter: blur(18px);
+  min-height: 200px;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border .18s ease;
+}
+.budget-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.34);
+  box-shadow: 0 18px 40px rgba(0,0,0,.26);
+  border-color: rgba(255,255,255,0.66);
+}
+
+.budget-card-body { 
+  padding: 1.8rem 1.9rem;                        /* more inner padding */
+  display: flex; flex-direction: column; height: 100%;
+}
+.budget-card-top { display: flex; align-items: center; gap: 1.2rem; margin-bottom: .35rem; }
+.budget-title { margin: 0; font-size: 1.42rem; font-weight: 800; }
+.budget-subtle { margin: .4rem 0 0; opacity: .97; }
+
+.budget-dates { margin-top: 1.0rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+.badge {
+  font-size: .86rem; padding: .40rem .68rem; border-radius: 999px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.42);
+  color: #f4f7ff;
+}
+
+/* extra vertical space before the button */
+.budget-card-spacer { height: 28px; }
+
+/* move button further down and keep it off the text */
+.budget-card-actions { margin-top: auto; padding-top: 2.0rem; }
+
+.tm-btn.primary {
+  background: #6f84ff;
+  border: none;
+  box-shadow: 0 12px 24px rgba(111,132,255,.36);
+}
+
+/* Modal opacity + ensure date row looks right */
+.tm-modal.tm-modal--opaque {
+  background: rgba(255,255,255,0.34);
+  border: 1px solid rgba(255,255,255,0.62);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 38px 72px rgba(0,0,0,.42);
+}
+
+.tm-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.tm-form input, .tm-form select {
+  background: rgba(255,255,255,0.26);
+  border: 1px solid rgba(255,255,255,0.54);
+  color: #fff;
+}
+@media (max-width: 768px) {
+  .tm-form-row { grid-template-columns: 1fr; }
+}
+
+/* === Budget Card: Professional spacing & rhythm (final overrides) === */
+.budget-grid {
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 2rem; /* more space between cards */
+}
+
+.budget-card {
+  min-height: 240px;                     /* taller card */
+  border-radius: 24px;
+  background: rgba(255,255,255,0.30);
+  border: 1px solid rgba(255,255,255,0.60);
+  backdrop-filter: blur(18px);
+}
+
+.budget-card-body {
+  padding: 2.4rem 2.6rem;           /* adds breathing room inside */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;   /* pushes content apart */
+}
+
+.budget-card-top { 
+  display: flex; 
+  align-items: center; 
+  gap: 1.25rem; 
+  margin-bottom: .25rem;
+}
+
+.budget-avatar {
+  width: 56px; height: 56px; border-radius: 16px;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.26);
+  border: 1px solid rgba(255,255,255,0.52);
+  font-size: 1.25rem;
+}
+
+.budget-title { 
+  margin: 0; 
+  font-size: 1.6rem;                     /* clearer hierarchy */
+  font-weight: 800; 
+  letter-spacing: .2px; 
+  line-height: 1.2;
+}
+
+.budget-subtle { 
+  margin-top: .5rem;                     /* space below title */
+  font-size: 1.05rem; 
+  opacity: .98; 
+  line-height: 1.35;
+}
+
+.budget-dates { 
+  margin-top: 1.1rem; 
+  display: flex; 
+  gap: .6rem; 
+  flex-wrap: wrap; 
+}
+
+.badge {
+  font-size: .86rem; 
+  padding: .42rem .7rem; 
+  border-radius: 999px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.42);
+  color: #f4f7ff;
+}
+
+/* Add real breathing room before the button */
+.budget-card-spacer { height: 24px; }
+
+.budget-card-actions { 
+  margin-top: auto; 
+  padding-top: 1.25rem; 
+}
+
+/* Button should NOT be full width; make it compact & aligned left */
+
+.btn-open {
+  min-width: 168px;                      /* tidy, readable width */
+  border-radius: 14px;                   /* slightly smaller radius looks sharper */
+  padding-inline: 1.25rem;
+}
+
+.budget-card-actions {
+  margin-top: 2.2rem;               /* pushes button further down */
+  text-align: left;                 /* aligns button neatly */
+}
+
+.budget-card-actions .tm-btn {
+  width: auto;                      /* makes button compact */
+  min-width: 160px;                 /* consistent shape */
+  padding: 0.75rem 1.5rem;
+  border-radius: 14px;
+  background: #6f84ff;
+  box-shadow: 0 6px 16px rgba(111,132,255,.3);
 
 /* === MapPage Styles Added === */
 
@@ -720,4 +1081,113 @@
   display: flex;
   margin-top: 0.5rem;
   gap: 10px;
+/* ==== Budget Overview (popup) — scoped ==== */
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.60);
+  display: grid;
+  place-items: center;
+  z-index: 2000; /* bump if needed */
+}
+
+.bo-modal {
+  max-width: 780px;
+  background: rgba(255,255,255,0.94);
+  border-radius: 22px;
+  padding: 1.8rem;
+  color: #0b1b2a;
+  box-shadow: 0 22px 60px rgba(0,0,0,.35);
+}
+
+.bo-sub {
+  margin: 0 0 1rem;
+  color: #5a6a78;
+  font-weight: 600;
+}
+
+.bo-progress {
+  height: 12px;
+  width: 100%;
+  background: #e9eef4;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.7rem;
+}
+
+.bo-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #12b5ea, #5f74ff);
+  border-radius: 999px;
+  transition: width .35s ease-in-out;
+}
+
+.bo-badges { display:flex; gap:.5rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.bo-pill {
+  background: #f3f7fb;
+  color: #243548;
+  border: 1px solid #dbe6f1;
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.bo-section { margin-top: 1.1rem; }
+.bo-section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
+.bo-actions { display:flex; gap:.5rem; }
+.tm-btn.danger { background: #ef4444; border: none; }
+.tm-btn.danger:hover { filter: brightness(0.95); }
+
+.bo-kv { display:grid; gap:.4rem; }
+.bo-k { color:#5a6a78; font-weight:600; margin-right:.5rem; }
+.bo-kv > div { display:flex; gap:.75rem; }
+
+.bo-add-form { margin-top:.6rem; }
+
+.bo-table-wrap {
+  margin-top: .6rem;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,.92);
+}
+.bo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.bo-table thead th {
+  text-align: left;
+  font-weight: 700;
+  font-size: .95rem;
+  background: #f5f7fb;
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #e6ecf2;
+}
+.bo-table tbody td {
+  padding: .6rem .75rem;
+  border-bottom: 1px solid #eef3f7;
+  vertical-align: middle;
+}
+.bo-note { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-actions { display:flex; gap:.4rem; }
+.bo-edit-row input, .bo-edit-row select { width: 100%; }
+
+.bo-empty {
+  background: #f6f8fc;
+  border: 1px dashed #cfd9e6;
+  color: #48586c;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  margin-top: .5rem;
+}
+
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.60);
+  display: grid;
+  place-items: center;
+  z-index: 2000;
 }
