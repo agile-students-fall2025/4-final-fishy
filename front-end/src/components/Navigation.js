@@ -11,6 +11,10 @@ function Navigation({ currentPage, onPageChange, user }) {
     { id: 'weather', label: 'Weather', icon: '🌤️' }
   ];
 
+  const toggleDropdown = () => {
+    setShowAccountDropdown(prev => !prev);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -30,11 +34,7 @@ function Navigation({ currentPage, onPageChange, user }) {
         ))}
 
         {/* Account / Profile Button */}
-        <div
-          className="account-container"
-          onMouseEnter={() => !user && setShowAccountDropdown(true)}
-          onMouseLeave={() => setShowAccountDropdown(false)}
-        >
+        <div className="account-container">
           {user ? (
             <button
               className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}
@@ -45,8 +45,8 @@ function Navigation({ currentPage, onPageChange, user }) {
             </button>
           ) : (
             <>
-              <button className="nav-item">
-                <span className="nav-label">Account</span>
+              <button className="nav-item" onClick={toggleDropdown}>
+                <span className="nav-label">Account ⏷</span>
               </button>
 
               {showAccountDropdown && (
