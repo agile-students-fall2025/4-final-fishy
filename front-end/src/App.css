@@ -630,3 +630,94 @@
   text-align: center;
   opacity: 0.8;
 }
+
+/* Enhancements for Interactive Map Page */
+.map-page {
+  padding: 2rem;
+  text-align: center;
+}
+
+.map-container {
+  margin: 1.5rem auto;
+  max-width: 900px;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.add-destination {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.destination-input {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 300px;
+}
+
+.add-destination-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.add-destination-btn:hover {
+  background-color: #0056b3;
+}
+
+.destination-list {
+  max-width: 800px;
+  margin: 1.5rem auto;
+  text-align: left;
+}
+
+.destination-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.no-data {
+  color: #888;
+  font-style: italic;
+}
+
+/* Destination cards styling improvements */
+.destination-card {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.destination-card:hover {
+  transform: translateY(-3px);
+}
+
+.destination-header h3 {
+  text-transform: capitalize;
+  color: #fff;
+}
+
+.task-list li {
+  color: #f0f0f0;
+}
+
+.add-task-section {
+  display: flex;
+  margin-top: 0.5rem;
+  gap: 10px;
+}
