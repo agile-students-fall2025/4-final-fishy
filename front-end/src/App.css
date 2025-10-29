@@ -1289,3 +1289,62 @@
   .budget-ov__kv { grid-template-columns: 1fr; }
   .expenses-table th, .expenses-table td { padding: .55rem .6rem; }
 }
+
+
+/* === Photo upload + Notes styling === */
+.upload-section input {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.photo-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.memory-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.note-input {
+  width: 100%;
+  min-height: 70px;
+  margin-top: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.note-section {
+  margin-top: 0.8rem;
+}
+
+.note-text {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  color: #f0f0f0;
+  white-space: pre-wrap;
+  margin-bottom: 0.5rem;
+}
+
+.note-input {
+  width: 100%;
+  min-height: 70px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
