@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
-function Navigation({ currentPage, onPageChange, user }) {
+function Navigation({ currentPage, onPageChange, onNavigate, user }) {
+  const navigate = onNavigate || onPageChange;
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   const navItems = [
@@ -26,7 +27,7 @@ function Navigation({ currentPage, onPageChange, user }) {
           <button
             key={item.id}
             className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-            onClick={() => onPageChange(item.id)}
+            onClick={() => navigate && navigate(item.id)}
           >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
@@ -38,7 +39,7 @@ function Navigation({ currentPage, onPageChange, user }) {
           {user ? (
             <button
               className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}
-              onClick={() => onPageChange('profile')}
+              onClick={() => navigate && navigate('profile')}
             >
               <span className="nav-icon">👤</span>
               <span className="nav-label">Profile</span>
@@ -55,7 +56,7 @@ function Navigation({ currentPage, onPageChange, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      onPageChange('login');
+                      navigate && navigate('login');
                     }}
                   >
                     Login
@@ -64,7 +65,7 @@ function Navigation({ currentPage, onPageChange, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      onPageChange('signup');
+                      navigate && navigate('signup');
                     }}
                   >
                     Sign Up
