@@ -3,7 +3,7 @@ import './App.css';
 import Navigation from './components/Navigation';
 import HomePage from './pages/HomePage';
 import TripPlanningPage from './pages/TripPlanningPage';
-import MapPage from './pages/MapPage'; // Updated for MapPage feature ✅
+import MapPage from './pages/MapPage';
 import BudgetPage from './pages/BudgetPage';
 import WeatherPage from './pages/WeatherPage';
 import LoginPage from './pages/LoginPage';
@@ -24,7 +24,7 @@ function App() {
       case 'trips':
         return <TripPlanningPage />;
       case 'map':
-        return <MapPage />; // Updated for MapPage feature ✅
+        return <MapPage />;
       case 'budget':
         return <BudgetPage />;
       case 'weather':
