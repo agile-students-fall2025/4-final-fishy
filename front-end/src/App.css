@@ -856,6 +856,8 @@
   background: #6f84ff;
   box-shadow: 0 6px 16px rgba(111,132,255,.3);
 
+}
+
 /* === MapPage Styles Added === */
 
 .map-page {
@@ -1081,6 +1083,7 @@
   display: flex;
   margin-top: 0.5rem;
   gap: 10px;
+}
 /* ==== Budget Overview (popup) — scoped ==== */
 .tm-modal-overlay {
   position: fixed;
