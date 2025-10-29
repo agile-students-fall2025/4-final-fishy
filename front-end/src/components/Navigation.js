@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-function Navigation({ currentPage, onPageChange }) {
+function Navigation({ currentPage, onPageChange, user }) {
+  const [showAccountDropdown, setShowAccountDropdown] = useState(false);
+
   const navItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
     { id: 'trips', label: 'Trips', icon: '✈️' },
@@ -14,6 +16,7 @@ function Navigation({ currentPage, onPageChange }) {
       <div className="navbar-brand">
         <h1>TripMate</h1>
       </div>
+
       <div className="navbar-nav">
         {navItems.map(item => (
           <button
@@ -25,6 +28,52 @@ function Navigation({ currentPage, onPageChange }) {
             <span className="nav-label">{item.label}</span>
           </button>
         ))}
+
+        {/* Account / Profile Button */}
+        <div
+          className="account-container"
+          onMouseEnter={() => !user && setShowAccountDropdown(true)}
+          onMouseLeave={() => setShowAccountDropdown(false)}
+        >
+          {user ? (
+            <button
+              className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}
+              onClick={() => onPageChange('profile')}
+            >
+              <span className="nav-icon">👤</span>
+              <span className="nav-label">Profile</span>
+            </button>
+          ) : (
+            <>
+              <button className="nav-item">
+                <span className="nav-label">Account</span>
+              </button>
+
+              {showAccountDropdown && (
+                <div className="account-dropdown">
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setShowAccountDropdown(false);
+                      onPageChange('login');
+                    }}
+                  >
+                    Login
+                  </button>
+                  <button
+                    className="dropdown-item"
+                    onClick={() => {
+                      setShowAccountDropdown(false);
+                      onPageChange('signup');
+                    }}
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
