@@ -1,4 +1,3 @@
-// src/pages/TripPlanningPage.js
 import React, { useState } from "react";
 import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
@@ -30,7 +29,10 @@ export default function TripPlanningPage() {
   return (
     <div className="tm-wrap">
       <header className="tm-pagehead">
-        <h1>Trip Planner</h1>
+        <div>
+          <h1 className="tm-pagehead__title">Trip Planner</h1>
+          <p className="tm-muted">Plan destinations, dates and per-day activities.</p>
+        </div>
         <button className="tm-btn tm-btn--primary" onClick={() => setIsOpen(true)}>
           Create New Trip
         </button>
@@ -38,15 +40,19 @@ export default function TripPlanningPage() {
 
       <section className="tm-grid">
         {trips.length === 0 && (
-          <div className="tm-empty">No trips yet — click “Create New Trip” to start.</div>
+          <div className="tm-empty">
+            No trips yet — click <strong>Create New Trip</strong> to start.
+          </div>
         )}
 
         {trips.map((t) => (
           <div key={t.id} className="tm-grid__item">
             <TripCard trip={t} onOpen={setSelected} />
-            <button className="tm-link-danger" onClick={() => handleDelete(t.id)}>
-              Delete
-            </button>
+            <div className="tm-card__footer">
+              <button className="tm-link-danger" onClick={() => handleDelete(t.id)}>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </section>
@@ -54,20 +60,26 @@ export default function TripPlanningPage() {
       {selected && (
         <div className="tm-drawer" onClick={() => setSelected(null)}>
           <div className="tm-drawer__panel" onClick={(e) => e.stopPropagation()}>
-            <h2 className="tm-drawer__title">Trip Overview</h2>
-            <p className="tm-muted">Destination: {selected.destination}</p>
+            <h2 className="tm-drawer__title">{selected.destination}</h2>
+            <p className="tm-muted">
+              {selected.startDate || "—"} {selected.endDate ? ` — ${selected.endDate}` : ""}
+            </p>
+
             <ul className="tm-list">
               {(selected.days || []).map((d, i) => (
                 <li key={i}>
                   <strong>{d.date || `Day ${i + 1}`}</strong>
-                  <ul className="tm-sublist">
-                    {(d.activities || []).map((a, j) => (
-                      <li key={j}>{a}</li>
-                    ))}
-                  </ul>
+                  {(d.activities || []).length === 0 ? (
+                    <div className="tm-muted">No activities.</div>
+                  ) : (
+                    <ul className="tm-sublist">
+                      {(d.activities || []).map((a, j) => <li key={j}>{a}</li>)}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>
+
             <button className="tm-btn" onClick={() => setSelected(null)}>Close</button>
           </div>
         </div>
@@ -76,7 +88,6 @@ export default function TripPlanningPage() {
       {isOpen && (
         <div className="tm-modal" role="dialog" aria-modal="true" onClick={() => setIsOpen(false)}>
           <div className="tm-modal__panel" onClick={(e) => e.stopPropagation()}>
-            <button className="tm-close" onClick={() => setIsOpen(false)} aria-label="Close">✕</button>
             <TripForm onCancel={() => setIsOpen(false)} onSave={handleSave} />
             {busy && <div className="tm-overlay">Saving…</div>}
           </div>
@@ -85,4 +96,3 @@ export default function TripPlanningPage() {
     </div>
   );
 }
-

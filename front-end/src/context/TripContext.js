@@ -1,37 +1,35 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { fetchTrips } from '../utils/api';
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const TripContext = createContext(null);
+const TripsContext = createContext();
+const STORAGE_KEY = "tripmate.trips.v1";
 
-export function TripProvider({ children }) {
-  const [trips, setTrips] = useState([]);
+export function TripsProvider({ children }) {
+  const [trips, setTrips] = useState(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
-    let mounted = true;
-    fetchTrips()
-      .then((data) => {
-        if (mounted && Array.isArray(data)) setTrips(data);
-      })
-      .catch(() => {
-        /* ignore fetch errors for dev */
-      });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
+    } catch {}
+  }, [trips]);
 
-  const addTrip = (trip) => setTrips((s) => [...s, trip]);
-  const deleteTrip = (id) => setTrips((s) => s.filter((t) => t.id !== id));
+  const addTrip = (trip) => setTrips((prev) => [trip, ...prev]);
+  const deleteTrip = (id) => setTrips((prev) => prev.filter((t) => t.id !== id));
+  const updateTrip = (id, patch) =>
+    setTrips((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
 
-  return (
-    <TripContext.Provider value={{ trips, addTrip, deleteTrip }}>
-      {children}
-    </TripContext.Provider>
-  );
+  const value = useMemo(() => ({ trips, addTrip, deleteTrip, updateTrip }), [trips]);
+  return <TripsContext.Provider value={value}>{children}</TripsContext.Provider>;
 }
 
 export function useTrips() {
-  const ctx = useContext(TripContext);
-  if (!ctx) throw new Error('useTrips must be used inside a TripProvider');
+  const ctx = useContext(TripsContext);
+  if (!ctx) throw new Error("useTrips must be used inside <TripsProvider>");
   return ctx;
 }

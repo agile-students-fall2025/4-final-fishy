@@ -23,3 +23,7 @@ export function formatPrettyDate(input) {
 	}
 }
 
+
+export function pluralize(word, n) {
+	return n === 1 ? word : `${word}s`;
+  }
