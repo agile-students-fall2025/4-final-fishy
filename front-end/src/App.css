@@ -798,3 +798,114 @@
   background: #6f84ff;
   box-shadow: 0 6px 16px rgba(111,132,255,.3);
 }
+
+/* ==== Budget Overview (popup) — scoped ==== */
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.60);
+  display: grid;
+  place-items: center;
+  z-index: 2000; /* bump if needed */
+}
+
+.bo-modal {
+  max-width: 780px;
+  background: rgba(255,255,255,0.94);
+  border-radius: 22px;
+  padding: 1.8rem;
+  color: #0b1b2a;
+  box-shadow: 0 22px 60px rgba(0,0,0,.35);
+}
+
+.bo-sub {
+  margin: 0 0 1rem;
+  color: #5a6a78;
+  font-weight: 600;
+}
+
+.bo-progress {
+  height: 12px;
+  width: 100%;
+  background: #e9eef4;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.7rem;
+}
+
+.bo-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #12b5ea, #5f74ff);
+  border-radius: 999px;
+  transition: width .35s ease-in-out;
+}
+
+.bo-badges { display:flex; gap:.5rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.bo-pill {
+  background: #f3f7fb;
+  color: #243548;
+  border: 1px solid #dbe6f1;
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.bo-section { margin-top: 1.1rem; }
+.bo-section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:.5rem; }
+.bo-actions { display:flex; gap:.5rem; }
+.tm-btn.danger { background: #ef4444; border: none; }
+.tm-btn.danger:hover { filter: brightness(0.95); }
+
+.bo-kv { display:grid; gap:.4rem; }
+.bo-k { color:#5a6a78; font-weight:600; margin-right:.5rem; }
+.bo-kv > div { display:flex; gap:.75rem; }
+
+.bo-add-form { margin-top:.6rem; }
+
+.bo-table-wrap {
+  margin-top: .6rem;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,.92);
+}
+.bo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.bo-table thead th {
+  text-align: left;
+  font-weight: 700;
+  font-size: .95rem;
+  background: #f5f7fb;
+  padding: .65rem .75rem;
+  border-bottom: 1px solid #e6ecf2;
+}
+.bo-table tbody td {
+  padding: .6rem .75rem;
+  border-bottom: 1px solid #eef3f7;
+  vertical-align: middle;
+}
+.bo-note { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bo-actions { display:flex; gap:.4rem; }
+.bo-edit-row input, .bo-edit-row select { width: 100%; }
+
+.bo-empty {
+  background: #f6f8fc;
+  border: 1px dashed #cfd9e6;
+  color: #48586c;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  margin-top: .5rem;
+}
+
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.60);
+  display: grid;
+  place-items: center;
+  z-index: 2000;
+}
