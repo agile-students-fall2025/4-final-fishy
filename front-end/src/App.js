@@ -8,6 +8,7 @@ import MapPage from "./pages/MapPage";
 import BudgetPage from "./pages/BudgetPage";
 import WeatherPage from "./pages/WeatherPage";
 import LoginPage from "./pages/LoginPage";
+import RegistrationPage from "./pages/RegistrationPage";
 import { BudgetProvider } from "./context/BudgetContext";
 import { TripsProvider } from "./context/TripContext";
 
@@ -34,6 +35,8 @@ function App() {
         return <WeatherPage />;
       case "login":
         return <LoginPage onLogin={handleLogin} />;
+      case "register":
+        return <RegistrationPage onRegister={(userData) => handleLogin(userData)} />;
       default:
         return <HomePage />;
     }
