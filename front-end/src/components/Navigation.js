@@ -65,7 +65,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      navigate && navigate('signup');
+                      navigate && navigate('register');
                     }}
                   >
                     Sign Up
