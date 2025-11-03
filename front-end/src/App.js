@@ -47,7 +47,9 @@ function App() {
       <BudgetProvider>
         <div className="App">
           <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-          {renderPage()}
+          <main className="main-content">
+            {renderPage()}
+          </main>  
         </div>
       </BudgetProvider>
     </TripsProvider>
