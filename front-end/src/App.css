@@ -1580,3 +1580,96 @@
   color: #fff;
   background: rgba(255,255,255,0.1);
 }
+
+/* ===== Mobile Overrides (place at END of App.css) ===== */
+@media (max-width: 768px) {
+  /* 1) Tighter app padding & background legibility */
+  .App { background-attachment: fixed; }
+  .main-content { padding: 1rem; }
+
+  /* 2) Navbar: stack nicely */
+  .navbar {
+    flex-direction: column;
+    gap: .6rem;
+    padding: .75rem 1rem;
+  }
+  .navbar-brand h1 { font-size: 1.4rem; }
+  .navbar-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem;
+  }
+  .nav-item { padding: .5rem .9rem; font-size: .85rem; }
+
+  /* 3) Trip cards grid: force single column on phones */
+  /* reduce min-width so it can collapse without horizontal scrolling */
+  .trips-grid { grid-template-columns: 1fr !important; }
+  /* also reduce the default minmax so larger phones can show 2 comfortably */
+  @supports (grid-template-columns: repeat(auto-fit, minmax(0px, 1fr))) {
+    .trips-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; }
+  }
+  .trip-card img { height: 160px; }
+
+  /* 4) Quick Actions tiles: comfortable stacking */
+  .action-buttons { grid-template-columns: 1fr; }
+
+  /* 5) Weather page: stack & shrink tiles a bit */
+  .weather-header { flex-direction: column; gap: .75rem; text-align: center; }
+  .current-weather-card {
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+  .weather-icon { font-size: 3rem; }
+  .weather-temp { font-size: 2.4rem; }
+  .weather-details { width: 100%; }
+  .detail-item { min-width: 0; }
+  .forecast-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+
+  /* 6) Tips grid: single column for readability */
+  .tips-grid { grid-template-columns: 1fr; }
+
+  /* 7) Budget grid/cards: let them collapse; reduce min card size */
+  .budget-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+  .budget-card,
+  .main-content .budget-card { min-height: 180px; border-radius: 18px; }
+  .budget-card-body { padding: 1.25rem 1.3rem; }
+
+  /* 8) Forms: already mostly stacked—ensure single column everywhere */
+  .tm-row,
+  .tm-form-row { grid-template-columns: 1fr !important; }
+
+  /* 9) Drawer & Modals: full-screen on phones */
+  .tm-drawer__panel {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0; right: 0;
+  }
+  .tm-modal__panel,
+  .tm-modal.tm-modal--opaque,
+  .tm-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+  .tm-modal__panel { padding: 14px; }
+
+  /* 10) Generic grid helpers used elsewhere */
+  .tm-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+
+  /* 11) Map page: shorter map on phones, inputs full width */
+  .map-page { padding: 1rem; }
+  .map-container { height: 280px; max-width: 100%; }
+  .add-destination { flex-direction: column; align-items: stretch; }
+  .destination-input { width: 100%; }
+
+  /* 12) Login card: tighter on mobile */
+  .login-card { width: 92%; padding: 1.5rem; border-radius: 16px; }
+}
+
+/* Optional: prevent body horizontal scroll if any element misbehaves */
+html, body { overflow-x: hidden; }
