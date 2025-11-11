@@ -1488,16 +1488,62 @@
 /* Drawer (details) */
 .tm-drawer { position: fixed; inset: 0; background: rgba(18,18,28,0.55); z-index: 950; }
 .tm-drawer__panel {
-  position: absolute; right: 0; top: 0; height: 100%; width: min(520px, 96%);
-  background: #fafbff; border-left: 1px solid rgba(255,255,255,0.18);
-  padding: 18px; overflow: auto;
+  background: linear-gradient(145deg, #151a4b, #2c317e);
+  color: #f8f9ff;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  box-shadow: -2px 0 20px rgba(0,0,0,0.2);
+  padding: 2rem;
+  margin-top: 1rem;
+  line-height: 1.6;
 }
-.tm-drawer__title { margin: 0 0 4px; }
+
+.tm-drawer__title { font-size: 1.6rem;
+  margin-bottom: 0.5rem;}
 
 /* Saving overlay */
 .tm-overlay {
   position: absolute; inset: 0; display: grid; place-items: center;
   background: rgba(35,35,55,0.3); border-radius: 16px; font-weight: 700;
+}
+/* ===== Centered Trip Details Modal ===== */
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.tm-modal-centered {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 2rem;
+  width: min(600px, 90%);
+  max-height: 80vh;
+  overflow-y: auto;
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.25s ease;
+}
+
+.tm-modal-title {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.tm-modal-centered .tm-btn {
+  margin-top: 1.5rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive */

@@ -6,16 +6,22 @@ import { saveTrip, deleteTripById } from "../utils/api";
 
 export default function TripPlanningPage() {
   const { trips, addTrip, deleteTrip } = useTrips();
-  const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);     // controls TripForm modal (create/edit)
+  const [selected, setSelected] = useState(null);  // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
 
+  // Create or Update depending on presence of trip.id
   const handleSave = async (trip) => {
     setBusy(true);
     try {
-      const persisted = await saveTrip(trip);
+      const persisted = await saveTrip(trip); // assume API updates when id exists
+      if (trip?.id) {
+        // simple replace-in-context: remove then add
+        deleteTrip(trip.id);
+      }
       addTrip(persisted);
       setIsOpen(false);
+      setSelected(null);
     } finally {
       setBusy(false);
     }
@@ -24,6 +30,7 @@ export default function TripPlanningPage() {
   const handleDelete = async (id) => {
     await deleteTripById(id);
     deleteTrip(id);
+    if (selected?.id === id) setSelected(null);
   };
 
   return (
@@ -33,7 +40,13 @@ export default function TripPlanningPage() {
           <h1 className="tm-pagehead__title">Trip Planner</h1>
           <p className="tm-muted">Plan destinations, dates and per-day activities.</p>
         </div>
-        <button className="tm-btn tm-btn--primary" onClick={() => setIsOpen(true)}>
+        <button
+          className="tm-btn tm-btn--primary"
+          onClick={() => {
+            setSelected(null);   // ensure a clean create form
+            setIsOpen(true);
+          }}
+        >
           Create New Trip
         </button>
       </header>
@@ -48,7 +61,16 @@ export default function TripPlanningPage() {
         {trips.map((t) => (
           <div key={t.id} className="tm-grid__item">
             <TripCard trip={t} onOpen={setSelected} />
-            <div className="tm-card__footer">
+            <div className="tm-card__footer" style={{ display: "flex", gap: 12 }}>
+              <button
+                className="tm-link"
+                onClick={() => {
+                  setSelected(t);   // prefill with this trip
+                  setIsOpen(true);  // open edit form
+                }}
+              >
+                Edit
+              </button>
               <button className="tm-link-danger" onClick={() => handleDelete(t.id)}>
                 Delete
               </button>
@@ -57,11 +79,12 @@ export default function TripPlanningPage() {
         ))}
       </section>
 
-      {selected && (
-        <div className="tm-drawer" onClick={() => setSelected(null)}>
-          <div className="tm-drawer__panel" onClick={(e) => e.stopPropagation()}>
-            <h2 className="tm-drawer__title">{selected.destination}</h2>
-            <p className="tm-muted">
+      {/* READ-ONLY DETAILS MODAL (centered) */}
+      {selected && !isOpen && (
+        <div className="tm-modal-overlay" onClick={() => setSelected(null)}>
+          <div className="tm-modal-centered" onClick={(e) => e.stopPropagation()}>
+            <h2 className="tm-modal-title">{selected.destination || "Untitled trip"}</h2>
+            <p className="tm-muted" style={{ marginBottom: "0.75rem" }}>
               {selected.startDate || "—"} {selected.endDate ? ` — ${selected.endDate}` : ""}
             </p>
 
@@ -80,15 +103,36 @@ export default function TripPlanningPage() {
               ))}
             </ul>
 
-            <button className="tm-btn" onClick={() => setSelected(null)}>Close</button>
+            <div className="tm-actions" style={{ justifyContent: "space-between", marginTop: 16 }}>
+              <button
+                className="tm-btn tm-btn--primary"
+                onClick={() => {
+                  // open edit form prefilled with this trip
+                  setIsOpen(true);
+                }}
+              >
+                Edit Trip
+              </button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button className="tm-btn" onClick={() => setSelected(null)}>Close</button>
+                <button className="tm-btn tm-link-danger" onClick={() => handleDelete(selected.id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
+      {/* CREATE/EDIT FORM MODAL */}
       {isOpen && (
-        <div className="tm-modal" role="dialog" aria-modal="true" onClick={() => setIsOpen(false)}>
+        <div className="tm-modal" role="dialog" aria-modal="true" onClick={() => { setIsOpen(false); setSelected(null); }}>
           <div className="tm-modal__panel" onClick={(e) => e.stopPropagation()}>
-            <TripForm onCancel={() => setIsOpen(false)} onSave={handleSave} />
+            <TripForm
+              trip={selected || null}  // prefill when editing; null means create
+              onCancel={() => { setIsOpen(false); setSelected(null); }}
+              onSave={handleSave}
+            />
             {busy && <div className="tm-overlay">Saving…</div>}
           </div>
         </div>

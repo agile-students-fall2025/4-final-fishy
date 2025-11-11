@@ -1,28 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeId } from "../utils/helpers";
 
-export default function TripForm({ onSave, onCancel }) {
+export default function TripForm({ trip, onSave, onCancel }) {
+  // form state
   const [destination, setDestination] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [days, setDays] = useState([{ date: "", activities: [""] }]);
 
+  const isEditing = Boolean(trip?.id);
+
+  // prefill on edit (or reset on create)
+  useEffect(() => {
+    if (trip) {
+      setDestination(trip.destination || "");
+      setStartDate(trip.startDate || "");
+      setEndDate(trip.endDate || "");
+      setDays(
+        Array.isArray(trip.days) && trip.days.length
+          ? trip.days.map((d) => ({
+              date: d.date || "",
+              activities:
+                Array.isArray(d.activities) && d.activities.length
+                  ? d.activities
+                  : [""],
+            }))
+          : [{ date: "", activities: [""] }]
+      );
+    } else {
+      // create mode defaults
+      setDestination("");
+      setStartDate("");
+      setEndDate("");
+      setDays([{ date: "", activities: [""] }]);
+    }
+  }, [trip]);
+
+  // itinerary helpers
   const addDay = () => setDays((d) => [...d, { date: "", activities: [""] }]);
   const removeDay = (i) => setDays((d) => d.filter((_, idx) => idx !== i));
-
   const setDayDate = (i, value) =>
     setDays((d) => d.map((day, idx) => (idx === i ? { ...day, date: value } : day)));
 
   const addActivity = (i) =>
     setDays((d) =>
-      d.map((day, idx) => (idx === i ? { ...day, activities: [...day.activities, ""] } : day))
+      d.map((day, idx) =>
+        idx === i ? { ...day, activities: [...day.activities, ""] } : day
+      )
     );
 
   const setActivity = (i, j, value) =>
     setDays((d) =>
       d.map((day, idx) =>
         idx === i
-          ? { ...day, activities: day.activities.map((a, k) => (k === j ? value : a)) }
+          ? {
+              ...day,
+              activities: day.activities.map((a, k) => (k === j ? value : a)),
+            }
           : day
       )
     );
@@ -30,32 +64,51 @@ export default function TripForm({ onSave, onCancel }) {
   const removeActivity = (i, j) =>
     setDays((d) =>
       d.map((day, idx) =>
-        idx === i ? { ...day, activities: day.activities.filter((_, k) => k !== j) } : day
+        idx === i
+          ? { ...day, activities: day.activities.filter((_, k) => k !== j) }
+          : day
       )
     );
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const cleanedDays = days
-      .map((d) => ({ date: d.date, activities: d.activities.filter((a) => a.trim() !== "") }))
-      .filter((d) => d.date || d.activities.length);
 
-    const trip = {
-      id: makeId("trip"),
-      destination: destination.trim() || "Untitled trip",
+    // strip empty activities and empty days
+    const cleanedDays = (days || [])
+      .map((d) => ({
+        date: d.date || "",
+        activities: (d.activities || []).filter((a) => a.trim() !== ""),
+      }))
+      .filter((d) => d.date || (d.activities && d.activities.length > 0));
+
+    const payload = {
+      // keep existing id in edit mode; create a new one in create mode
+      id: isEditing ? trip.id : makeId("trip"),
+      destination: (destination || "").trim() || "Untitled trip",
       startDate: startDate || "",
       endDate: endDate || "",
       days: cleanedDays.length ? cleanedDays : [{ date: "", activities: [] }],
-      createdAt: new Date().toISOString(),
+      createdAt: isEditing ? trip.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
-    onSave(trip);
+
+    onSave(payload);
   };
 
   return (
     <form className="tm-form" onSubmit={handleSubmit}>
       <header className="tm-modal__header">
-        <h2 className="tm-modal__title">Create New Trip</h2>
-        <button type="button" className="tm-icon-btn" onClick={onCancel} aria-label="Close">✕</button>
+        <h2 className="tm-modal__title">
+          {isEditing ? "Edit Trip" : "Create New Trip"}
+        </h2>
+        <button
+          type="button"
+          className="tm-icon-btn"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          ✕
+        </button>
       </header>
 
       <label className="tm-label">Destination</label>
@@ -87,9 +140,11 @@ export default function TripForm({ onSave, onCancel }) {
         </div>
       </div>
 
-      <div className="tm-section">
+      <div className="tm-section" style={{ marginTop: 8 }}>
         <h3 className="tm-subtitle">Itinerary</h3>
-        <button type="button" className="tm-btn tm-btn--ghost" onClick={addDay}>+ New Day</button>
+        <button type="button" className="tm-btn tm-btn--ghost" onClick={addDay}>
+          + New Day
+        </button>
       </div>
 
       {days.map((day, i) => (
@@ -140,7 +195,12 @@ export default function TripForm({ onSave, onCancel }) {
                 </div>
               </div>
             ))}
-            <button type="button" className="tm-btn tm-btn--ghost" onClick={() => addActivity(i)}>
+
+            <button
+              type="button"
+              className="tm-btn tm-btn--ghost"
+              onClick={() => addActivity(i)}
+            >
               + Add Activity
             </button>
           </div>
@@ -148,8 +208,12 @@ export default function TripForm({ onSave, onCancel }) {
       ))}
 
       <div className="tm-actions">
-        <button type="button" className="tm-btn" onClick={onCancel}>Cancel</button>
-        <button type="submit" className="tm-btn tm-btn--primary">Save Trip</button>
+        <button type="button" className="tm-btn" onClick={onCancel}>
+          Cancel
+        </button>
+        <button type="submit" className="tm-btn tm-btn--primary">
+          {isEditing ? "Save Changes" : "Save Trip"}
+        </button>
       </div>
     </form>
   );

@@ -1,0 +1,24 @@
+{
+    "name": "tripmate-back-end",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "start": "node src/index.js",
+        "dev": "nodemon src/index.js",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:cov": "vitest run --coverage"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2",
+        "joi": "^17.12.0"
+    },
+    "devDependencies": {
+        "@vitest/coverage-v8": "^4.0.8",
+        "nodemon": "^3.0.1",
+        "supertest": "^7.1.4",
+        "vitest": "^4.0.8"
+    }
+}
