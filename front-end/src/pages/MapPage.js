@@ -1,13 +1,23 @@
 // File: src/pages/MapPage.js
-// Feature: Photo upload + Add/Edit notes for each destination (User Story #15)
+// Feature: Travel Map connected to backend (GET, POST, PUT, DELETE)
 
 import React, { useState, useEffect, useCallback } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import "../App.css";
+import "./MapPage.css";
+
+import {
+  fetchLocations,
+  createLocation,
+  deleteLocation,
+  addTask,
+  addPhotos,
+  updateLocation,
+} from "../utils/mapApi";
 
 const containerStyle = {
   width: "100%",
-  height: "100%",
+  height: "500px",
   borderRadius: "15px",
 };
 
@@ -27,26 +37,23 @@ function MapPage() {
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
 
-  // Load from localStorage
+  // Load from backend
   useEffect(() => {
-    setMarkers(JSON.parse(localStorage.getItem("mapMarkers")) || []);
-    setDestinations(JSON.parse(localStorage.getItem("destinations")) || []);
-    setTasks(JSON.parse(localStorage.getItem("destinationTasks")) || {});
+    fetchLocations()
+      .then((data) => {
+        setDestinations(data);
+        // Create marker objects for map display
+        const loadedMarkers = data.map((loc) => ({
+          id: loc.id,
+          lat: loc.lat,
+          lng: loc.lng,
+        }));
+        setMarkers(loadedMarkers);
+      })
+      .catch((err) => console.error("Error fetching destinations:", err));
   }, []);
 
-  // Save to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem("mapMarkers", JSON.stringify(markers));
-      localStorage.setItem("destinations", JSON.stringify(destinations));
-      localStorage.setItem("destinationTasks", JSON.stringify(tasks));
-    } catch (e) {
-      console.warn("Storage quota exceeded, clearing old data.");
-      localStorage.clear();
-    }
-  }, [markers, destinations, tasks]);
-
-  // Get user location
+  // Get user location (for centering the map)
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -60,39 +67,58 @@ function MapPage() {
     }
   }, []);
 
-  // Add new destination
-  const handleAddDestination = () => {
+  // Add new destination (POST to backend)
+  const handleAddDestination = async () => {
     if (!newDestination.trim()) return;
-    const destination = {
-      id: Date.now(),
-      name: newDestination.trim(),
-      photos: [],
-      note: "",
-    };
-    setDestinations((prev) => [...prev, destination]);
-    setNewDestination("");
+    try {
+      const newDest = await createLocation({
+        title: newDestination.trim(),
+        lat: mapCenter.lat,
+        lng: mapCenter.lng,
+      });
+      setDestinations((prev) => [...prev, newDest]);
+      setMarkers((prev) => [
+        ...prev,
+        { id: newDest.id, lat: newDest.lat, lng: newDest.lng },
+      ]);
+      setNewDestination("");
+    } catch (err) {
+      console.error("Add destination failed:", err);
+    }
   };
 
-  // Add marker by map click
-  const handleMapClick = useCallback((event) => {
-    const newMarker = {
-      id: Date.now(),
-      lat: event.latLng.lat(),
-      lng: event.latLng.lng(),
-    };
-    setMarkers((prev) => [...prev, newMarker]);
+  // Add marker manually by clicking on map
+  const handleMapClick = useCallback(async (event) => {
+    try {
+      const lat = event.latLng.lat();
+      const lng = event.latLng.lng();
+      const newDest = await createLocation({
+        title: `Pinned Location ${Date.now()}`,
+        lat,
+        lng,
+      });
+      setDestinations((prev) => [...prev, newDest]);
+      setMarkers((prev) => [...prev, { id: newDest.id, lat, lng }]);
+    } catch (err) {
+      console.error("Map click add failed:", err);
+    }
   }, []);
 
-  // Add task per destination
-  const handleAddTask = (destId, newTask) => {
+  // Add task (POST)
+  const handleAddTask = async (destId, newTask) => {
     if (!newTask.trim()) return;
-    setTasks((prev) => ({
-      ...prev,
-      [destId]: [...(prev[destId] || []), newTask.trim()],
-    }));
+    try {
+      const added = await addTask(destId, newTask.trim());
+      setTasks((prev) => ({
+        ...prev,
+        [destId]: [...(prev[destId] || []), added.text],
+      }));
+    } catch (err) {
+      console.error("Task add failed:", err);
+    }
   };
 
-  // Compress and upload photos
+  // Upload photos (POST)
   const handlePhotoUpload = (destId, files) => {
     const readerPromises = Array.from(files).map(
       (file) =>
@@ -117,18 +143,23 @@ function MapPage() {
         })
     );
 
-    Promise.all(readerPromises).then((base64Photos) => {
-      setDestinations((prev) =>
-        prev.map((dest) =>
-          dest.id === destId
-            ? { ...dest, photos: [...(dest.photos || []), ...base64Photos] }
-            : dest
-        )
-      );
+    Promise.all(readerPromises).then(async (base64Photos) => {
+      try {
+        await addPhotos(destId, base64Photos);
+        setDestinations((prev) =>
+          prev.map((dest) =>
+            dest.id === destId
+              ? { ...dest, photos: [...(dest.photos || []), ...base64Photos] }
+              : dest
+          )
+        );
+      } catch (err) {
+        console.error("Photo upload failed:", err);
+      }
     });
   };
 
-  // Note handling
+  // Add/Edit Note (PUT)
   const handleAddNote = (destId) => {
     setEditingNoteId(destId);
     const currentNote =
@@ -136,14 +167,30 @@ function MapPage() {
     setTempNote(currentNote);
   };
 
-  const handleSaveNote = (destId) => {
-    setDestinations((prev) =>
-      prev.map((dest) =>
-        dest.id === destId ? { ...dest, note: tempNote } : dest
-      )
-    );
-    setEditingNoteId(null);
-    setTempNote("");
+  const handleSaveNote = async (destId) => {
+    try {
+      await updateLocation(destId, { note: tempNote });
+      setDestinations((prev) =>
+        prev.map((dest) =>
+          dest.id === destId ? { ...dest, note: tempNote } : dest
+        )
+      );
+      setEditingNoteId(null);
+      setTempNote("");
+    } catch (err) {
+      console.error("Save note failed:", err);
+    }
+  };
+
+  // Delete destination (DELETE)
+  const handleDeleteDestination = async (destId) => {
+    try {
+      await deleteLocation(destId);
+      setDestinations((prev) => prev.filter((d) => d.id !== destId));
+      setMarkers((prev) => prev.filter((m) => m.id !== destId));
+    } catch (err) {
+      console.error("Delete destination failed:", err);
+    }
   };
 
   return (
@@ -152,7 +199,7 @@ function MapPage() {
         <h2>Travel Memories Map</h2>
         <p>
           Add destinations, upload photos, and write or edit notes to remember
-          your adventures!
+          your adventures! (Data now saves on the server 🎯)
         </p>
       </div>
 
@@ -202,7 +249,13 @@ function MapPage() {
         {destinations.map((dest) => (
           <div key={dest.id} className="destination-card">
             <div className="destination-header">
-              <h3>{dest.name}</h3>
+              <h3>{dest.title || dest.name}</h3>
+              <button
+                className="add-destination-btn"
+                onClick={() => handleDeleteDestination(dest.id)}
+              >
+                Delete
+              </button>
             </div>
 
             {/* Photo Upload */}
