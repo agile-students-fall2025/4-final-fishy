@@ -66,64 +66,6 @@
   font-size: 1.2rem;
 }
 
-/*Account Button*/
-.account-container {
-  position: relative;
-  display: flex;
-}
-
-.account-container .nav-item {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 25px;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.account-container .nav-item:hover {
-  background: rgba(102, 126, 234, 0.2);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25);
-  transform: translateY(-2px);
-  color: #667eea;
-}
-
-.account-dropdown {
-  position: absolute;
-  top: 120%;
-  right: 0;
-  min-width: 160px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
-  padding: 0.5rem 0;
-  z-index: 10;
-  animation: fadeIn 0.25s ease-out;
-}
-
-.account-dropdown .dropdown-item {
-  width: 100%;
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 0.75rem 1.25rem;
-  font-size: 0.9rem;
-  color: #444;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.account-dropdown .dropdown-item:hover {
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  transform: translateX(2px);
-}
-
 /* Main Content */
 .main-content {
   padding: 2rem;
@@ -643,12 +585,12 @@
 @media (max-width: 768px) {
   .tm-form-row { grid-template-columns: 1fr; }
 }
-/* === BUDGET PAGE — FINAL OVERRIDES (high specificity) === */
+
 .main-content .budget-grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.6rem; }
 
 .main-content .budget-card {
   border-radius: 22px;
-  background: rgba(255,255,255,0.30);              /* more opaque */
+  background: rgba(255,255,255,0.30);              
   border: 1px solid rgba(255,255,255,0.58);
   backdrop-filter: blur(18px);
   min-height: 190px;
@@ -668,14 +610,14 @@
   font-size: .86rem; padding: .40rem .68rem; border-radius: 999px;
   background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.42); color: #f4f7ff;
 }
-/* push the Open button further down */
+
 .main-content .budget-card-actions { margin-top: auto; padding-top: 1.3rem; }
 
 /* Buttons */
 .main-content .tm-btn { background: rgba(255,255,255,0.20); border: 1px solid rgba(255,255,255,0.42); }
 .main-content .tm-btn.primary { background: #6f84ff; border-color: transparent; box-shadow: 0 12px 24px rgba(111,132,255,.36); }
 
-/* Modal — make it clearly more opaque */
+
 .tm-modal-overlay { background: rgba(0,0,0,.60); }
 .tm-modal.tm-modal--opaque {
   background: rgba(255,255,255,0.34);              /* was ~0.20–0.22 */
@@ -689,18 +631,18 @@
   border: 1px solid rgba(255,255,255,0.54);
   color: #fff;
 }
-/* === BUDGET PAGE – spacing / opacity overrides === */
+
 .container { width: min(1180px, 92vw); margin: 0 auto; }
 
 .budget-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 1.8rem; /* more space between cards */
+  gap: 1.8rem; 
 }
 
 .budget-card {
   border-radius: 22px;
-  background: rgba(255,255,255,0.30);           /* more opaque */
+  background: rgba(255,255,255,0.30);           
   border: 1px solid rgba(255,255,255,0.60);
   backdrop-filter: blur(18px);
   min-height: 200px;
@@ -729,10 +671,10 @@
   color: #f4f7ff;
 }
 
-/* extra vertical space before the button */
+
 .budget-card-spacer { height: 28px; }
 
-/* move button further down and keep it off the text */
+
 .budget-card-actions { margin-top: auto; padding-top: 2.0rem; }
 
 .tm-btn.primary {
@@ -741,7 +683,7 @@
   box-shadow: 0 12px 24px rgba(111,132,255,.36);
 }
 
-/* Modal opacity + ensure date row looks right */
+
 .tm-modal.tm-modal--opaque {
   background: rgba(255,255,255,0.34);
   border: 1px solid rgba(255,255,255,0.62);
@@ -759,14 +701,14 @@
   .tm-form-row { grid-template-columns: 1fr; }
 }
 
-/* === Budget Card: Professional spacing & rhythm (final overrides) === */
+
 .budget-grid {
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 2rem; /* more space between cards */
+  gap: 2rem; 
 }
 
 .budget-card {
-  min-height: 240px;                     /* taller card */
+  min-height: 240px;                     
   border-radius: 24px;
   background: rgba(255,255,255,0.30);
   border: 1px solid rgba(255,255,255,0.60);
@@ -774,11 +716,11 @@
 }
 
 .budget-card-body {
-  padding: 2.4rem 2.6rem;           /* adds breathing room inside */
+  padding: 2.4rem 2.6rem;           
   display: flex;
   flex-direction: column;
   height: 100%;
-  justify-content: space-between;   /* pushes content apart */
+  justify-content: space-between;   
 }
 
 .budget-card-top { 
@@ -798,14 +740,14 @@
 
 .budget-title { 
   margin: 0; 
-  font-size: 1.6rem;                     /* clearer hierarchy */
+  font-size: 1.6rem;                     
   font-weight: 800; 
   letter-spacing: .2px; 
   line-height: 1.2;
 }
 
 .budget-subtle { 
-  margin-top: .5rem;                     /* space below title */
+  margin-top: .5rem;                     
   font-size: 1.05rem; 
   opacity: .98; 
   line-height: 1.35;
@@ -827,7 +769,7 @@
   color: #f4f7ff;
 }
 
-/* Add real breathing room before the button */
+
 .budget-card-spacer { height: 24px; }
 
 .budget-card-actions { 
@@ -835,263 +777,35 @@
   padding-top: 1.25rem; 
 }
 
-/* Button should NOT be full width; make it compact & aligned left */
+
 
 .btn-open {
-  min-width: 168px;                      /* tidy, readable width */
-  border-radius: 14px;                   /* slightly smaller radius looks sharper */
+  min-width: 168px;                      
+  border-radius: 14px;                   
   padding-inline: 1.25rem;
 }
 
 .budget-card-actions {
-  margin-top: 2.2rem;               /* pushes button further down */
-  text-align: left;                 /* aligns button neatly */
+  margin-top: 2.2rem;               
+  text-align: left;                 
 }
 
 .budget-card-actions .tm-btn {
-  width: auto;                      /* makes button compact */
-  min-width: 160px;                 /* consistent shape */
+  width: auto;                      
+  min-width: 160px;                 
   padding: 0.75rem 1.5rem;
   border-radius: 14px;
   background: #6f84ff;
   box-shadow: 0 6px 16px rgba(111,132,255,.3);
-
 }
 
-/* === MapPage Styles Added === */
-
-.map-page {
-  color: white;
-}
-
-.add-destination {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.destination-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.destination-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.add-destination-btn {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.add-destination-btn:hover {
-  background: #5a6fd8;
-}
-
-.map-container {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  height: 400px;
-  margin-bottom: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ccc;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.destination-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.destination-card {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-}
-
-.destination-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-3px);
-}
-
-.destination-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.destination-header h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.destination-tasks {
-  margin-top: 1rem;
-}
-
-.destination-tasks ul {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 1rem;
-}
-
-.destination-tasks li {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.no-tasks {
-  font-style: italic;
-  opacity: 0.8;
-}
-
-.task-input {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.task-input input {
-  flex: 1;
-  padding: 0.6rem 0.9rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-}
-
-.task-input button {
-  background: #667eea;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.task-input button:hover {
-  background: #5a6fd8;
-}
-
-.no-data {
-  text-align: center;
-  opacity: 0.8;
-}
-
-/* Enhancements for Interactive Map Page */
-.map-page {
-  padding: 2rem;
-  text-align: center;
-}
-
-.map-container {
-  margin: 1.5rem auto;
-  max-width: 900px;
-  border-radius: 15px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.add-destination {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.destination-input {
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  width: 300px;
-}
-
-.add-destination-btn {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.6rem 1.2rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.add-destination-btn:hover {
-  background-color: #0056b3;
-}
-
-.destination-list {
-  max-width: 800px;
-  margin: 1.5rem auto;
-  text-align: left;
-}
-
-.destination-card {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.no-data {
-  color: #888;
-  font-style: italic;
-}
-
-/* Destination cards styling improvements */
-.destination-card {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
-}
-
-.destination-card:hover {
-  transform: translateY(-3px);
-}
-
-.destination-header h3 {
-  text-transform: capitalize;
-  color: #fff;
-}
-
-.task-list li {
-  color: #f0f0f0;
-}
-
-.add-task-section {
-  display: flex;
-  margin-top: 0.5rem;
-  gap: 10px;
-}
-/* ==== Budget Overview (popup) — scoped ==== */
 .tm-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.60);
   display: grid;
   place-items: center;
-  z-index: 2000; /* bump if needed */
+  z-index: 2000; 
 }
 
 .bo-modal {
@@ -1195,17 +909,17 @@
   z-index: 2000;
 }
 
-/* === Budget Overview Modal enhancements === */
+
 .tm-modal-lg {
   width: min(860px, 94vw);
-  max-height: 86vh;                /* modal scroll cap */
+  max-height: 86vh;                
   display: flex;
   flex-direction: column;
   border-radius: 20px;
 }
 
 .tm-modal-body {
-  overflow: auto;                  /* modal content scrolls */
+  overflow: auto;                  
   padding: 1rem 1.25rem 1.5rem;
 }
 
@@ -1292,430 +1006,3 @@
   .budget-ov__kv { grid-template-columns: 1fr; }
   .expenses-table th, .expenses-table td { padding: .55rem .6rem; }
 }
-
-
-/* === Photo upload + Notes styling === */
-.upload-section input {
-  color: white;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.3rem;
-  margin-top: 0.5rem;
-}
-
-.photo-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 1rem;
-}
-
-.memory-photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.note-input {
-  width: 100%;
-  min-height: 70px;
-  margin-top: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: white;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.note-section {
-  margin-top: 0.8rem;
-}
-
-.note-text {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.7rem 1rem;
-  border-radius: 8px;
-  color: #f0f0f0;
-  white-space: pre-wrap;
-  margin-bottom: 0.5rem;
-}
-
-.note-input {
-  width: 100%;
-  min-height: 70px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  color: white;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Container */
-.tm-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px 16px 64px;
-}
-
-/* Page head */
-.tm-pagehead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-.tm-pagehead__title { margin: 0; }
-.tm-muted { color: #8a8fa0; font-size: 0.95rem; }
-
-/* Grid */
-.tm-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 16px;
-}
-.tm-grid__item { display: flex; flex-direction: column; gap: 8px; }
-.tm-empty {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 32px;
-  background: rgba(255,255,255,0.15);
-  border: 1px dashed rgba(255,255,255,0.25);
-  border-radius: 16px;
-}
-
-/* Card */
-.tm-card {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.28);
-  border-radius: 16px;
-  padding: 14px 16px;
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-}
-.tm-card--clickable { cursor: pointer; transition: transform .08s ease, box-shadow .2s; }
-.tm-card--clickable:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.18); }
-.tm-card__header { display: flex; flex-direction: column; gap: 4px; }
-.tm-card__title { margin: 0; font-size: 1.1rem; }
-.tm-card__meta { margin: 0; font-size: .9rem; color: #cfd3e0; }
-.tm-card__stats { display: flex; gap: 8px; margin-top: 10px; }
-.tm-card__footer { margin-top: 6px; }
-
-/* Chips */
-.tm-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  padding: 4px 10px;
-  background: rgba(255,255,255,0.22);
-  border: 1px solid rgba(255,255,255,0.28);
-  font-size: .85rem;
-}
-
-/* Buttons & links */
-.tm-btn {
-  appearance: none;
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.18);
-  color: #fff;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight: 600;
-  backdrop-filter: blur(6px);
-}
-.tm-btn:hover { background: rgba(255,255,255,0.26); }
-.tm-btn--primary {
-  background: linear-gradient(135deg, #6f86ff, #8a5bff);
-  border: none;
-}
-.tm-btn--ghost {
-  background: transparent;
-  border: 1px dashed rgba(255,255,255,0.35);
-}
-.tm-link, .tm-link-danger {
-  background: none; border: none; padding: 0; cursor: pointer; font-weight: 600;
-}
-.tm-link { color: #dfe3ff; }
-.tm-link:hover { text-decoration: underline; }
-.tm-link-danger { color: #ff9aa5; }
-.tm-link-danger:hover { text-decoration: underline; }
-
-.tm-icon-btn {
-  border: none; background: transparent; font-size: 1.15rem; cursor: pointer; color: #cfd3e0;
-}
-.tm-icon-btn:hover { color: white; }
-
-/* Form */
-.tm-form {
-  display: flex; flex-direction: column; gap: 12px;
-}
-.tm-label { font-weight: 600; margin-bottom: 6px; display: inline-block; }
-.tm-input {
-  width: 100%; border-radius: 12px; padding: 10px 12px;
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.14); color: #fff;
-}
-.tm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.tm-row--middle { align-items: center; }
-.tm-col--auto { width: max-content; }
-.tm-section { display: flex; align-items: center; justify-content: space-between; }
-
-.tm-day { padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22); }
-.tm-activities { display: flex; flex-direction: column; gap: 8px; }
-
-.tm-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
-.tm-subtitle { margin: 8px 0; }
-
-.tm-list { display: grid; gap: 8px; padding-left: 18px; }
-.tm-sublist { padding-left: 18px; margin-top: 4px; }
-
-/* Modal */
-.tm-modal {
-  position: fixed; inset: 0; display: grid; place-items: center; padding: 24px;
-  background: rgba(18,18,28,0.55); z-index: 1000;
-}
-.tm-modal__panel {
-  width: min(720px, 100%); background: rgba(35,35,55,0.98);
-  border: 1px solid rgba(255,255,255,0.18); border-radius: 16px; padding: 16px;
-  position: relative;
-}
-.tm-modal__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.tm-modal__title { margin: 0; }
-
-/* Drawer (details) */
-.tm-drawer { position: fixed; inset: 0; background: rgba(18,18,28,0.55); z-index: 950; }
-.tm-drawer__panel {
-  background: linear-gradient(145deg, #151a4b, #2c317e);
-  color: #f8f9ff;
-  border-left: 1px solid rgba(255,255,255,0.1);
-  box-shadow: -2px 0 20px rgba(0,0,0,0.2);
-  padding: 2rem;
-  margin-top: 1rem;
-  line-height: 1.6;
-}
-
-.tm-drawer__title { font-size: 1.6rem;
-  margin-bottom: 0.5rem;}
-
-/* Saving overlay */
-.tm-overlay {
-  position: absolute; inset: 0; display: grid; place-items: center;
-  background: rgba(35,35,55,0.3); border-radius: 16px; font-weight: 700;
-}
-/* ===== Centered Trip Details Modal ===== */
-.tm-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.tm-modal-centered {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 2rem;
-  width: min(600px, 90%);
-  max-height: 80vh;
-  overflow-y: auto;
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.25s ease;
-}
-
-.tm-modal-title {
-  font-size: 1.8rem;
-  margin-bottom: 0.25rem;
-}
-
-.tm-modal-centered .tm-btn {
-  margin-top: 1.5rem;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Responsive */
-@media (max-width: 720px) {
-  .tm-row { grid-template-columns: 1fr; }
-  .tm-pagehead { flex-direction: column; align-items: flex-start; }
-}
-
-/* === Login Page Styling === */
-.login-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 80px); /* adjust for navbar */
-}
-
-.login-card {
-  width: min(420px, 90%);
-  padding: 2rem 2.5rem;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  backdrop-filter: blur(14px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  text-align: center;
-  color: #fff;
-  animation: fadeIn 0.4s ease;
-}
-
-.login-title {
-  font-size: 1.8rem;
-  margin-bottom: 0.25rem;
-  font-weight: 700;
-}
-
-.login-card .tm-form {
-  margin-top: 1.5rem;
-}
-
-.login-card .tm-input {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 16px;
-  padding: 1rem 1.2rem;
-  color: #fff;
-  font-size: 1rem;
-  box-shadow: inset 0 0 12px rgba(255,255,255,0.08);
-  transition: all 0.25s ease;
-}
-
-.login-card .tm-input:focus {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: #8a7bff;
-  box-shadow: 0 0 12px rgba(138,123,255,0.45);
-  transform: translateY(-1px);
-}
-
-.login-card .tm-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.login-card .tm-actions {
-  margin-top: 1.25rem;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.login-card .tm-btn--primary {
-  background: linear-gradient(135deg, #6f86ff, #8a5bff);
-  border: none;
-  box-shadow: 0 8px 18px rgba(111,132,255,0.35);
-}
-
-.login-card .tm-btn--primary:hover {
-  filter: brightness(1.1);
-}
-
-.login-card .tm-btn--ghost {
-  border: 1px dashed rgba(255,255,255,0.35);
-  color: #fff;
-  background: rgba(255,255,255,0.1);
-}
-
-/* ===== Mobile Overrides (place at END of App.css) ===== */
-@media (max-width: 768px) {
-  /* 1) Tighter app padding & background legibility */
-  .App { background-attachment: fixed; }
-  .main-content { padding: 1rem; }
-
-  /* 2) Navbar: stack nicely */
-  .navbar {
-    flex-direction: column;
-    gap: .6rem;
-    padding: .75rem 1rem;
-  }
-  .navbar-brand h1 { font-size: 1.4rem; }
-  .navbar-nav {
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: .5rem;
-  }
-  .nav-item { padding: .5rem .9rem; font-size: .85rem; }
-
-  /* 3) Trip cards grid: force single column on phones */
-  /* reduce min-width so it can collapse without horizontal scrolling */
-  .trips-grid { grid-template-columns: 1fr !important; }
-  /* also reduce the default minmax so larger phones can show 2 comfortably */
-  @supports (grid-template-columns: repeat(auto-fit, minmax(0px, 1fr))) {
-    .trips-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important; }
-  }
-  .trip-card img { height: 160px; }
-
-  /* 4) Quick Actions tiles: comfortable stacking */
-  .action-buttons { grid-template-columns: 1fr; }
-
-  /* 5) Weather page: stack & shrink tiles a bit */
-  .weather-header { flex-direction: column; gap: .75rem; text-align: center; }
-  .current-weather-card {
-    flex-direction: column;
-    gap: 1.25rem;
-    padding: 1.25rem;
-  }
-  .weather-icon { font-size: 3rem; }
-  .weather-temp { font-size: 2.4rem; }
-  .weather-details { width: 100%; }
-  .detail-item { min-width: 0; }
-  .forecast-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-
-  /* 6) Tips grid: single column for readability */
-  .tips-grid { grid-template-columns: 1fr; }
-
-  /* 7) Budget grid/cards: let them collapse; reduce min card size */
-  .budget-grid { grid-template-columns: 1fr !important; gap: 1rem; }
-  .budget-card,
-  .main-content .budget-card { min-height: 180px; border-radius: 18px; }
-  .budget-card-body { padding: 1.25rem 1.3rem; }
-
-  /* 8) Forms: already mostly stacked—ensure single column everywhere */
-  .tm-row,
-  .tm-form-row { grid-template-columns: 1fr !important; }
-
-  /* 9) Drawer & Modals: full-screen on phones */
-  .tm-drawer__panel {
-    width: 100% !important;
-    max-width: 100% !important;
-    left: 0; right: 0;
-  }
-  .tm-modal__panel,
-  .tm-modal.tm-modal--opaque,
-  .tm-modal {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100%;
-    max-height: 100%;
-    margin: 0;
-    border-radius: 0;
-  }
-  .tm-modal__panel { padding: 14px; }
-
-  /* 10) Generic grid helpers used elsewhere */
-  .tm-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
-
-  /* 11) Map page: shorter map on phones, inputs full width */
-  .map-page { padding: 1rem; }
-  .map-container { height: 280px; max-width: 100%; }
-  .add-destination { flex-direction: column; align-items: stretch; }
-  .destination-input { width: 100%; }
-
-  /* 12) Login card: tighter on mobile */
-  .login-card { width: 92%; padding: 1.5rem; border-radius: 16px; }
-}
-
-/* Optional: prevent body horizontal scroll if any element misbehaves */
-html, body { overflow-x: hidden; }
