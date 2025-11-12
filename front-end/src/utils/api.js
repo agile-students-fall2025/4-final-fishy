@@ -1,31 +1,31 @@
-// API functions will go here
+const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const TRIPS = `${API}/api/trips`;
 
-// These stubs persist to localStorage so the UI works without a backend.
-const KEY = "tripmate.trips.v1";
-
-function read() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY)) || [];
-  } catch {
-    return [];
-  }
+export async function fetchTrips() {
+  const r = await fetch(TRIPS);
+  if (!r.ok) throw new Error("Failed to load trips");
+  return r.json();
 }
-function write(list) {
-  localStorage.setItem(KEY, JSON.stringify(list));
-}
-
 export async function saveTrip(trip) {
-  const list = read();
-  // if trip with same id exists, replace; otherwise prepend
-  const idx = list.findIndex((t) => t.id === trip.id);
-  if (idx >= 0) list[idx] = trip;
-  else list.unshift(trip);
-  write(list);
-  return Promise.resolve(trip);
+  const r = await fetch(TRIPS, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(trip),
+  });
+  if (!r.ok) throw new Error("Failed to save trip");
+  return r.json();
 }
-
+export async function updateTripById(id, patch) {
+  const r = await fetch(`${TRIPS}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+  if (!r.ok) throw new Error("Failed to update trip");
+  return r.json();
+}
 export async function deleteTripById(id) {
-  const list = read().filter((t) => t.id !== id);
-  write(list);
-  return Promise.resolve({ ok: true });
+  const r = await fetch(`${TRIPS}/${id}`, { method: "DELETE" });
+  if (!r.ok) throw new Error("Failed to delete trip");
+  return r.json();
 }
