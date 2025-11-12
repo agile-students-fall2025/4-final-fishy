@@ -29,3 +29,38 @@ export async function deleteTripById(id) {
   if (!r.ok) throw new Error("Failed to delete trip");
   return r.json();
 }
+
+export async function fetchBudgets() {
+  const r = await fetch(`${API}/api/budgets`);
+  if (!r.ok) throw new Error('Failed to load budgets');
+  return r.json();
+}
+export async function createBudgetAPI(payload) {
+  const r = await fetch(`${API}/api/budgets`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  if (!r.ok) throw new Error('Create budget failed');
+  return r.json();
+}
+export async function updateBudgetAPI(id, patch) {
+  const r = await fetch(`${API}/api/budgets/${id}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(patch) });
+  if (!r.ok) throw new Error('Update budget failed');
+  return r.json();
+}
+export async function deleteBudgetAPI(id) {
+  const r = await fetch(`${API}/api/budgets/${id}`, { method:'DELETE' });
+  if (!r.ok && r.status !== 204) throw new Error('Delete budget failed');
+}
+
+export async function addExpenseAPI(budgetId, payload) {
+  const r = await fetch(`${API}/api/budgets/${budgetId}/expenses`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  if (!r.ok) throw new Error('Add expense failed');
+  return r.json();
+}
+export async function updateExpenseAPI(budgetId, expenseId, patch) {
+  const r = await fetch(`${API}/api/budgets/${budgetId}/expenses/${expenseId}`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(patch) });
+  if (!r.ok) throw new Error('Update expense failed');
+  return r.json();
+}
+export async function deleteExpenseAPI(budgetId, expenseId) {
+  const r = await fetch(`${API}/api/budgets/${budgetId}/expenses/${expenseId}`, { method:'DELETE' });
+  if (!r.ok && r.status !== 204) throw new Error('Delete expense failed');
+}
