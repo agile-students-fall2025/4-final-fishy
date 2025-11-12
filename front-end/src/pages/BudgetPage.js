@@ -30,7 +30,6 @@ function BudgetCard({ b, onOpen }) {
 }
 
 export default function BudgetPage() {
-  // ---- mock budgets (kept local, as in your working version) ----
   const [budgets, setBudgets] = useState([
     { id: 'nyc', name: 'NYC Trip', currency: 'USD', limit: 1500, startDate: '', endDate: '' },
     { id: 'paris', name: 'Paris Weekend', currency: 'EUR', limit: 900, startDate: '', endDate: '' },
@@ -38,7 +37,6 @@ export default function BudgetPage() {
     { id: 'fl', name: 'florida', currency: 'USD', limit: 30000, startDate: '', endDate: '' },
   ]);
 
-  // ---- mock expenses (local, as requested) ----
   const [expenses, setExpenses] = useState([
     { id: 'e1', budgetId: 'nyc', amount: 120, category: 'Food', note: 'Bagels', date: '2025-10-20' },
     { id: 'e2', budgetId: 'nyc', amount: 222, category: 'Transit', note: 'Subway + Uber', date: '2025-10-21' },
@@ -46,7 +44,6 @@ export default function BudgetPage() {
     { id: 'e4', budgetId: 'boston', amount: 740, category: 'Hotel', note: '2 nights', date: '2025-08-02' },
   ]);
 
-  // categories for the dropdown
   const categories = useMemo(
     () => ['Food', 'Transit', 'Lodging', 'Entertainment', 'Shopping', 'Attractions', 'Misc'],
     []
@@ -65,7 +62,6 @@ export default function BudgetPage() {
 
   const currencies = useMemo(() => ['USD', 'EUR', 'AED', 'GBP', 'BDT'], []);
 
-  // ----- budget CRUD -----
   const addBudget = (payload) => {
     const b = {
       id: crypto.randomUUID(),
@@ -113,7 +109,6 @@ export default function BudgetPage() {
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   };
 
-  // ----- new budget modal -----
   const onCreate = (e) => {
     e.preventDefault();
     if (!form.name || !form.limit) return;
@@ -137,7 +132,7 @@ export default function BudgetPage() {
         ))}
       </div>
 
-      {/* New Budget Modal */}
+      {/* Budget Modal */}
       {showNewModal && (
         <div className="tm-modal-overlay" onClick={() => setShowNewModal(false)}>
           <div className="tm-modal tm-modal--opaque" onClick={(e) => e.stopPropagation()}>
