@@ -7,7 +7,10 @@
         "dev": "nodemon src/index.js",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:cov": "vitest run --coverage"
+        "test:cov": "vitest run --coverage",
+        "test:mocha": "NODE_ENV=test mocha \"tests-mocha/**/*.test.js\" --timeout 8000 --require dotenv/config",
+        "test:mocha:watch": "NODE_ENV=test mocha \"tests-mocha/**/*.test.js\" --watch --timeout 8000 --require dotenv/config",
+        "coverage:mocha": "c8 -r text -r html -r lcov npm run test:mocha"
     },
     "dependencies": {
         "bcryptjs": "^3.0.3",
@@ -19,6 +22,9 @@
     },
     "devDependencies": {
         "@vitest/coverage-v8": "^4.0.8",
+        "c8": "^10.1.3",
+        "chai": "^6.2.1",
+        "mocha": "^11.7.5",
         "nodemon": "^3.1.11",
         "supertest": "^7.1.4",
         "vitest": "^4.0.8"

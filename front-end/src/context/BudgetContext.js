@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from 'react';
 import {
   fetchBudgets,
   createBudgetAPI,
@@ -9,21 +16,22 @@ import {
   deleteExpenseAPI,
 } from '../utils/api';
 
-const normalizeBudget = (b) => ({
-  id: b.id ?? b._id ?? String(b.id || b._id),
+const normalizeExpense = (e = {}) => ({
+  id: e.id ?? e._id ?? String(e.id || e._id || crypto.randomUUID()),
+  amount: Number(e.amount ?? 0),
+  category: e.category || 'Other',
+  date: e.date || null,
+  note: e.note || '',
+});
+
+const normalizeBudget = (b = {}) => ({
+  id: b.id ?? b._id ?? String(b.id || b._id || crypto.randomUUID()),
   name: b.name || '',
   currency: b.currency || 'USD',
   limit: Number(b.limit ?? 0),
   startDate: b.startDate || null,
   endDate: b.endDate || null,
   expenses: Array.isArray(b.expenses) ? b.expenses.map(normalizeExpense) : [],
-});
-const normalizeExpense = (e) => ({
-  id: e.id ?? e._id ?? String(e.id || e._id),
-  amount: Number(e.amount ?? 0),
-  category: e.category || 'Other',
-  date: e.date || null,
-  note: e.note || '',
 });
 
 const BudgetContext = createContext(null);
@@ -33,9 +41,7 @@ export function BudgetProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [isOverviewOpen, setOverviewOpen] = useState(false);
   const [activeBudgetId, setActiveBudgetId] = useState(null);
-
   const activeBudget = useMemo(
     () => budgets.find((b) => b.id === activeBudgetId) || null,
     [budgets, activeBudgetId]
@@ -43,7 +49,10 @@ export function BudgetProvider({ children }) {
 
   const getTotalSpent = useCallback((budget) => {
     if (!budget) return 0;
-    return budget.expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+    return (budget.expenses || []).reduce(
+      (sum, e) => sum + (Number(e.amount) || 0),
+      0
+    );
   }, []);
 
   const getProgressPct = useCallback(
@@ -55,7 +64,7 @@ export function BudgetProvider({ children }) {
     [getTotalSpent]
   );
 
-  const loadBudgets = useCallback(async () => {
+  const reload = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -63,24 +72,15 @@ export function BudgetProvider({ children }) {
       const normalized = Array.isArray(data) ? data.map(normalizeBudget) : [];
       setBudgets(normalized);
     } catch (err) {
-      setError(err.message || 'Failed to load budgets');
+      setError(err?.message || 'Failed to load budgets');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    loadBudgets();
-  }, [loadBudgets]);
-
-  const openOverview = useCallback((budgetId) => {
-    setActiveBudgetId(budgetId);
-    setOverviewOpen(true);
-  }, []);
-  const closeOverview = useCallback(() => {
-    setOverviewOpen(false);
-    setActiveBudgetId(null);
-  }, []);
+    reload();
+  }, [reload]);
 
   // CRUD — Budgets
   const createBudget = useCallback(async (payload) => {
@@ -100,8 +100,8 @@ export function BudgetProvider({ children }) {
   const deleteBudget = useCallback(async (id) => {
     await deleteBudgetAPI(id);
     setBudgets((prev) => prev.filter((b) => b.id !== id));
-    if (activeBudgetId === id) closeOverview();
-  }, [activeBudgetId, closeOverview]);
+    if (activeBudgetId === id) setActiveBudgetId(null);
+  }, [activeBudgetId]);
 
   // CRUD — Expenses
   const addExpense = useCallback(async (budgetId, payload) => {
@@ -109,7 +109,7 @@ export function BudgetProvider({ children }) {
     const exp = normalizeExpense(res);
     setBudgets((prev) =>
       prev.map((b) =>
-        b.id === budgetId ? { ...b, expenses: [...b.expenses, exp] } : b
+        b.id === budgetId ? { ...b, expenses: [...(b.expenses || []), exp] } : b
       )
     );
     return exp;
@@ -123,7 +123,9 @@ export function BudgetProvider({ children }) {
         b.id === budgetId
           ? {
               ...b,
-              expenses: b.expenses.map((e) => (e.id === updated.id ? updated : e)),
+              expenses: (b.expenses || []).map((e) =>
+                e.id === updated.id ? updated : e
+              ),
             }
           : b
       )
@@ -136,7 +138,7 @@ export function BudgetProvider({ children }) {
     setBudgets((prev) =>
       prev.map((b) =>
         b.id === budgetId
-          ? { ...b, expenses: b.expenses.filter((e) => e.id !== expenseId) }
+          ? { ...b, expenses: (b.expenses || []).filter((e) => e.id !== expenseId) }
           : b
       )
     );
@@ -149,18 +151,14 @@ export function BudgetProvider({ children }) {
       loading,
       error,
       activeBudget,
-      isOverviewOpen,
+      setActiveBudgetId,
 
       // derived
       getTotalSpent,
       getProgressPct,
 
-      // modal
-      openOverview,
-      closeOverview,
-
-      // data ops
-      reload: loadBudgets,
+      // ops
+      reload,
       createBudget,
       updateBudget,
       deleteBudget,
@@ -173,12 +171,9 @@ export function BudgetProvider({ children }) {
       loading,
       error,
       activeBudget,
-      isOverviewOpen,
       getTotalSpent,
       getProgressPct,
-      openOverview,
-      closeOverview,
-      loadBudgets,
+      reload,
       createBudget,
       updateBudget,
       deleteBudget,
@@ -193,8 +188,6 @@ export function BudgetProvider({ children }) {
 
 export function useBudgets() {
   const ctx = useContext(BudgetContext);
-  if (!ctx) {
-    throw new Error('useBudgets must be used within a BudgetProvider');
-  }
+  if (!ctx) throw new Error('useBudgets must be used within a BudgetProvider');
   return ctx;
 }
