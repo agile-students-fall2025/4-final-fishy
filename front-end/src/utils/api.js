@@ -69,8 +69,10 @@ export async function deleteExpenseAPI(budgetId, expenseId) {
 export async function fetchWeather(location) {
   const r = await fetch(`${API}/api/weather/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch weather data');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch weather data');
   }
   return r.json();
 }
@@ -78,8 +80,10 @@ export async function fetchWeather(location) {
 export async function fetchCurrentWeather(location) {
   const r = await fetch(`${API}/api/weather/current/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch current weather');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch current weather');
   }
   return r.json();
 }
@@ -87,8 +91,10 @@ export async function fetchCurrentWeather(location) {
 export async function fetchForecast(location) {
   const r = await fetch(`${API}/api/weather/forecast/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch forecast');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch forecast');
   }
   return r.json();
 }

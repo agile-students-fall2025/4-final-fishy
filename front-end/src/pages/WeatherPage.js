@@ -43,52 +43,57 @@ function WeatherPage() {
   return (
     <div className="weather-page">
       <div className="weather-header">
-        <h2>Weather Forecast</h2>
+        <div className="weather-title-section">
+          <h2 className="weather-main-title">🌤️ Weather Forecast</h2>
+          <p className="weather-subtitle">Get real-time weather updates for your travel destinations</p>
+        </div>
         <div className="location-selector">
-          <form onSubmit={handleLocationSubmit} style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
-            <label htmlFor="location-input">Search Location:</label>
-            <input 
-              id="location-input"
-              name="locationInput"
-              type="text"
-              placeholder="Enter city name..."
-              style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-            <button type="submit" style={{ padding: '5px 15px', borderRadius: '4px', border: '1px solid #ccc', cursor: 'pointer' }}>
-              Search
-            </button>
-          </form>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span>Quick select:</span>
-            {quickLocations.map(location => (
-              <button
-                key={location}
-                onClick={() => setSelectedLocation(location)}
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: '4px',
-                  border: '1px solid #ccc',
-                  cursor: 'pointer',
-                  backgroundColor: selectedLocation === location ? '#007bff' : 'white',
-                  color: selectedLocation === location ? 'white' : 'black'
-                }}
-              >
-                {location}
+          <form onSubmit={handleLocationSubmit} className="weather-search-form">
+            <div className="search-input-wrapper">
+              <span className="search-icon">🔍</span>
+              <input 
+                id="location-input"
+                name="locationInput"
+                type="text"
+                placeholder="Search for a city..."
+                className="weather-search-input"
+              />
+              <button type="submit" className="weather-search-btn">
+                Search
               </button>
-            ))}
+            </div>
+          </form>
+          <div className="quick-locations">
+            <span className="quick-locations-label">Popular cities:</span>
+            <div className="quick-location-buttons">
+              {quickLocations.map(location => (
+                <button
+                  key={location}
+                  onClick={() => setSelectedLocation(location)}
+                  className={`quick-location-btn ${selectedLocation === location ? 'active' : ''}`}
+                >
+                  {location}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {loading && (
-        <div style={{ textAlign: 'center', padding: '20px' }}>
+        <div className="weather-loading">
+          <div className="loading-spinner"></div>
           <p>Loading weather data...</p>
         </div>
       )}
 
       {error && (
-        <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
-          <p>Error: {error}</p>
+        <div className="weather-error">
+          <div className="error-icon">⚠️</div>
+          <p className="error-message">{error}</p>
+          <button onClick={() => setSelectedLocation(selectedLocation)} className="retry-btn">
+            Try Again
+          </button>
         </div>
       )}
 
@@ -97,26 +102,35 @@ function WeatherPage() {
           <div className="current-weather">
             <div className="current-weather-card">
               <div className="weather-main">
-                <div className="weather-icon">{weatherData.current.icon}</div>
-                <div className="weather-temp">{weatherData.current.temperature}°C</div>
-                <div className="weather-condition">{weatherData.current.condition}</div>
-                <div className="weather-location">{weatherData.location || selectedLocation}</div>
+                <div className="weather-icon-large">{weatherData.current.icon}</div>
+                <div className="weather-temp-large">{weatherData.current.temperature}°</div>
+                <div className="weather-condition-text">{weatherData.current.condition}</div>
+                <div className="weather-location-text">
+                  <span className="location-icon">📍</span>
+                  {weatherData.location || selectedLocation}
+                </div>
               </div>
               <div className="weather-details">
                 <div className="detail-item">
-                  <span className="detail-label">Humidity</span>
-                  <span className="detail-value">{weatherData.current.humidity}%</span>
+                  <div className="detail-icon">💧</div>
+                  <div className="detail-info">
+                    <span className="detail-label">Humidity</span>
+                    <span className="detail-value">{weatherData.current.humidity}%</span>
+                  </div>
                 </div>
                 <div className="detail-item">
-                  <span className="detail-label">Wind Speed</span>
-                  <span className="detail-value">{weatherData.current.windSpeed} km/h</span>
+                  <div className="detail-icon">💨</div>
+                  <div className="detail-info">
+                    <span className="detail-label">Wind Speed</span>
+                    <span className="detail-value">{weatherData.current.windSpeed} km/h</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="forecast-section">
-            <h3>5-Day Forecast</h3>
+            <h3 className="forecast-title">📅 5-Day Forecast</h3>
             <div className="forecast-grid">
               {weatherData.forecast && weatherData.forecast.length > 0 ? (
                 weatherData.forecast.map((day, index) => (
@@ -126,12 +140,13 @@ function WeatherPage() {
                     <div className="forecast-condition">{day.condition}</div>
                     <div className="forecast-temps">
                       <span className="high-temp">{day.high}°</span>
+                      <span className="temp-separator">/</span>
                       <span className="low-temp">{day.low}°</span>
                     </div>
                   </div>
                 ))
               ) : (
-                <p>No forecast data available</p>
+                <p className="no-forecast">No forecast data available</p>
               )}
             </div>
           </div>
