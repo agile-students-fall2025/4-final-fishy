@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { searchUnsplashPhoto } from '../utils/api';
 
 function HomePage() {
   // Mock data for trips
-  const mockTrips = [
+  const [mockTrips, setMockTrips] = useState([
     {
       id: 1,
       destination: 'Tokyo, Japan',
@@ -10,7 +11,7 @@ function HomePage() {
       endDate: '2024-03-22',
       budget: 2500,
       spent: 1800,
-      image: 'https://picsum.photos/300/200?random=1'
+      image: null // Will be fetched from Unsplash
     },
     {
       id: 2,
@@ -19,7 +20,7 @@ function HomePage() {
       endDate: '2024-04-17',
       budget: 3000,
       spent: 0,
-      image: 'https://picsum.photos/300/200?random=2'
+      image: null
     },
     {
       id: 3,
@@ -28,9 +29,63 @@ function HomePage() {
       endDate: '2024-05-12',
       budget: 2000,
       spent: 0,
-      image: 'https://picsum.photos/300/200?random=3'
+      image: null
     }
-  ];
+  ]);
+
+  // Fetch images for all destinations when component mounts
+  useEffect(() => {
+    const fetchImages = async () => {
+      const initialTrips = [
+        {
+          id: 1,
+          destination: 'Tokyo, Japan',
+          startDate: '2024-03-15',
+          endDate: '2024-03-22',
+          budget: 2500,
+          spent: 1800,
+          image: null
+        },
+        {
+          id: 2,
+          destination: 'Paris, France',
+          startDate: '2024-04-10',
+          endDate: '2024-04-17',
+          budget: 3000,
+          spent: 0,
+          image: null
+        },
+        {
+          id: 3,
+          destination: 'New York, USA',
+          startDate: '2024-05-05',
+          endDate: '2024-05-12',
+          budget: 2000,
+          spent: 0,
+          image: null
+        }
+      ];
+
+      const tripsWithImages = await Promise.all(
+        initialTrips.map(async (trip) => {
+          try {
+            const imageUrl = await searchUnsplashPhoto(trip.destination, 800, 600);
+            return { ...trip, image: imageUrl };
+          } catch (error) {
+            console.error(`Error fetching image for ${trip.destination}:`, error);
+            // Return trip with fallback image
+            return { 
+              ...trip, 
+              image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format' 
+            };
+          }
+        })
+      );
+      setMockTrips(tripsWithImages);
+    };
+
+    fetchImages();
+  }, []); // Empty dependency array means this runs once on mount
 
   const upcomingTrips = mockTrips.filter(trip => trip.spent === 0);
   const currentTrips = mockTrips.filter(trip => trip.spent > 0);
@@ -52,7 +107,15 @@ function HomePage() {
               {currentTrips.map(trip => (
                 <div key={trip.id} className="trip-card">
                   <div className="trip-image-wrapper">
-                    <img src={trip.image} alt={trip.destination} />
+                    <img 
+                      src={trip.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format'} 
+                      alt={trip.destination}
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback to a generic travel image if the destination image fails to load
+                        e.target.src = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format';
+                      }}
+                    />
                   </div>
                   <div className="trip-info">
                     <h4 className="trip-destination">{trip.destination}</h4>
@@ -81,7 +144,15 @@ function HomePage() {
               {upcomingTrips.map(trip => (
                 <div key={trip.id} className="trip-card">
                   <div className="trip-image-wrapper">
-                    <img src={trip.image} alt={trip.destination} />
+                    <img 
+                      src={trip.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format'} 
+                      alt={trip.destination}
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback to a generic travel image if the destination image fails to load
+                        e.target.src = 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format';
+                      }}
+                    />
                   </div>
                   <div className="trip-info">
                     <h4 className="trip-destination">{trip.destination}</h4>
