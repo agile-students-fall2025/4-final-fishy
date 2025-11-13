@@ -140,9 +140,9 @@ export default function TripForm({ trip, onSave, onCancel }) {
         </div>
       </div>
 
-      <div className="tm-section" style={{ marginTop: 8 }}>
+      <div className="tm-section">
         <h3 className="tm-subtitle">Itinerary</h3>
-        <button type="button" className="tm-btn tm-btn--ghost" onClick={addDay}>
+        <button type="button" className="tm-btn ghost tm-btn--compact" onClick={addDay}>
           + New Day
         </button>
       </div>
@@ -198,7 +198,7 @@ export default function TripForm({ trip, onSave, onCancel }) {
 
             <button
               type="button"
-              className="tm-btn tm-btn--ghost"
+              className="tm-btn ghost tm-btn--compact"
               onClick={() => addActivity(i)}
             >
               + Add Activity
@@ -208,10 +208,10 @@ export default function TripForm({ trip, onSave, onCancel }) {
       ))}
 
       <div className="tm-actions">
-        <button type="button" className="tm-btn" onClick={onCancel}>
+        <button type="button" className="tm-btn ghost" onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className="tm-btn tm-btn--primary">
+        <button type="submit" className="tm-btn primary">
           {isEditing ? "Save Changes" : "Save Trip"}
         </button>
       </div>

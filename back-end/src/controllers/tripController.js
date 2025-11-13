@@ -12,7 +12,9 @@ const tripSchema = Joi.object({
     .items(
       Joi.object({
         date: Joi.string().allow('', null),
-        activities: Joi.array().items(Joi.string()).default([]),
+        activities: Joi.array()
+          .items(Joi.string().allow('', null))
+          .default([]),
       })
     )
     .default([]),
