@@ -76,22 +76,32 @@
 /* Home Page Styles */
 .home-page {
   color: white;
+  animation: fadeIn 0.5s ease-in;
 }
 
-.welcome-section {
-  text-align: center;
+.home-header {
   margin-bottom: 3rem;
 }
 
-.welcome-section h2 {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  font-weight: 300;
+.home-title-section {
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
-.welcome-section p {
-  font-size: 1.2rem;
-  opacity: 0.9;
+.home-main-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.85;
+  font-weight: 300;
 }
 
 .trips-overview {
@@ -99,54 +109,85 @@
 }
 
 .trips-section {
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
-.trips-section h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 500;
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .trips-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.75rem;
 }
 
 .trip-card {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 25px;
   overflow: hidden;
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .trip-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.trip-image-wrapper {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+}
+
+.trip-image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
 }
 
 .trip-card img {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.trip-card:hover img {
+  transform: scale(1.1);
 }
 
 .trip-info {
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
-.trip-info h4 {
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
+.trip-destination {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.trip-info p {
-  opacity: 0.8;
-  margin-bottom: 1rem;
+.trip-dates {
+  opacity: 0.85;
+  margin-bottom: 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 .budget-info {
@@ -154,87 +195,81 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
 
 .spent {
-  font-weight: 600;
+  font-weight: 700;
   color: #ff6b6b;
+  font-size: 1.3rem;
 }
 
 .budget {
-  opacity: 0.8;
+  opacity: 0.9;
+  font-weight: 500;
 }
 
 .progress-bar {
   width: 100%;
-  height: 6px;
+  height: 8px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff6b6b, #ffa500);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.5s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+  border-radius: 10px;
 }
 
 .plan-trip-btn {
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 2rem;
   border-radius: 25px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1rem;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  width: 100%;
 }
 
 .plan-trip-btn:hover {
-  background: #5a6fd8;
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
 }
 
-/* Quick Actions */
-.quick-actions {
+.empty-state {
   text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
 }
 
-.quick-actions h3 {
-  font-size: 1.5rem;
+.empty-icon {
+  font-size: 4rem;
   margin-bottom: 1.5rem;
-  font-weight: 500;
+  animation: float 3s ease-in-out infinite;
 }
 
-.action-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+.empty-state h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
 }
 
-.action-btn {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 1.5rem;
-  border-radius: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.action-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-}
-
-.action-icon {
-  font-size: 2rem;
+.empty-state p {
+  font-size: 1.1rem;
+  opacity: 0.85;
 }
 
 /* Weather Page Styles */
@@ -725,8 +760,26 @@
     padding: 1rem;
   }
 
-  .welcome-section h2 {
-    font-size: 2rem;
+  .home-main-title {
+    font-size: 2.2rem;
+  }
+
+  .home-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .trips-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .trip-info {
+    padding: 1.5rem;
   }
 
   .weather-header {
