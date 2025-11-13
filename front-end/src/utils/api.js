@@ -64,3 +64,31 @@ export async function deleteExpenseAPI(budgetId, expenseId) {
   const r = await fetch(`${API}/api/budgets/${budgetId}/expenses/${expenseId}`, { method:'DELETE' });
   if (!r.ok && r.status !== 204) throw new Error('Delete expense failed');
 }
+
+// Weather API functions
+export async function fetchWeather(location) {
+  const r = await fetch(`${API}/api/weather/${encodeURIComponent(location)}`);
+  if (!r.ok) {
+    if (r.status === 404) throw new Error('Location not found');
+    throw new Error('Failed to fetch weather data');
+  }
+  return r.json();
+}
+
+export async function fetchCurrentWeather(location) {
+  const r = await fetch(`${API}/api/weather/current/${encodeURIComponent(location)}`);
+  if (!r.ok) {
+    if (r.status === 404) throw new Error('Location not found');
+    throw new Error('Failed to fetch current weather');
+  }
+  return r.json();
+}
+
+export async function fetchForecast(location) {
+  const r = await fetch(`${API}/api/weather/forecast/${encodeURIComponent(location)}`);
+  if (!r.ok) {
+    if (r.status === 404) throw new Error('Location not found');
+    throw new Error('Failed to fetch forecast');
+  }
+  return r.json();
+}
