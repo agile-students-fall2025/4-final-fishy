@@ -69,8 +69,10 @@ export async function deleteExpenseAPI(budgetId, expenseId) {
 export async function fetchWeather(location) {
   const r = await fetch(`${API}/api/weather/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch weather data');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch weather data');
   }
   return r.json();
 }
@@ -78,8 +80,10 @@ export async function fetchWeather(location) {
 export async function fetchCurrentWeather(location) {
   const r = await fetch(`${API}/api/weather/current/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch current weather');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch current weather');
   }
   return r.json();
 }
@@ -87,8 +91,65 @@ export async function fetchCurrentWeather(location) {
 export async function fetchForecast(location) {
   const r = await fetch(`${API}/api/weather/forecast/${encodeURIComponent(location)}`);
   if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
     if (r.status === 404) throw new Error('Location not found');
-    throw new Error('Failed to fetch forecast');
+    if (r.status === 401) throw new Error('Invalid API key. Please check your OpenWeather API key configuration.');
+    throw new Error(errorData.error || 'Failed to fetch forecast');
   }
   return r.json();
+}
+
+// Unsplash API functions
+const UNSPLASH_ACCESS_KEY = process.env.REACT_APP_UNSPLASH_ACCESS_KEY;
+const UNSPLASH_API_URL = 'https://api.unsplash.com';
+
+/**
+ * Search for photos on Unsplash based on a query (destination name)
+ * @param {string} query - The search query (e.g., "Tokyo", "Paris")
+ * @param {number} width - Desired image width (default: 800)
+ * @param {number} height - Desired image height (default: 600)
+ * @returns {Promise<string>} The URL of the best matching photo
+ */
+export async function searchUnsplashPhoto(query, width = 800, height = 600) {
+  if (!UNSPLASH_ACCESS_KEY) {
+    console.warn('Unsplash API key not found. Please set REACT_APP_UNSPLASH_ACCESS_KEY in your .env file');
+    // Return a fallback image
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=${width}&h=${height}&fit=crop&q=80&auto=format`;
+  }
+
+  if (!query) {
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=${width}&h=${height}&fit=crop&q=80&auto=format`;
+  }
+
+  try {
+    // Extract city name (everything before the first comma)
+    const cityName = query.split(',')[0].trim();
+    
+    // Search for photos related to the destination
+    // Add "travel" and "city" to improve relevance
+    const searchQuery = `${cityName} travel city tourism`;
+    const response = await fetch(
+      `${UNSPLASH_API_URL}/search/photos?query=${encodeURIComponent(searchQuery)}&per_page=1&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`Unsplash API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.results && data.results.length > 0) {
+      // Get the first (most relevant) photo
+      const photo = data.results[0];
+      // Return the regular URL with our desired dimensions
+      return `${photo.urls.regular}?w=${width}&h=${height}&fit=crop&q=80&auto=format`;
+    } else {
+      // No results found, return fallback
+      return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=${width}&h=${height}&fit=crop&q=80&auto=format`;
+    }
+  } catch (error) {
+    console.error('Error fetching Unsplash photo:', error);
+    // Return fallback image on error
+    return `https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=${width}&h=${height}&fit=crop&q=80&auto=format`;
+  }
 }
