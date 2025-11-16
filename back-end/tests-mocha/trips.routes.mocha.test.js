@@ -84,5 +84,131 @@ describe('Trip routes (Mocha)', () => {
     expect(res.status).to.equal(400);
     expect(res.body).to.have.property('error');
   });
+
+  it('GET /api/trips/:id -> 200 returns specific trip', async () => {
+    const create = await request(app)
+      .post('/api/trips')
+      .send({ destination: 'Barcelona', startDate: '2026-07-01', endDate: '2026-07-05' });
+
+    const id = create.body.id;
+    const res = await request(app).get(`/api/trips/${id}`);
+
+    expect(res.status).to.equal(200);
+    expect(res.body).to.have.property('id', id);
+    expect(res.body.destination).to.equal('Barcelona');
+    expect(res.body).to.have.property('startDate', '2026-07-01');
+    expect(res.body).to.have.property('endDate', '2026-07-05');
+  });
+
+  it('GET /api/trips/:id -> 404 for non-existent trip', async () => {
+    const res = await request(app).get('/api/trips/non-existent-id');
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.property('error', 'Not found');
+  });
+
+  it('PUT /api/trips/:id -> 404 for non-existent trip', async () => {
+    const res = await request(app)
+      .put('/api/trips/non-existent-id')
+      .send({ destination: 'Paris' });
+
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.property('error', 'Not found');
+  });
+
+  it('DELETE /api/trips/:id -> 404 for non-existent trip', async () => {
+    const res = await request(app).delete('/api/trips/non-existent-id');
+    expect(res.status).to.equal(404);
+    expect(res.body).to.have.property('error', 'Not found');
+  });
+
+  it('POST /api/trips -> creates trip with empty days array', async () => {
+    const res = await request(app)
+      .post('/api/trips')
+      .send({
+        destination: 'London',
+        startDate: '2026-08-01',
+        endDate: '2026-08-07',
+        days: []
+      });
+
+    expect(res.status).to.equal(201);
+    expect(res.body.destination).to.equal('London');
+    expect(res.body.days).to.be.an('array').that.is.empty;
+  });
+
+  it('POST /api/trips -> creates trip with multiple days and activities', async () => {
+    const res = await request(app)
+      .post('/api/trips')
+      .send({
+        destination: 'Rome',
+        startDate: '2026-09-01',
+        endDate: '2026-09-05',
+        days: [
+          { date: '2026-09-01', activities: ['Colosseum', 'Roman Forum'] },
+          { date: '2026-09-02', activities: ['Vatican', 'Sistine Chapel'] },
+          { date: '2026-09-03', activities: ['Trevi Fountain'] }
+        ]
+      });
+
+    expect(res.status).to.equal(201);
+    expect(res.body.destination).to.equal('Rome');
+    expect(res.body.days).to.have.lengthOf(3);
+    expect(res.body.days[0].activities).to.deep.equal(['Colosseum', 'Roman Forum']);
+    expect(res.body.days[1].activities).to.deep.equal(['Vatican', 'Sistine Chapel']);
+    expect(res.body.days[2].activities).to.deep.equal(['Trevi Fountain']);
+  });
+
+  it('PUT /api/trips/:id -> partial update preserves existing fields', async () => {
+    const create = await request(app)
+      .post('/api/trips')
+      .send({
+        destination: 'Amsterdam',
+        startDate: '2026-10-01',
+        endDate: '2026-10-05',
+        days: [{ date: '2026-10-01', activities: ['Anne Frank House'] }]
+      });
+
+    expect(create.status).to.equal(201);
+    expect(create.body.days).to.have.lengthOf(1); // Verify days were created
+
+    const id = create.body.id;
+    const res = await request(app)
+      .put(`/api/trips/${id}`)
+      .send({
+        destination: 'Rotterdam'
+      });
+
+    expect(res.status).to.equal(200);
+    expect(res.body.destination).to.equal('Rotterdam');
+    expect(res.body.startDate).to.equal('2026-10-01'); // Preserved
+    expect(res.body.endDate).to.equal('2026-10-05'); // Preserved
+    expect(res.body.days).to.be.an('array');
+    expect(res.body.days).to.have.lengthOf(1); // Preserved
+    expect(res.body.days[0].activities).to.include('Anne Frank House'); // Verify activities preserved
+  });
+
+  it('POST /api/trips -> handles missing destination (defaults to "Untitled trip")', async () => {
+    const res = await request(app)
+      .post('/api/trips')
+      .send({
+        startDate: '2026-11-01',
+        endDate: '2026-11-05'
+      });
+
+    expect(res.status).to.equal(201);
+    expect(res.body.destination).to.equal('Untitled trip');
+  });
+
+  it('POST /api/trips -> handles null destination (defaults to "Untitled trip")', async () => {
+    const res = await request(app)
+      .post('/api/trips')
+      .send({
+        destination: null,
+        startDate: '2026-12-01'
+      });
+
+    expect(res.status).to.equal(201);
+    expect(res.body.destination).to.equal('Untitled trip');
+  });
 });
 
