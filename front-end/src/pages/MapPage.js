@@ -350,13 +350,13 @@ function TaskInput({ destId, onAddTask }) {
     <div className="add-task-section">
       <input
         type="text"
-        placeholder="Add a task..."
+        placeholder="Add a Memory..."
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
         className="destination-input"
       />
       <button onClick={handleAdd} className="add-destination-btn">
-        Add Task
+        Add Memory
       </button>
     </div>
   );
