@@ -43,7 +43,8 @@ src/
 │   └── AppContext.js
 ├── utils/              # Utility functions
 │   ├── helpers.js
-│   └── api.js
+│   ├── api.js
+│	└── mapApi.js
 ├── App.js              # Main App component
 ├── App.css             # App styles
 ├── index.js            # React entry point
