@@ -7,8 +7,11 @@ export async function fetchTrips() {
   return r.json();
 }
 export async function saveTrip(trip) {
-  const r = await fetch(TRIPS, {
-    method: "POST",
+  // Use POST for new trips (no id), PUT for updates (has id)
+  const method = trip?.id ? "PUT" : "POST";
+  const url = trip?.id ? `${TRIPS}/${trip.id}` : TRIPS;
+  const r = await fetch(url, {
+    method,
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(trip),
   });
