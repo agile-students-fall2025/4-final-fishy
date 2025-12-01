@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { searchUnsplashPhoto } from '../utils/api';
 
-function HomePage() {
+function HomePage({ onNavigate }) {
   // Mock data for trips
   const [mockTrips, setMockTrips] = useState([
     {
@@ -105,7 +105,16 @@ function HomePage() {
             <h3 className="section-title">📍 Current Trips</h3>
             <div className="trips-grid">
               {currentTrips.map(trip => (
-                <div key={trip.id} className="trip-card">
+                <div 
+                  key={trip.id} 
+                  className="trip-card"
+                  onClick={() => {
+                    if (onNavigate) {
+                      onNavigate('trips', { tripId: trip.id });
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="trip-image-wrapper">
                     <img 
                       src={trip.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format'} 
@@ -160,7 +169,15 @@ function HomePage() {
                     <div className="budget-info">
                       <span className="budget">Budget: ${trip.budget}</span>
                     </div>
-                    <button className="plan-trip-btn">Plan Trip</button>
+                    <button 
+                      className="plan-trip-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onNavigate) onNavigate('trips');
+                      }}
+                    >
+                      Plan Trip
+                    </button>
                   </div>
                 </div>
               ))}
