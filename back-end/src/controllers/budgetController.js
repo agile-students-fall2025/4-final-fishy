@@ -1,50 +1,44 @@
-import {
-  listBudgets, getBudget, createBudget, updateBudget, removeBudget,
-  addExpense, updateExpense, removeExpense
-} from '../data/budgetStore.js';
+import Joi from 'joi';
+import Budget from '../models/Budget.js';
 
-export const getAll = (_req, res) => res.json(listBudgets());
+const budgetCreateSchema = Joi.object({
+  name: Joi.string().trim().min(1).required(),
+  currency: Joi.string().trim().default('USD'),
+  limit: Joi.number().min(0).required(),
+  startDate: Joi.string().allow(null, ''),
+  endDate: Joi.string().allow(null, '')
+});
 
-export const getOne = (req, res) => {
-  const b = getBudget(req.params.id);
-  if (!b) return res.status(404).json({ error: 'Budget not found' });
-  res.json(b);
+const budgetUpdateSchema = Joi.object({
+  name: Joi.string().trim().min(1),
+  currency: Joi.string().trim(),
+  limit: Joi.number().min(0),
+  startDate: Joi.string().allow(null, ''),
+  endDate: Joi.string().allow(null, '')
+}).min(1);
+
+const expenseCreateSchema = Joi.object({
+  amount: Joi.number().min(0).required(),
+  currency: Joi.string().trim().optional(),
+  category: Joi.string().trim().optional(),
+  date: Joi.string().optional(),
+  note: Joi.string().allow('', null).optional()
+});
+
+const expenseUpdateSchema = Joi.object({
+  amount: Joi.number().min(0),
+  currency: Joi.string().trim(),
+  category: Joi.string().trim(),
+  date: Joi.string(),
+  note: Joi.string().allow('', null)
+}).min(1);
+
+export const getAll = async (_req, res) => {
+  try {
+    const budgets = await Budget.find().sort({ createdAt: -1 });
+    res.json(budgets);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load budgets' });
+  }
 };
 
-export const create = (req, res) => {
-  const { name, limit } = req.body || {};
-  if (!name || limit === undefined) return res.status(400).json({ error: 'name and limit are required' });
-  const b = createBudget(req.body);
-  res.status(201).json(b);
-};
-
-export const patch = (req, res) => {
-  const b = updateBudget(req.params.id, req.body || {});
-  if (!b) return res.status(404).json({ error: 'Budget not found' });
-  res.json(b);
-};
-
-export const destroy = (req, res) => {
-  const ok = removeBudget(req.params.id);
-  if (!ok) return res.status(404).json({ error: 'Budget not found' });
-  res.status(204).end();
-};
-
-// Expenses
-export const addExp = (req, res) => {
-  const e = addExpense(req.params.id, req.body || {});
-  if (!e) return res.status(404).json({ error: 'Budget not found' });
-  res.status(201).json(e);
-};
-
-export const patchExp = (req, res) => {
-  const e = updateExpense(req.params.id, req.params.expenseId, req.body || {});
-  if (!e) return res.status(404).json({ error: 'Budget or expense not found' });
-  res.json(e);
-};
-
-export const destroyExp = (req, res) => {
-  const ok = removeExpense(req.params.id, req.params.expenseId);
-  if (!ok) return res.status(404).json({ error: 'Budget or expense not found' });
-  res.status(204).end();
-};
