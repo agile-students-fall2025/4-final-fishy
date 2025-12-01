@@ -3,10 +3,8 @@ import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
 import { useTrips } from "../context/TripContext";
 
-export default function TripPlanningPage() {
-  const { trips, loading, error, createTrip, updateTrip, deleteTrip } = useTrips();
 export default function TripPlanningPage({ initialTripId }) {
-  const { trips, addTrip, deleteTrip } = useTrips();
+  const { trips, loading, error, createTrip, updateTrip, deleteTrip } = useTrips();
   const [isOpen, setIsOpen] = useState(false); // controls TripForm modal (create/edit)
   const [selected, setSelected] = useState(null); // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
