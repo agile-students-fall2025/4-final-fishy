@@ -14,6 +14,7 @@ import { TripsProvider } from "./context/TripContext";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("home");
+  const [pageParams, setPageParams] = useState({});
   const [user, setUser] = useState(null);
 
   const handleLogin = (userData) => {
@@ -26,12 +27,17 @@ function App() {
     setCurrentPage("home");
   };
 
+  const handleNavigate = (page, params = {}) => {
+    setCurrentPage(page);
+    setPageParams(params);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HomePage />;
+        return <HomePage onNavigate={handleNavigate} />;
       case "trips":
-        return <TripPlanningPage />;
+        return <TripPlanningPage initialTripId={pageParams.tripId} />;
       case "map":
         return <MapPage />;
       case "budget":
