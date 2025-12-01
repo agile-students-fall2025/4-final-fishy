@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from "react";
 import "./App.css";
 import Navigation from "./components/Navigation";
@@ -9,6 +8,7 @@ import BudgetPage from "./pages/BudgetPage";
 import WeatherPage from "./pages/WeatherPage";
 import LoginPage from "./pages/LoginPage";
 import RegistrationPage from "./pages/RegistrationPage";
+import ProfilePage from "./pages/ProfilePage";
 import { BudgetProvider } from "./context/BudgetContext";
 import { TripsProvider } from "./context/TripContext";
 
@@ -19,7 +19,12 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    setCurrentPage("profile");
+    setCurrentPage("profile"); // go to profile page after login/registration
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setCurrentPage("home");
   };
 
   const handleNavigate = (page, params = {}) => {
@@ -40,9 +45,11 @@ function App() {
       case "weather":
         return <WeatherPage />;
       case "login":
-        return <LoginPage onLogin={handleLogin} />;
+        return <LoginPage onLogin={handleLogin} onNavigateRegister={() => setCurrentPage("register")} />;
       case "register":
-        return <RegistrationPage onRegister={(userData) => handleLogin(userData)} />;
+        return <RegistrationPage onRegister={handleLogin} onNavigateLogin={() => setCurrentPage("login")} />;
+      case "profile":
+        return <ProfilePage user={user} onLogout={handleLogout} onClose={() => setCurrentPage("home")} />;
       default:
         return <HomePage />;
     }
@@ -52,10 +59,8 @@ function App() {
     <TripsProvider>
       <BudgetProvider>
         <div className="App">
-          <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-          <main className="main-content">
-            {renderPage()}
-          </main>  
+          <Navigation currentPage={currentPage} onNavigate={setCurrentPage} user={user} />
+          <main className="main-content">{renderPage()}</main>
         </div>
       </BudgetProvider>
     </TripsProvider>

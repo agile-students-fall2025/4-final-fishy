@@ -6,7 +6,7 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -14,9 +14,31 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
       return;
     }
 
-    // Example: Mock registration success
-    onRegister?.({ name, email });
-    alert('Account created successfully!');
+    try {
+      const res = await fetch('http://localhost:4000/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: name, // backend expects "username"
+          email,
+          password
+        })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || 'Registration failed');
+        return;
+      }
+
+      // Registration successful
+      onRegister?.(data.user);
+      alert('Account created successfully!');
+    } catch (err) {
+      console.error(err);
+      alert('Network error');
+    }
   };
 
   return (

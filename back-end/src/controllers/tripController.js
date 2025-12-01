@@ -12,7 +12,9 @@ const tripSchema = Joi.object({
     .items(
       Joi.object({
         date: Joi.string().allow('', null),
-        activities: Joi.array().items(Joi.string()).default([]),
+        activities: Joi.array()
+          .items(Joi.string().allow('', null))
+          .default([]),
       })
     )
     .default([]),
@@ -64,13 +66,17 @@ export async function updateTrip(req, res) {
   const { value, error } = tripSchema.validate(req.body || {}, { stripUnknown: true });
   if (error) return res.status(400).json({ error: error.message });
 
+  // Check original request body to determine which fields were actually provided
+  // (Joi defaults might add fields that weren't in the request)
+  const body = req.body || {};
+
   const patch = {
-    ...(value.destination !== undefined && {
+    ...(body.destination !== undefined && {
       destination: String(value.destination || '').trim() || 'Untitled trip',
     }),
-    ...(value.startDate !== undefined && { startDate: value.startDate || '' }),
-    ...(value.endDate !== undefined && { endDate: value.endDate || '' }),
-    ...(value.days !== undefined && {
+    ...(body.startDate !== undefined && { startDate: value.startDate || '' }),
+    ...(body.endDate !== undefined && { endDate: value.endDate || '' }),
+    ...(body.days !== undefined && {
       days: (value.days || []).map((d) => ({
         date: d?.date || '',
         activities: Array.isArray(d?.activities)

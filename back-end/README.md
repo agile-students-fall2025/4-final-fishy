@@ -1,60 +1,3 @@
-# TripMate – Your Smart Travel Companion
-
-### Product Vision Statement
-
-TripMate simplifies travel planning by bringing **hotels, food, transport, weather, and budgeting** into a single interactive map.  
-No more switching between five apps — plan, explore, and track your trips in one place.
-
----
-
-## Project Overview
-
-**TripMate** is a full-stack web application that helps travelers:
-
-- Plan trips day-by-day
-- Visualize destinations on a map
-- Track budgets and expenses
-- Preview weather forecasts
-- (Bonus) Save photos and memories on a “Memory Map”
-
----
-
-## Team
-
-* [Juno Cheung](https://github.com/avacheungx)
-* [Jessy Wang](https://github.com/jwang9500)
-* [Ahmmed Razee](https://github.com/ErazeerHead04)
-* [Sejona Sujit Das](https://github.com/sejonasdas) 
-* [Amy Liao](https://github.com/agile-students-fall2025/4-final-fishy/commits?author=Amyliao0) 
-
-## How TripMate Started
-
-TripMate began during our Agile Development course as a project to practice **Scrum methodology** and full-stack collaboration.  
-The concept evolved from early brainstorming around travel apps and personal trackers — we chose TripMate to combine both ideas.
-
-We’re currently in **Sprint 0**, focusing on research, wireframes, and environment setup.
-
-## Tech Stack
-
-**Frontend:** React.js
-
-**Backend:** Node.js + Express  
-
-**Database:** MongoDB  
-
-**APIs:** Google Maps, OpenWeather, Currency API  
-
-**Version Control:** Git + GitHub Project Boards  
-
-## How to Contribute
-
-We welcome collaboration! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) for full details on:
-
-- Team norms and coding conventions
-- Branch and PR workflow
-- How to set up your local environment
-- How to submit and review pull requests
-
 ## Build & Run Instructions
 
 ### Prerequisites
@@ -79,7 +22,7 @@ We welcome collaboration! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) f
    OPENWEATHER_API_KEY=your_openweather_api_key_here
    PORT=4000
    ```
-   > **Note:** Get your OpenWeather API key from [openweathermap.org](https://openweathermap.org/api)
+   > **Note:** Get .env files from discord channel: fishy
 
 4. **Run the backend server:**
    ```bash
@@ -103,6 +46,10 @@ We welcome collaboration! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) f
    ```bash
    npm install
    ```
+
+3. **Create a `.env` file** in the `front-end` directory
+> **Note:** Get .env files from discord channel: fishy
+
 
 3. **Start the development server:**
    ```bash
@@ -195,11 +142,4 @@ npm run test:mocha:watch
 # Run tests with coverage
 npm run test:cov
 npm run coverage:mocha
-```
-
-### Frontend Testing
-
-```bash
-cd front-end
-npm test
 ```

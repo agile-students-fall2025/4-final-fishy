@@ -1,48 +1,45 @@
-import { promises as fs } from 'fs';
-import path from 'path';
-import crypto from 'crypto';
+import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 
-const USER_FILE = process.env.USER_FILE;
-let users = [];
-
-async function load() {
-    if (!USER_FILE) return;
-    try {
-        const p = path.resolve(USER_FILE);
-        const txt = await fs.readFile(p, 'utf-8');
-        users = JSON.parse(txt || '[]');
-    } catch (e) {
-        if (e.code === 'ENOENT') await save();
-        else console.warn('userStore load error:', e.message);
-    }
-}
-
-async function save(data = users) {
-    if (!USER_FILE) return;
-    const p = path.resolve(USER_FILE);
-    await fs.mkdir(path.dirname(p), { recursive: true });
-    await fs.writeFile(p, JSON.stringify(data, null, 2));
-}
-
-await load();
-
 export async function createUser({ username, email, password }) {
-    const id = `user_${crypto.randomUUID()}`;
-    const hashed = await bcrypt.hash(password, 10);
-    const user = { id, username, email, password: hashed, createdAt: Date.now() };
-    users.push(user);
-    await save();
-    return { id, username, email };
+    const newUser = await User.create({
+        username,
+        email,
+        password // raw password
+    });
+
+    return {
+        id: newUser._id.toString(),
+        username: newUser.username,
+        email: newUser.email
+    };
 }
+
 
 export async function findByEmail(email) {
-    return users.find((u) => u.email === email) || null;
+    const user = await User.findOne({ email });
+
+    if (!user) return null;
+
+    return {
+        id: user._id.toString(),
+        username: user.username,
+        email: user.email,
+        password: user.password, // required for validateUser
+        createdAt: user.createdAt
+    };
 }
 
 export async function validateUser(email, password) {
-    const user = await findByEmail(email);
+    const user = await findByEmail(email); // get user including hashed password
     if (!user) return null;
-    const match = await bcrypt.compare(password, user.password);
-    return match ? { id: user.id, username: user.username, email: user.email } : null;
+
+    const ok = await bcrypt.compare(password, user.password);
+    if (!ok) return null;
+
+    return {
+        id: user.id,
+        username: user.username,
+        email: user.email
+    };
 }
