@@ -1,103 +1,68 @@
-// back-end/src/data/tripStore.js
-import mongoose from 'mongoose';
-import Trip from '../models/Trip.js';
+import { promises as fs } from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+
+const DATA_FILE = process.env.DATA_FILE; // if falsy -> memory-only
+let memory = [];
+
+async function loadFromFile() {
+  if (!DATA_FILE) return;                 // memory-only
+  try {
+    const p = path.resolve(DATA_FILE);
+    const txt = await fs.readFile(p, 'utf-8');
+    memory = JSON.parse(txt || '[]');
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      await saveToFile([]);
+    } else {
+      console.warn('store load error:', e.message);
+    }
+  }
+}
+
+async function saveToFile(data = memory) {
+  if (!DATA_FILE) return;                 // memory-only
+  const p = path.resolve(DATA_FILE);
+  await fs.mkdir(path.dirname(p), { recursive: true });
+  await fs.writeFile(p, JSON.stringify(data, null, 2));
+}
+
+await loadFromFile(); // initialize on import
 
 export async function getAll() {
-  try {
-    const trips = await Trip.find().sort({ createdAt: -1 });
-    // Transform MongoDB documents to match expected format
-    return trips.map(trip => ({
-      id: trip._id.toString(),
-      destination: trip.destination || 'Untitled trip',
-      startDate: trip.startDate || '',
-      endDate: trip.endDate || '',
-      days: trip.days || [],
-      createdAt: trip.createdAt
-    }));
-  } catch (error) {
-    console.error('Error fetching trips:', error);
-    throw error;
-  }
+  return memory.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 
 export async function getById(id) {
-  try {
-    const trip = await Trip.findById(id);
-    if (!trip) return null;
-    return {
-      id: trip._id.toString(),
-      destination: trip.destination || 'Untitled trip',
-      startDate: trip.startDate || '',
-      endDate: trip.endDate || '',
-      days: trip.days || [],
-      createdAt: trip.createdAt
-    };
-  } catch (error) {
-    console.error('Error fetching trip by id:', error);
-    return null;
-  }
+  return memory.find(t => t.id === id) || null;
 }
 
 export async function create(trip) {
-  try {
-    // Ensure MongoDB connection is ready
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error('MongoDB not connected. Ready state: ' + mongoose.connection.readyState);
-    }
-    
-    const doc = await Trip.create({
-      destination: trip.destination?.trim() || 'Untitled trip',
-      startDate: trip.startDate || '',
-      endDate: trip.endDate || '',
-      days: Array.isArray(trip.days) ? trip.days : []
-    });
-    return {
-      id: doc._id.toString(),
-      destination: doc.destination || 'Untitled trip',
-      startDate: doc.startDate || '',
-      endDate: doc.endDate || '',
-      days: doc.days || [],
-      createdAt: doc.createdAt
-    };
-  } catch (error) {
-    console.error('Error creating trip:', error);
-    throw error;
-  }
+  const now = Date.now();
+  const doc = {
+    id: trip.id || `trip_${crypto.randomUUID()}`,
+    destination: trip.destination?.trim() || 'Untitled trip',
+    startDate: trip.startDate || '',
+    endDate: trip.endDate || '',
+    days: Array.isArray(trip.days) ? trip.days : [],
+    createdAt: now
+  };
+  memory.unshift(doc);
+  await saveToFile();
+  return doc;
 }
 
 export async function update(id, patch) {
-  try {
-    const doc = await Trip.findByIdAndUpdate(
-      id,
-      {
-        ...(patch.destination !== undefined && { destination: patch.destination }),
-        ...(patch.startDate !== undefined && { startDate: patch.startDate }),
-        ...(patch.endDate !== undefined && { endDate: patch.endDate }),
-        ...(patch.days !== undefined && { days: patch.days })
-      },
-      { new: true, runValidators: true }
-    );
-    if (!doc) return null;
-    return {
-      id: doc._id.toString(),
-      destination: doc.destination || 'Untitled trip',
-      startDate: doc.startDate || '',
-      endDate: doc.endDate || '',
-      days: doc.days || [],
-      createdAt: doc.createdAt
-    };
-  } catch (error) {
-    console.error('Error updating trip:', error);
-    return null;
-  }
+  const i = memory.findIndex(t => t.id === id);
+  if (i < 0) return null;
+  memory[i] = { ...memory[i], ...patch, id };
+  await saveToFile();
+  return memory[i];
 }
 
 export async function remove(id) {
-  try {
-    const deleted = await Trip.findByIdAndDelete(id);
-    return !!deleted;
-  } catch (error) {
-    console.error('Error deleting trip:', error);
-    return false;
-  }
+  const before = memory.length;
+  memory = memory.filter(t => t.id !== id);
+  if (memory.length !== before) await saveToFile();
+  return before !== memory.length;
 }

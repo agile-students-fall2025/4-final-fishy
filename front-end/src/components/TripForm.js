@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { makeId } from "../utils/helpers";
 
 export default function TripForm({ trip, onSave, onCancel }) {
   // form state
@@ -81,12 +82,14 @@ export default function TripForm({ trip, onSave, onCancel }) {
       .filter((d) => d.date || (d.activities && d.activities.length > 0));
 
     const payload = {
-      // Only include id when editing (MongoDB will generate it for new trips)
-      ...(isEditing && { id: trip.id }),
+      // keep existing id in edit mode; create a new one in create mode
+      id: isEditing ? trip.id : makeId("trip"),
       destination: (destination || "").trim() || "Untitled trip",
       startDate: startDate || "",
       endDate: endDate || "",
       days: cleanedDays.length ? cleanedDays : [{ date: "", activities: [] }],
+      createdAt: isEditing ? trip.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     onSave(payload);

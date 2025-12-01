@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
 import { useTrips } from "../context/TripContext";
+import { saveTrip, deleteTripById } from "../utils/api";
 
-export default function TripPlanningPage() {
-  const { trips, loading, error, createTrip, updateTrip, deleteTrip } = useTrips();
 export default function TripPlanningPage({ initialTripId }) {
   const { trips, addTrip, deleteTrip } = useTrips();
   const [isOpen, setIsOpen] = useState(false); // controls TripForm modal (create/edit)
@@ -41,30 +40,22 @@ export default function TripPlanningPage({ initialTripId }) {
   const handleSave = async (trip) => {
     setBusy(true);
     try {
+      const persisted = await saveTrip(trip); // assume API updates when id exists
       if (trip?.id) {
-        // Update existing trip
-        await updateTrip(trip.id, trip);
-      } else {
-        // Create new trip
-        await createTrip(trip);
+        // simple replace-in-context: remove then add
+        deleteTrip(trip.id);
       }
+      addTrip(persisted);
       closeModal();
-    } catch (err) {
-      console.error('Failed to save trip:', err);
-      // Error is handled by context
     } finally {
       setBusy(false);
     }
   };
 
   const handleDelete = async (id) => {
-    try {
-      await deleteTrip(id);
-      if (selected?.id === id) closeDetails();
-    } catch (err) {
-      console.error('Failed to delete trip:', err);
-      // Error is handled by context
-    }
+    await deleteTripById(id);
+    deleteTrip(id);
+    if (selected?.id === id) closeDetails();
   };
 
   return (
@@ -72,27 +63,13 @@ export default function TripPlanningPage({ initialTripId }) {
       <header className="trip-toolbar">
         <h1>Trip Planner</h1>
         <p className="trip-toolbar__sub">Organise destinations, dates and daily activities.</p>
-        <button 
-          className="tm-btn primary" 
-          onClick={openCreateModal}
-          disabled={loading}
-        >
+        <button className="tm-btn primary" onClick={openCreateModal}>
           + Create Trip
         </button>
       </header>
 
-      {error && (
-        <div className="tm-empty" style={{ color: 'red', marginBottom: '1rem' }}>
-          Error: {String(error)}
-        </div>
-      )}
-
       <section className="trip-grid">
-        {loading && trips.length === 0 && (
-          <div className="tm-empty">Loading trips...</div>
-        )}
-
-        {!loading && trips.length === 0 && (
+        {trips.length === 0 && (
           <div className="tm-empty">
             No trips yet — click <strong>Create Trip</strong> to start.
           </div>
@@ -102,18 +79,10 @@ export default function TripPlanningPage({ initialTripId }) {
           <div key={trip.id} className="trip-grid__item">
             <TripCard trip={trip} onOpen={setSelected} />
             <div className="trip-card__footer">
-              <button 
-                className="tm-link" 
-                onClick={() => openEditModal(trip)}
-                disabled={busy || loading}
-              >
+              <button className="tm-link" onClick={() => openEditModal(trip)}>
                 Edit
               </button>
-              <button 
-                className="tm-link-danger" 
-                onClick={() => handleDelete(trip.id)}
-                disabled={busy || loading}
-              >
+              <button className="tm-link-danger" onClick={() => handleDelete(trip.id)}>
                 Delete
               </button>
             </div>
