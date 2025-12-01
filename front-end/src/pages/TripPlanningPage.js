@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
 import { useTrips } from "../context/TripContext";
 import { saveTrip, deleteTripById } from "../utils/api";
 
-export default function TripPlanningPage() {
+export default function TripPlanningPage({ initialTripId }) {
   const { trips, addTrip, deleteTrip } = useTrips();
   const [isOpen, setIsOpen] = useState(false);     // controls TripForm modal (create/edit)
   const [selected, setSelected] = useState(null);  // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
+
+  // Auto-select trip when initialTripId is provided
+  useEffect(() => {
+    if (initialTripId && trips.length > 0) {
+      const trip = trips.find(t => t.id === initialTripId);
+      if (trip) {
+        setSelected(trip);
+      }
+    }
+  }, [initialTripId, trips]);
 
   // Create or Update depending on presence of trip.id
   const handleSave = async (trip) => {
