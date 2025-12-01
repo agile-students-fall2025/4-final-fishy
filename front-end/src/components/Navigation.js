@@ -23,29 +23,28 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
       </div>
 
       <div className="navbar-nav">
-        {navItems.map(item => (
+        {navItems.map((item) => (
           <button
             key={item.id}
-            className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-            onClick={() => navigate && navigate(item.id)}
+            className={`nav-item ${currentPage === item.id ? "active" : ""}`}
+            onClick={() => onNavigate(item.id)}
           >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
           </button>
         ))}
 
-        {/* Account / Profile Button */}
         <div className="account-container">
           {user ? (
             <button
-              className={`nav-item ${currentPage === 'profile' ? 'active' : ''}`}
-              onClick={() => navigate && navigate('profile')}
+              className={`nav-item ${currentPage === "profile" ? "active" : ""}`}
+              onClick={() => onNavigate("profile")}
             >
               <span className="nav-icon">👤</span>
               <span className="nav-label">Profile</span>
             </button>
           ) : (
-            <>
+            <div className="dropdown-wrapper">
               <button className="nav-item" onClick={toggleDropdown}>
                 <span className="nav-label">Account ⏷</span>
               </button>
@@ -56,7 +55,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      navigate && navigate('login');
+                      onNavigate("login");
                     }}
                   >
                     Login
@@ -65,14 +64,14 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      navigate && navigate('register');
+                      onNavigate("register");
                     }}
                   >
                     Sign Up
                   </button>
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
       </div>
