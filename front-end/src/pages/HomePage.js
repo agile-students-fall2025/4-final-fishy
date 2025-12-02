@@ -2,10 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { searchUnsplashPhoto } from '../utils/api';
 import { useTrips } from '../context/TripContext';
 import { useBudgets } from '../context/BudgetContext';
+import { useReminders } from '../context/RemindersContext';
 
 function HomePage({ onNavigate }) {
   const { trips, loading: tripsLoading } = useTrips();
   const { budgets, getTotalSpent, loading: budgetsLoading } = useBudgets();
+  const { highPriorityReminders, upcomingReminders } = useReminders();
   const [tripImages, setTripImages] = useState({});
 
   // Match trips with budgets by destination name or date range
@@ -136,6 +138,41 @@ function HomePage({ onNavigate }) {
         </div>
       </div>
 
+      {/* Reminders Widget */}
+      {!loading && highPriorityReminders.length > 0 && (
+        <div className="reminders-widget">
+          <div className="reminders-widget__header">
+            <h3>🔔 Important Reminders</h3>
+            <button
+              className="tm-link"
+              onClick={() => onNavigate('reminders')}
+            >
+              View All →
+            </button>
+          </div>
+          <div className="reminders-widget__list">
+            {highPriorityReminders.slice(0, 3).map((reminder) => (
+              <div
+                key={reminder.id}
+                className="reminders-widget__item"
+                onClick={() => onNavigate('trips', { tripId: reminder.tripId })}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="reminders-widget__icon">
+                  {reminder.type === 'departure' && '✈️'}
+                  {reminder.type === 'return' && '🏠'}
+                  {reminder.type === 'ongoing' && '📍'}
+                </div>
+                <div className="reminders-widget__content">
+                  <div className="reminders-widget__title">{reminder.title}</div>
+                  <div className="reminders-widget__message">{reminder.message}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="trips-overview">
         {loading && (
           <div className="empty-state">
@@ -245,10 +282,12 @@ function HomePage({ onNavigate }) {
                       className="plan-trip-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (onNavigate) onNavigate('trips');
+                        if (onNavigate) {
+                          onNavigate('trips', { tripId: trip.id });
+                        }
                       }}
                     >
-                      Plan Trip
+                      View Trip
                     </button>
                   </div>
                 </div>

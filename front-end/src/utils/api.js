@@ -119,6 +119,20 @@ const UNSPLASH_API_URL = 'https://api.unsplash.com';
  * @param {number} height - Desired image height (default: 600)
  * @returns {Promise<string>} The URL of the best matching photo
  */
+// Activity Recommendations API
+export async function fetchRecommendedActivities(destination) {
+  if (!destination || destination.trim() === '') {
+    return [];
+  }
+  
+  const r = await fetch(`${API}/api/activities/recommendations?destination=${encodeURIComponent(destination)}`);
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch recommendations');
+  }
+  return r.json();
+}
+
 export async function searchUnsplashPhoto(query, width = 800, height = 600) {
   if (!UNSPLASH_ACCESS_KEY) {
     console.warn('Unsplash API key not found. Please set REACT_APP_UNSPLASH_ACCESS_KEY in your .env file');

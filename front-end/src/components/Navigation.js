@@ -1,11 +1,26 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Navigation({ currentPage, onPageChange, onNavigate, user }) {
+  const navigate = useNavigate();
+  
+  const handleNavClick = (pageId) => {
+    if (onNavigate) {
+      onNavigate(pageId);
+    }
+    // Also update URL
+    if (pageId === 'home') {
+      navigate('/');
+    } else {
+      navigate(`/${pageId}`);
+    }
+  };
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   const navItems = [
     { id: 'home', label: 'Home', icon: '🏠' },
     { id: 'trips', label: 'Trips', icon: '✈️' },
+    { id: 'reminders', label: 'Reminders', icon: '🔔' },
     { id: 'map', label: 'Map', icon: '🗺️' },
     { id: 'budget', label: 'Budget', icon: '💰' },
     { id: 'weather', label: 'Weather', icon: '🌤️' }
@@ -26,7 +41,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
           <button
             key={item.id}
             className={`nav-item ${currentPage === item.id ? "active" : ""}`}
-            onClick={() => onNavigate(item.id)}
+            onClick={() => handleNavClick(item.id)}
           >
             <span className="nav-icon">{item.icon}</span>
             <span className="nav-label">{item.label}</span>
@@ -37,7 +52,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
           {user ? (
             <button
               className={`nav-item ${currentPage === "profile" ? "active" : ""}`}
-              onClick={() => onNavigate("profile")}
+              onClick={() => handleNavClick("profile")}
             >
               <span className="nav-icon">👤</span>
               <span className="nav-label">Profile</span>
@@ -54,7 +69,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      onNavigate("login");
+                      handleNavClick("login");
                     }}
                   >
                     Login
@@ -63,7 +78,7 @@ function Navigation({ currentPage, onPageChange, onNavigate, user }) {
                     className="dropdown-item"
                     onClick={() => {
                       setShowAccountDropdown(false);
-                      onNavigate("register");
+                      handleNavClick("register");
                     }}
                   >
                     Sign Up

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import RecommendedActivities from "./RecommendedActivities";
 
 export default function TripForm({ trip, onSave, onCancel }) {
   // form state
@@ -170,6 +171,23 @@ export default function TripForm({ trip, onSave, onCancel }) {
 
           <div className="tm-activities">
             <label className="tm-label">Activities</label>
+            <RecommendedActivities 
+              destination={destination}
+              onAddActivity={(dayIdx, activity) => {
+                // Add the recommended activity to this specific day
+                const day = days[dayIdx];
+                if (day && !day.activities.includes(activity)) {
+                  setDays((d) =>
+                    d.map((day, idx) =>
+                      idx === dayIdx
+                        ? { ...day, activities: [...day.activities, activity] }
+                        : day
+                    )
+                  );
+                }
+              }}
+              dayIndex={i}
+            />
             {day.activities.map((a, j) => (
               <div key={j} className="tm-row">
                 <div className="tm-col">

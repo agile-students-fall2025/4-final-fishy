@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
+import TripShare from "../components/TripShare";
 import { useTrips } from "../context/TripContext";
 
 export default function TripPlanningPage({ initialTripId }) {
@@ -9,6 +10,7 @@ export default function TripPlanningPage({ initialTripId }) {
   const [selected, setSelected] = useState(null); // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
   const [saveError, setSaveError] = useState(null);
+  const [showShare, setShowShare] = useState(false); // controls TripShare modal
 
   // Auto-select trip when initialTripId is provided
   useEffect(() => {
@@ -16,6 +18,13 @@ export default function TripPlanningPage({ initialTripId }) {
       const trip = trips.find(t => t.id === initialTripId);
       if (trip) {
         setSelected(trip);
+        // Scroll to the selected trip card if it exists in the grid
+        setTimeout(() => {
+          const tripCard = document.querySelector(`[data-trip-id="${trip.id}"]`);
+          if (tripCard) {
+            tripCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       }
     }
   }, [initialTripId, trips]);
@@ -104,7 +113,17 @@ export default function TripPlanningPage({ initialTripId }) {
         )}
 
         {trips.map((trip) => (
-          <div key={trip.id} className="trip-grid__item">
+          <div 
+            key={trip.id} 
+            className="trip-grid__item"
+            data-trip-id={trip.id}
+            style={{
+              border: selected?.id === trip.id ? '2px solid #667eea' : 'none',
+              borderRadius: selected?.id === trip.id ? '12px' : '0',
+              padding: selected?.id === trip.id ? '4px' : '0',
+              transition: 'all 0.3s ease'
+            }}
+          >
             <TripCard trip={trip} onOpen={setSelected} />
             <div className="trip-card__footer">
               <button 
@@ -144,6 +163,9 @@ export default function TripPlanningPage({ initialTripId }) {
                 <button className="tm-btn ghost" onClick={closeDetails}>
                   Close
                 </button>
+                <button className="tm-btn" onClick={() => setShowShare(true)}>
+                  📤 Share
+                </button>
                 <button className="tm-btn primary" onClick={() => setIsOpen(true)}>
                   Edit Trip
                 </button>
@@ -173,6 +195,15 @@ export default function TripPlanningPage({ initialTripId }) {
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* SHARE MODAL */}
+      {showShare && selected && (
+        <div className="tm-modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowShare(false)}>
+          <div className="tm-modal tm-modal--opaque trip-share-modal" onClick={(e) => e.stopPropagation()}>
+            <TripShare trip={selected} onClose={() => setShowShare(false)} />
           </div>
         </div>
       )}

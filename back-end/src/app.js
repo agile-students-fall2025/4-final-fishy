@@ -7,6 +7,7 @@ import userRouter from './routes/userRoutes.js';
 import budgetsRouter from './routes/budgetRoutes.js';
 import mapRouter from './routes/mapRoutes.js';
 import weatherRouter from './routes/weatherRoutes.js';
+import activityRouter from './routes/activityRoutes.js';
 
 const app = express();
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] }));
@@ -35,6 +36,7 @@ app.use('/api/trips', tripsRouter);
 app.use('/api/users', userRouter);
 app.use('/api/budgets', budgetsRouter);
 app.use('/api/map', mapRouter);
-app.use('/api/weather', weatherRouter); 
+app.use('/api/weather', weatherRouter);
+app.use('/api/activities', activityRouter); 
 
 export default app;
