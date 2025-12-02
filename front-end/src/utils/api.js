@@ -15,7 +15,10 @@ export async function saveTrip(trip) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(trip),
   });
-  if (!r.ok) throw new Error("Failed to save trip");
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to save trip: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
 export async function updateTripById(id, patch) {
@@ -24,7 +27,10 @@ export async function updateTripById(id, patch) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   });
-  if (!r.ok) throw new Error("Failed to update trip");
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to update trip: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
 export async function deleteTripById(id) {
@@ -113,6 +119,20 @@ const UNSPLASH_API_URL = 'https://api.unsplash.com';
  * @param {number} height - Desired image height (default: 600)
  * @returns {Promise<string>} The URL of the best matching photo
  */
+// Activity Recommendations API
+export async function fetchRecommendedActivities(destination) {
+  if (!destination || destination.trim() === '') {
+    return [];
+  }
+  
+  const r = await fetch(`${API}/api/activities/recommendations?destination=${encodeURIComponent(destination)}`);
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch recommendations');
+  }
+  return r.json();
+}
+
 export async function searchUnsplashPhoto(query, width = 800, height = 600) {
   if (!UNSPLASH_ACCESS_KEY) {
     console.warn('Unsplash API key not found. Please set REACT_APP_UNSPLASH_ACCESS_KEY in your .env file');

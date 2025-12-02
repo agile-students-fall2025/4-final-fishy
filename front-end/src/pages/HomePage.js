@@ -1,94 +1,133 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { searchUnsplashPhoto } from '../utils/api';
+import { useTrips } from '../context/TripContext';
+import { useBudgets } from '../context/BudgetContext';
+import { useReminders } from '../context/RemindersContext';
 
 function HomePage({ onNavigate }) {
-  // Mock data for trips
-  const [mockTrips, setMockTrips] = useState([
-    {
-      id: 1,
-      destination: 'Tokyo, Japan',
-      startDate: '2024-03-15',
-      endDate: '2024-03-22',
-      budget: 2500,
-      spent: 1800,
-      image: null // Will be fetched from Unsplash
-    },
-    {
-      id: 2,
-      destination: 'Paris, France',
-      startDate: '2024-04-10',
-      endDate: '2024-04-17',
-      budget: 3000,
-      spent: 0,
-      image: null
-    },
-    {
-      id: 3,
-      destination: 'New York, USA',
-      startDate: '2024-05-05',
-      endDate: '2024-05-12',
-      budget: 2000,
-      spent: 0,
-      image: null
-    }
-  ]);
+  const { trips, loading: tripsLoading } = useTrips();
+  const { budgets, getTotalSpent, loading: budgetsLoading } = useBudgets();
+  const { highPriorityReminders, upcomingReminders } = useReminders();
+  const [tripImages, setTripImages] = useState({});
 
-  // Fetch images for all destinations when component mounts
+  // Match trips with budgets by destination name or date range
+  const matchTripWithBudget = (trip) => {
+    // First try to match by destination name
+    let budget = budgets.find(b => 
+      b.name && trip.destination && 
+      b.name.toLowerCase().trim() === trip.destination.toLowerCase().trim()
+    );
+
+    // If no match by name, try to match by overlapping date range
+    if (!budget && trip.startDate && trip.endDate) {
+      budget = budgets.find(b => {
+        if (!b.startDate || !b.endDate) return false;
+        const tripStart = new Date(trip.startDate);
+        const tripEnd = new Date(trip.endDate);
+        const budgetStart = new Date(b.startDate);
+        const budgetEnd = new Date(b.endDate);
+        
+        // Check if date ranges overlap
+        return (tripStart <= budgetEnd && tripEnd >= budgetStart);
+      });
+    }
+
+    return budget || null;
+  };
+
+  // Combine trips with budget data
+  const tripsWithBudget = useMemo(() => {
+    return trips.map(trip => {
+      const budget = matchTripWithBudget(trip);
+      const spent = budget ? getTotalSpent(budget) : 0;
+      const budgetLimit = budget ? budget.limit : 0;
+      
+      return {
+        ...trip,
+        budget: budgetLimit,
+        spent: spent,
+        budgetId: budget?.id || null,
+        image: tripImages[trip.id] || null
+      };
+    });
+  }, [trips, budgets, getTotalSpent, tripImages]);
+
+  // Determine if trip is current (ongoing) or upcoming (future)
+  const categorizeTrips = (trips) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return trips.reduce((acc, trip) => {
+      let startDate = null;
+      let endDate = null;
+      
+      // Parse dates if they exist and are valid
+      if (trip.startDate && trip.startDate.trim()) {
+        startDate = new Date(trip.startDate);
+        if (isNaN(startDate.getTime())) startDate = null;
+      }
+      if (trip.endDate && trip.endDate.trim()) {
+        endDate = new Date(trip.endDate);
+        if (isNaN(endDate.getTime())) endDate = null;
+      }
+      
+      // Trip is current if:
+      // 1. Today is between start and end date, OR
+      // 2. Trip has expenses (spent > 0) and start date has passed, OR
+      // 3. Trip has expenses and no dates set (assume it's ongoing)
+      let isCurrent = false;
+      
+      if (startDate && endDate) {
+        isCurrent = now >= startDate && now <= endDate;
+      } else if (trip.spent > 0) {
+        // If there are expenses, consider it current if start date has passed or no start date
+        isCurrent = !startDate || now >= startDate;
+      }
+      
+      if (isCurrent) {
+        acc.current.push(trip);
+      } else {
+        acc.upcoming.push(trip);
+      }
+      
+      return acc;
+    }, { current: [], upcoming: [] });
+  };
+
+  const { current: currentTrips, upcoming: upcomingTrips } = useMemo(() => {
+    return categorizeTrips(tripsWithBudget);
+  }, [tripsWithBudget]);
+
+  // Fetch images for all destinations
   useEffect(() => {
     const fetchImages = async () => {
-      const initialTrips = [
-        {
-          id: 1,
-          destination: 'Tokyo, Japan',
-          startDate: '2024-03-15',
-          endDate: '2024-03-22',
-          budget: 2500,
-          spent: 1800,
-          image: null
-        },
-        {
-          id: 2,
-          destination: 'Paris, France',
-          startDate: '2024-04-10',
-          endDate: '2024-04-17',
-          budget: 3000,
-          spent: 0,
-          image: null
-        },
-        {
-          id: 3,
-          destination: 'New York, USA',
-          startDate: '2024-05-05',
-          endDate: '2024-05-12',
-          budget: 2000,
-          spent: 0,
-          image: null
-        }
-      ];
-
-      const tripsWithImages = await Promise.all(
-        initialTrips.map(async (trip) => {
-          try {
-            const imageUrl = await searchUnsplashPhoto(trip.destination, 800, 600);
-            return { ...trip, image: imageUrl };
-          } catch (error) {
-            console.error(`Error fetching image for ${trip.destination}:`, error);
-            // Return trip with fallback image
-            return { 
-              ...trip, 
-              image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format' 
-            };
-          }
-        })
+      const tripsNeedingImages = trips.filter(trip => 
+        trip.destination && !tripImages[trip.id]
       );
-      setMockTrips(tripsWithImages);
+
+      if (tripsNeedingImages.length === 0) return;
+
+      const imagePromises = tripsNeedingImages.map(async (trip) => {
+        try {
+          const imageUrl = await searchUnsplashPhoto(trip.destination, 800, 600);
+          setTripImages(prev => ({ ...prev, [trip.id]: imageUrl }));
+        } catch (error) {
+          console.error(`Error fetching image for ${trip.destination}:`, error);
+          setTripImages(prev => ({ 
+            ...prev, 
+            [trip.id]: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format' 
+          }));
+        }
+      });
+
+      await Promise.all(imagePromises);
     };
 
     fetchImages();
-  }, []); // Empty dependency array means this runs once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trips]);
 
-  const upcomingTrips = mockTrips.filter(trip => trip.spent === 0);
-  const currentTrips = mockTrips.filter(trip => trip.spent > 0);
+  const loading = tripsLoading || budgetsLoading;
 
   return (
     <div className="home-page">
@@ -99,8 +138,50 @@ function HomePage({ onNavigate }) {
         </div>
       </div>
 
+      {/* Reminders Widget */}
+      {!loading && highPriorityReminders.length > 0 && (
+        <div className="reminders-widget">
+          <div className="reminders-widget__header">
+            <h3>🔔 Important Reminders</h3>
+            <button
+              className="tm-link"
+              onClick={() => onNavigate('reminders')}
+            >
+              View All →
+            </button>
+          </div>
+          <div className="reminders-widget__list">
+            {highPriorityReminders.slice(0, 3).map((reminder) => (
+              <div
+                key={reminder.id}
+                className="reminders-widget__item"
+                onClick={() => onNavigate('trips', { tripId: reminder.tripId })}
+                style={{ cursor: 'pointer' }}
+              >
+                <div className="reminders-widget__icon">
+                  {reminder.type === 'departure' && '✈️'}
+                  {reminder.type === 'return' && '🏠'}
+                  {reminder.type === 'ongoing' && '📍'}
+                </div>
+                <div className="reminders-widget__content">
+                  <div className="reminders-widget__title">{reminder.title}</div>
+                  <div className="reminders-widget__message">{reminder.message}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="trips-overview">
-        {currentTrips.length > 0 && (
+        {loading && (
+          <div className="empty-state">
+            <div className="empty-icon">⏳</div>
+            <h3>Loading trips...</h3>
+          </div>
+        )}
+
+        {!loading && currentTrips.length > 0 && (
           <div className="trips-section">
             <h3 className="section-title">📍 Current Trips</h3>
             <div className="trips-grid">
@@ -127,18 +208,29 @@ function HomePage({ onNavigate }) {
                     />
                   </div>
                   <div className="trip-info">
-                    <h4 className="trip-destination">{trip.destination}</h4>
-                    <p className="trip-dates">{trip.startDate} - {trip.endDate}</p>
-                    <div className="budget-info">
-                      <span className="spent">${trip.spent}</span>
-                      <span className="budget">/ ${trip.budget}</span>
-                    </div>
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${(trip.spent / trip.budget) * 100}%` }}
-                      ></div>
-                    </div>
+                    <h4 className="trip-destination">{trip.destination || 'Untitled trip'}</h4>
+                    <p className="trip-dates">
+                      {trip.startDate || '—'} {trip.endDate ? ` - ${trip.endDate}` : ''}
+                    </p>
+                    {trip.budget > 0 && (
+                      <>
+                        <div className="budget-info">
+                          <span className="spent">${trip.spent.toLocaleString()}</span>
+                          <span className="budget">/ ${trip.budget.toLocaleString()}</span>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${Math.min(100, (trip.spent / trip.budget) * 100)}%` }}
+                          ></div>
+                        </div>
+                      </>
+                    )}
+                    {trip.budget === 0 && trip.spent === 0 && (
+                      <div className="budget-info">
+                        <span className="budget">No budget set</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -146,12 +238,21 @@ function HomePage({ onNavigate }) {
           </div>
         )}
 
-        {upcomingTrips.length > 0 && (
+        {!loading && upcomingTrips.length > 0 && (
           <div className="trips-section">
             <h3 className="section-title">🗓️ Upcoming Trips</h3>
             <div className="trips-grid">
               {upcomingTrips.map(trip => (
-                <div key={trip.id} className="trip-card">
+                <div 
+                  key={trip.id} 
+                  className="trip-card"
+                  onClick={() => {
+                    if (onNavigate) {
+                      onNavigate('trips', { tripId: trip.id });
+                    }
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="trip-image-wrapper">
                     <img 
                       src={trip.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&h=600&fit=crop&q=80&auto=format'} 
@@ -164,19 +265,29 @@ function HomePage({ onNavigate }) {
                     />
                   </div>
                   <div className="trip-info">
-                    <h4 className="trip-destination">{trip.destination}</h4>
-                    <p className="trip-dates">{trip.startDate} - {trip.endDate}</p>
-                    <div className="budget-info">
-                      <span className="budget">Budget: ${trip.budget}</span>
-                    </div>
+                    <h4 className="trip-destination">{trip.destination || 'Untitled trip'}</h4>
+                    <p className="trip-dates">
+                      {trip.startDate || '—'} {trip.endDate ? ` - ${trip.endDate}` : ''}
+                    </p>
+                    {trip.budget > 0 ? (
+                      <div className="budget-info">
+                        <span className="budget">Budget: ${trip.budget.toLocaleString()}</span>
+                      </div>
+                    ) : (
+                      <div className="budget-info">
+                        <span className="budget">No budget set</span>
+                      </div>
+                    )}
                     <button 
                       className="plan-trip-btn"
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (onNavigate) onNavigate('trips');
+                        if (onNavigate) {
+                          onNavigate('trips', { tripId: trip.id });
+                        }
                       }}
                     >
-                      Plan Trip
+                      View Trip
                     </button>
                   </div>
                 </div>
@@ -185,11 +296,20 @@ function HomePage({ onNavigate }) {
           </div>
         )}
 
-        {currentTrips.length === 0 && upcomingTrips.length === 0 && (
+        {!loading && currentTrips.length === 0 && upcomingTrips.length === 0 && (
           <div className="empty-state">
             <div className="empty-icon">🌍</div>
             <h3>No trips yet</h3>
             <p>Start planning your first adventure!</p>
+            <button 
+              className="tm-btn primary"
+              onClick={() => {
+                if (onNavigate) onNavigate('trips');
+              }}
+              style={{ marginTop: '1rem' }}
+            >
+              Create Your First Trip
+            </button>
           </div>
         )}
       </div>

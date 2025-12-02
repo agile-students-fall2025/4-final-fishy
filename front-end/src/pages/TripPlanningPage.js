@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TripCard from "../components/TripCard";
 import TripForm from "../components/TripForm";
+import TripShare from "../components/TripShare";
 import { useTrips } from "../context/TripContext";
 
 export default function TripPlanningPage({ initialTripId }) {
@@ -8,6 +9,8 @@ export default function TripPlanningPage({ initialTripId }) {
   const [isOpen, setIsOpen] = useState(false); // controls TripForm modal (create/edit)
   const [selected, setSelected] = useState(null); // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [showShare, setShowShare] = useState(false); // controls TripShare modal
 
   // Auto-select trip when initialTripId is provided
   useEffect(() => {
@@ -15,22 +18,32 @@ export default function TripPlanningPage({ initialTripId }) {
       const trip = trips.find(t => t.id === initialTripId);
       if (trip) {
         setSelected(trip);
+        // Scroll to the selected trip card if it exists in the grid
+        setTimeout(() => {
+          const tripCard = document.querySelector(`[data-trip-id="${trip.id}"]`);
+          if (tripCard) {
+            tripCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
       }
     }
   }, [initialTripId, trips]);
   const openCreateModal = () => {
     setSelected(null);
+    setSaveError(null);
     setIsOpen(true);
   };
 
   const openEditModal = (trip) => {
     setSelected(trip);
+    setSaveError(null);
     setIsOpen(true);
   };
 
   const closeModal = () => {
     setIsOpen(false);
     setSelected(null);
+    setSaveError(null);
   };
 
   const closeDetails = () => setSelected(null);
@@ -38,10 +51,12 @@ export default function TripPlanningPage({ initialTripId }) {
   // Create or Update depending on presence of trip.id
   const handleSave = async (trip) => {
     setBusy(true);
+    setSaveError(null);
     try {
       if (trip?.id) {
-        // Update existing trip
-        await updateTrip(trip.id, trip);
+        // Update existing trip - remove id from payload since it's in the URL
+        const { id, ...patch } = trip;
+        await updateTrip(trip.id, patch);
       } else {
         // Create new trip
         await createTrip(trip);
@@ -49,7 +64,8 @@ export default function TripPlanningPage({ initialTripId }) {
       closeModal();
     } catch (err) {
       console.error('Failed to save trip:', err);
-      // Error is handled by context
+      const errorMessage = err?.message || 'Failed to save trip. Please try again.';
+      setSaveError(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -97,7 +113,17 @@ export default function TripPlanningPage({ initialTripId }) {
         )}
 
         {trips.map((trip) => (
-          <div key={trip.id} className="trip-grid__item">
+          <div 
+            key={trip.id} 
+            className="trip-grid__item"
+            data-trip-id={trip.id}
+            style={{
+              border: selected?.id === trip.id ? '2px solid #667eea' : 'none',
+              borderRadius: selected?.id === trip.id ? '12px' : '0',
+              padding: selected?.id === trip.id ? '4px' : '0',
+              transition: 'all 0.3s ease'
+            }}
+          >
             <TripCard trip={trip} onOpen={setSelected} />
             <div className="trip-card__footer">
               <button 
@@ -137,6 +163,9 @@ export default function TripPlanningPage({ initialTripId }) {
                 <button className="tm-btn ghost" onClick={closeDetails}>
                   Close
                 </button>
+                <button className="tm-btn" onClick={() => setShowShare(true)}>
+                  📤 Share
+                </button>
                 <button className="tm-btn primary" onClick={() => setIsOpen(true)}>
                   Edit Trip
                 </button>
@@ -170,11 +199,25 @@ export default function TripPlanningPage({ initialTripId }) {
         </div>
       )}
 
+      {/* SHARE MODAL */}
+      {showShare && selected && (
+        <div className="tm-modal-overlay" role="dialog" aria-modal="true" onClick={() => setShowShare(false)}>
+          <div className="tm-modal tm-modal--opaque trip-share-modal" onClick={(e) => e.stopPropagation()}>
+            <TripShare trip={selected} onClose={() => setShowShare(false)} />
+          </div>
+        </div>
+      )}
+
       {/* CREATE/EDIT FORM MODAL */}
       {isOpen && (
         <div className="tm-modal-overlay" role="dialog" aria-modal="true" onClick={closeModal}>
           <div className="tm-modal tm-modal--opaque trip-modal" onClick={(e) => e.stopPropagation()}>
             <div className="tm-modal-body">
+              {saveError && (
+                <div className="tm-empty" style={{ color: 'red', marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px' }}>
+                  <strong>Error:</strong> {saveError}
+                </div>
+              )}
               <TripForm
                 trip={selected || null} // prefill when editing; null means create
                 onCancel={closeModal}
