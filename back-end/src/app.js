@@ -9,7 +9,7 @@ import mapRouter from './routes/mapRoutes.js';
 import weatherRouter from './routes/weatherRoutes.js';
 
 const app = express();
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'] }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

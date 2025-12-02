@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 function Navigation({ currentPage, onPageChange, onNavigate, user }) {
-  const navigate = onNavigate || onPageChange;
   const [showAccountDropdown, setShowAccountDropdown] = useState(false);
 
   const navItems = [

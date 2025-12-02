@@ -8,6 +8,7 @@ export default function TripPlanningPage({ initialTripId }) {
   const [isOpen, setIsOpen] = useState(false); // controls TripForm modal (create/edit)
   const [selected, setSelected] = useState(null); // holds the trip for view/edit
   const [busy, setBusy] = useState(false);
+  const [saveError, setSaveError] = useState(null);
 
   // Auto-select trip when initialTripId is provided
   useEffect(() => {
@@ -20,17 +21,20 @@ export default function TripPlanningPage({ initialTripId }) {
   }, [initialTripId, trips]);
   const openCreateModal = () => {
     setSelected(null);
+    setSaveError(null);
     setIsOpen(true);
   };
 
   const openEditModal = (trip) => {
     setSelected(trip);
+    setSaveError(null);
     setIsOpen(true);
   };
 
   const closeModal = () => {
     setIsOpen(false);
     setSelected(null);
+    setSaveError(null);
   };
 
   const closeDetails = () => setSelected(null);
@@ -38,10 +42,12 @@ export default function TripPlanningPage({ initialTripId }) {
   // Create or Update depending on presence of trip.id
   const handleSave = async (trip) => {
     setBusy(true);
+    setSaveError(null);
     try {
       if (trip?.id) {
-        // Update existing trip
-        await updateTrip(trip.id, trip);
+        // Update existing trip - remove id from payload since it's in the URL
+        const { id, ...patch } = trip;
+        await updateTrip(trip.id, patch);
       } else {
         // Create new trip
         await createTrip(trip);
@@ -49,7 +55,8 @@ export default function TripPlanningPage({ initialTripId }) {
       closeModal();
     } catch (err) {
       console.error('Failed to save trip:', err);
-      // Error is handled by context
+      const errorMessage = err?.message || 'Failed to save trip. Please try again.';
+      setSaveError(errorMessage);
     } finally {
       setBusy(false);
     }
@@ -175,6 +182,11 @@ export default function TripPlanningPage({ initialTripId }) {
         <div className="tm-modal-overlay" role="dialog" aria-modal="true" onClick={closeModal}>
           <div className="tm-modal tm-modal--opaque trip-modal" onClick={(e) => e.stopPropagation()}>
             <div className="tm-modal-body">
+              {saveError && (
+                <div className="tm-empty" style={{ color: 'red', marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px' }}>
+                  <strong>Error:</strong> {saveError}
+                </div>
+              )}
               <TripForm
                 trip={selected || null} // prefill when editing; null means create
                 onCancel={closeModal}

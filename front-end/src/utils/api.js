@@ -15,7 +15,10 @@ export async function saveTrip(trip) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(trip),
   });
-  if (!r.ok) throw new Error("Failed to save trip");
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to save trip: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
 export async function updateTripById(id, patch) {
@@ -24,7 +27,10 @@ export async function updateTripById(id, patch) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(patch),
   });
-  if (!r.ok) throw new Error("Failed to update trip");
+  if (!r.ok) {
+    const errorData = await r.json().catch(() => ({}));
+    throw new Error(errorData.error || `Failed to update trip: ${r.status} ${r.statusText}`);
+  }
   return r.json();
 }
 export async function deleteTripById(id) {
