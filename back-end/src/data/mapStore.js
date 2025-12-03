@@ -1,120 +1,117 @@
 // back-end/src/data/mapStore.js
-import { promises as fs } from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-
-const MAP_DATA_FILE = process.env.MAP_DATA_FILE; // if falsy => memory-only
-let state = {
-  locations: [] // each: { id, title, lat, lng, note, photos: [base64], tasks: [{ id, text, done }] }
-};
-
-async function load() {
-  if (!MAP_DATA_FILE) return;
-  try {
-    const p = path.resolve(MAP_DATA_FILE);
-    const txt = await fs.readFile(p, 'utf-8');
-    state = JSON.parse(txt || '{"locations": []}');
-  } catch (e) {
-    if (e.code === 'ENOENT') await save();
-    else console.warn('mapStore load error:', e.message);
-  }
-}
-
-async function save(data = state) {
-  if (!MAP_DATA_FILE) return;
-  const p = path.resolve(MAP_DATA_FILE);
-  await fs.mkdir(path.dirname(p), { recursive: true });
-  await fs.writeFile(p, JSON.stringify(data, null, 2));
-}
-
-await load();
+import MapLocation from '../models/MapLocation.js';
 
 // ---- CRUD for locations ----
 export async function listLocations() {
-  return state.locations.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  // newest first, like original createdAt-based sort
+  return MapLocation.find().sort({ createdAt: -1 });
 }
 
 export async function getLocation(id) {
-  return state.locations.find(l => l.id === id) || null;
+  return MapLocation.findById(id);
 }
 
 export async function createLocation(payload) {
-  const loc = {
-    id: payload.id || `loc_${crypto.randomUUID()}`,
-    title: String(payload.title || '').trim() || 'Untitled',
-    lat: Number(payload.lat),
-    lng: Number(payload.lng),
-    note: String(payload.note || ''),
+  // Ensure we only keep the fields we care about
+  const tasks = Array.isArray(payload.tasks)
+    ? payload.tasks.map((t) => ({
+        text: t.text,
+        done: t.done ?? false,
+      }))
+    : [];
+
+  const doc = new MapLocation({
+    title: payload.title,
+    lat: payload.lat,
+    lng: payload.lng,
+    note: payload.note,
     photos: Array.isArray(payload.photos) ? payload.photos : [],
-    tasks: Array.isArray(payload.tasks) ? payload.tasks : [],
-    createdAt: Date.now()
-  };
-  state.locations.unshift(loc);
-  await save();
-  return loc;
+    tasks,
+  });
+
+  return doc.save();
 }
 
 export async function updateLocation(id, patch) {
-  const i = state.locations.findIndex(l => l.id === id);
-  if (i < 0) return null;
-  const current = state.locations[i];
-  state.locations[i] = {
-    ...current,
-    ...(patch.title !== undefined && { title: String(patch.title || '').trim() || 'Untitled' }),
-    ...(patch.lat !== undefined && { lat: Number(patch.lat) }),
-    ...(patch.lng !== undefined && { lng: Number(patch.lng) }),
-    ...(patch.note !== undefined && { note: String(patch.note || '') }),
-    ...(patch.photos !== undefined && { photos: Array.isArray(patch.photos) ? patch.photos : current.photos }),
-  };
-  await save();
-  return state.locations[i];
+  const update = { ...patch };
+
+  if (Array.isArray(patch.tasks)) {
+    update.tasks = patch.tasks.map((t) => ({
+      text: t.text,
+      done: t.done ?? false,
+    }));
+  }
+
+  // runValidators ensures numeric lat/lng etc are valid
+  return MapLocation.findByIdAndUpdate(id, update, {
+    new: true,
+    runValidators: true,
+  });
 }
 
 export async function removeLocation(id) {
-  const before = state.locations.length;
-  state.locations = state.locations.filter(l => l.id !== id);
-  if (state.locations.length !== before) await save();
-  return before !== state.locations.length;
+  const doc = await MapLocation.findByIdAndDelete(id);
+  return !!doc;
 }
 
 // ---- Tasks (nested) ----
 export async function addTask(locationId, text) {
-  const loc = await getLocation(locationId);
+  const loc = await MapLocation.findById(locationId);
   if (!loc) return null;
-  const task = { id: `task_${crypto.randomUUID()}`, text: String(text || '').trim(), done: false };
-  loc.tasks.push(task);
-  await save();
-  return task;
+
+  loc.tasks.push({ text: String(text || '').trim(), done: false });
+  await loc.save();
+
+  const task = loc.tasks[loc.tasks.length - 1];
+  return {
+    id: task._id.toString(),
+    text: task.text,
+    done: task.done,
+  };
 }
 
 export async function updateTask(locationId, taskId, patch) {
-  const loc = await getLocation(locationId);
+  const loc = await MapLocation.findById(locationId);
   if (!loc) return null;
-  const i = loc.tasks.findIndex(t => t.id === taskId);
-  if (i < 0) return null;
-  loc.tasks[i] = {
-    ...loc.tasks[i],
-    ...(patch.text !== undefined && { text: String(patch.text || '').trim() }),
-    ...(patch.done !== undefined && { done: !!patch.done }),
+
+  const task = loc.tasks.id(taskId);
+  if (!task) return null;
+
+  if (patch.text !== undefined) task.text = String(patch.text || '').trim();
+  if (patch.done !== undefined) task.done = !!patch.done;
+
+  await loc.save();
+
+  return {
+    id: task._id.toString(),
+    text: task.text,
+    done: task.done,
   };
-  await save();
-  return loc.tasks[i];
 }
 
 export async function removeTask(locationId, taskId) {
-  const loc = await getLocation(locationId);
+  const loc = await MapLocation.findById(locationId);
   if (!loc) return null;
-  const before = loc.tasks.length;
-  loc.tasks = loc.tasks.filter(t => t.id !== taskId);
-  if (loc.tasks.length !== before) await save();
-  return before !== loc.tasks.length;
+
+  const task = loc.tasks.id(taskId);
+  if (!task) return false;
+
+  task.deleteOne(); // mark subdoc for removal
+  await loc.save();
+  return true;
 }
 
 export async function addPhotos(locationId, base64List) {
-  const loc = await getLocation(locationId);
+  const loc = await MapLocation.findById(locationId);
   if (!loc) return null;
+
   const list = Array.isArray(base64List) ? base64List : [];
-  loc.photos.push(...list.filter(x => typeof x === 'string' && x.startsWith('data:image/')));
-  await save();
+  const validPhotos = list.filter(
+    (x) => typeof x === 'string' && x.startsWith('data:image/')
+  );
+
+  loc.photos.push(...validPhotos);
+  await loc.save();
+
   return loc.photos;
 }
