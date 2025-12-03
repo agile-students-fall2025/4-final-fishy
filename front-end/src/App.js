@@ -111,7 +111,7 @@ function AppContent() {
                 <Route path="/weather" element={<WeatherPage />} />
                 <Route path="/login" element={<LoginPage onLogin={handleLogin} onNavigateRegister={() => setCurrentPage("register")} />} />
                 <Route path="/register" element={<RegistrationPage onRegister={handleLogin} onNavigateLogin={() => setCurrentPage("login")} />} />
-                <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} onClose={() => setCurrentPage("home")} />} />
+                <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} onNavigate={(page) => handleNavigate(page)} />} />
               </Routes>
             </main>
           </div>
