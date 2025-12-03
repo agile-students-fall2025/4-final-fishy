@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 function RegistrationPage({ onRegister, onNavigateLogin }) {
+  const { login } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,7 +16,7 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
       alert('Passwords do not match');
       return;
     }
-
+    setLoading(true);
     try {
       const res = await fetch('http://localhost:4000/api/users/register', {
         method: 'POST',
@@ -32,12 +35,11 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
         return;
       }
 
-      // Registration successful
-      onRegister?.(data.user);
-      alert('Account created successfully!');
+      login(data.user, data.token);
     } catch (err) {
       console.error(err);
-      alert('Network error');
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -43,3 +43,14 @@ export async function validateUser(email, password) {
         email: user.email
     };
 }
+
+export async function validateUserById(id) {
+  const user = await User.findById(id);
+  if (!user) return null;
+
+  return {
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email
+  };
+}

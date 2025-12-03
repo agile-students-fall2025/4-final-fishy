@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
-function ProfilePage({ user, onClose, onLogout }) {
+function ProfilePage({ onClose }) {
+  const { user, logout } = useContext(AuthContext);
+  if (!user) return null;
   return (
     <div className="profile-page">
       <div className="profile-card">
-        <button className="close-btn" onClick={onClose}>×</button>
         <h2>{user.username}'s Profile</h2>
         <p>Email: {user.email}</p>
-        <button className="btn logout-btn" onClick={onLogout}>Logout</button>
+        <button className="btn logout-btn" onClick={logout}>Logout</button>
       </div>
     </div>
   );

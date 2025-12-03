@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter, Routes, Route, useParams, useNavigate, useLocation } from "react-router-dom";
 import "./App.css";
 import Navigation from "./components/Navigation";
@@ -15,25 +15,27 @@ import ProfilePage from "./pages/ProfilePage";
 import { BudgetProvider } from "./context/BudgetContext";
 import { TripsProvider } from "./context/TripContext";
 import { RemindersProvider } from "./context/RemindersContext";
+import { AuthProvider, AuthContext } from './context/AuthContext';
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
   const [pageParams, setPageParams] = useState({});
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const handleLogin = (userData) => {
-    setUser(userData);
-    setCurrentPage("profile");
-    navigate('/profile');
-  };
+  const { user, login, logout } = useContext(AuthContext);
+  // const handleLogin = (userData) => {
+  //   setUser(userData);
+  //   setCurrentPage("profile");
+  //   navigate('/profile');
+  // };
 
-  const handleLogout = () => {
-    setUser(null);
-    setCurrentPage("home");
-    navigate('/');
-  };
+  // const handleLogout = () => {
+  //   setUser(null);
+  //   setCurrentPage("home");
+  //   navigate('/');
+  // };
 
   const handleNavigate = (page, params = {}) => {
     setCurrentPage(page);
@@ -109,9 +111,9 @@ function AppContent() {
                 <Route path="/map" element={<MapPage />} />
                 <Route path="/budget" element={<BudgetPage />} />
                 <Route path="/weather" element={<WeatherPage />} />
-                <Route path="/login" element={<LoginPage onLogin={handleLogin} onNavigateRegister={() => setCurrentPage("register")} />} />
-                <Route path="/register" element={<RegistrationPage onRegister={handleLogin} onNavigateLogin={() => setCurrentPage("login")} />} />
-                <Route path="/profile" element={<ProfilePage user={user} onLogout={handleLogout} onClose={() => setCurrentPage("home")} />} />
+                <Route path="/login" element={<LoginPage onNavigateRegister={() => setCurrentPage("register")} />} />
+                <Route path="/register" element={<RegistrationPage onNavigateLogin={() => setCurrentPage("login")} />} />
+                <Route path="/profile" element={<ProfilePage user={user} onClose={() => setCurrentPage("home")} />} />
               </Routes>
             </main>
           </div>
@@ -129,7 +131,9 @@ function ShareTripPageWrapper() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

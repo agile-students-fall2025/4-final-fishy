@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 function LoginPage({ onLogin, onNavigateRegister }) {
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,11 +25,7 @@ function LoginPage({ onLogin, onNavigateRegister }) {
         return;
       }
 
-      // Save user and token in parent state
-      onLogin?.({ user: data.user, token: data.token });
-
-      // No alert here
-      // You can redirect or update UI instead
+      login(data.user, data.token);
     } catch (err) {
       console.error(err);
       alert('Network error');
