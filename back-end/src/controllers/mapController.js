@@ -1,108 +1,115 @@
 // back-end/src/controllers/mapController.js
-import Joi from 'joi';
+import Joi from "joi";
 import {
-  listLocations, getLocation, createLocation, updateLocation, removeLocation,
-  addTask, updateTask, removeTask, addPhotos
-} from '../data/mapStore.js';
+  listLocations,
+  getLocation,
+  createLocation,
+  updateLocation,
+  removeLocation,
+  addPhotos
+} from "../data/mapStore.js";
 
-const locSchema = Joi.object({
-  title: Joi.string().allow('', null),
+// ----------------------------------------------------------------------
+// Validation
+// ----------------------------------------------------------------------
+
+const locCreateSchema = Joi.object({
+  title: Joi.string().allow("", null),
   lat: Joi.number().required(),
   lng: Joi.number().required(),
-  note: Joi.string().allow('', null),
+  note: Joi.string().allow("", null),
   photos: Joi.array().items(Joi.string()).default([]),
-  tasks: Joi.array().items(
-    Joi.object({
-      id: Joi.string().optional(),
-      text: Joi.string().required(),
-      done: Joi.boolean().default(false),
-    })
-  ).default([]),
-});
+}).unknown(true);
 
-const locPatch = locSchema.fork(['lat', 'lng'], (s) => s.optional());
+const locUpdateSchema = Joi.object({
+  title: Joi.string().allow("", null),
+  lat: Joi.number().optional(),
+  lng: Joi.number().optional(),
+  note: Joi.string().allow("", null),
+  photos: Joi.array().items(Joi.string()).optional(),
+}).unknown(true);
 
-const taskSchema = Joi.object({
-  text: Joi.string().min(1).max(300).required(),
-});
+// ----------------------------------------------------------------------
+// ROUTES
+// ----------------------------------------------------------------------
 
-const taskPatch = Joi.object({
-  text: Joi.string().min(1).max(300).optional(),
-  done: Joi.boolean().optional(),
-});
-
-const photosSchema = Joi.object({
-  photos: Joi.array().items(Joi.string().pattern(/^data:image\/[a-zA-Z]+;base64,/)).min(1).required(),
-});
-
-export async function listAll(_req, res) {
+export async function listAll(req, res) {
   try {
-    const rows = await listLocations();
-    res.json(rows);
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to list locations', details: e.message });
+    const docs = await listLocations();
+    return res.json(docs);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to list locations" });
   }
 }
 
 export async function getOne(req, res) {
-  const doc = await getLocation(req.params.id);
-  if (!doc) return res.status(404).json({ error: 'Location not found' });
-  res.json(doc);
+  try {
+    const doc = await getLocation(req.params.id);
+    if (!doc) return res.status(404).json({ error: "Location not found" });
+    return res.json(doc);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to fetch location" });
+  }
 }
 
 export async function createOne(req, res) {
-  const { value, error } = locSchema.validate(req.body || {}, { stripUnknown: true });
-  if (error) return res.status(400).json({ error: error.message });
   try {
+    const { value, error } = locCreateSchema.validate(req.body || {}, {
+      abortEarly: false
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
     const doc = await createLocation(value);
-    res.status(201).json(doc);
-  } catch (e) {
-    res.status(500).json({ error: 'Failed to create location', details: e.message });
+    return res.status(201).json(doc);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to create location" });
   }
 }
 
 export async function updateOne(req, res) {
-  const { value, error } = locPatch.validate(req.body || {}, { stripUnknown: true });
-  if (error) return res.status(400).json({ error: error.message });
-  const doc = await updateLocation(req.params.id, value);
-  if (!doc) return res.status(404).json({ error: 'Location not found' });
-  res.json(doc);
+  try {
+    const { value, error } = locUpdateSchema.validate(req.body || {}, {
+      abortEarly: false
+    });
+
+    if (error) return res.status(400).json({ error: error.message });
+
+    const doc = await updateLocation(req.params.id, value);
+    if (!doc) return res.status(404).json({ error: "Location not found" });
+
+    return res.json(doc);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to update location" });
+  }
 }
 
 export async function removeOne(req, res) {
-  const ok = await removeLocation(req.params.id);
-  if (!ok) return res.status(404).json({ error: 'Location not found' });
-  res.json({ ok: true });
+  try {
+    const ok = await removeLocation(req.params.id);
+    if (!ok) return res.status(404).json({ error: "Location not found" });
+
+    return res.json({ message: "Location deleted" });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to delete location" });
+  }
 }
 
-// ---- tasks ----
-export async function createTask(req, res) {
-  const { value, error } = taskSchema.validate(req.body || {}, { stripUnknown: true });
-  if (error) return res.status(400).json({ error: error.message });
-  const task = await addTask(req.params.id, value.text);
-  if (!task) return res.status(404).json({ error: 'Location not found' });
-  res.status(201).json(task);
-}
+// ----------------------------------------------------------------------
+// PHOTOS ONLY
+// ----------------------------------------------------------------------
 
-export async function updateTaskOne(req, res) {
-  const { value, error } = taskPatch.validate(req.body || {}, { stripUnknown: true });
-  if (error) return res.status(400).json({ error: error.message });
-  const t = await updateTask(req.params.id, req.params.taskId, value);
-  if (!t) return res.status(404).json({ error: 'Task or location not found' });
-  res.json(t);
-}
-
-export async function removeTaskOne(req, res) {
-  const ok = await removeTask(req.params.id, req.params.taskId);
-  if (!ok) return res.status(404).json({ error: 'Task or location not found' });
-  res.json({ ok: true });
-}
-
-// ---- photos ----
 export async function addPhotosOne(req, res) {
-  const { value, error } = photosSchema.validate(req.body || {}, { stripUnknown: true });
-  if (error) return res.status(400).json({ error: error.message });
-  const photos = await addPhotos(req.params.id, value.photos);
-  if (!photos) return res.status(404).json({ error: 'Location not found' });
-  res.json({ photos });
+  try {
+    const { photos } = req.body;
+    if (!Array.isArray(photos))
+      return res.status(400).json({ error: "Photos must be array" });
+
+    const out = await addPhotos(req.params.id, photos);
+    if (!out) return res.status(404).json({ error: "Location not found" });
+
+    return res.json({ photos: out });
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to add photos" });
+  }
 }
