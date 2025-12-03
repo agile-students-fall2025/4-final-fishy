@@ -1,9 +1,11 @@
 // back-end/src/data/mapStore.js
-import MapLocation from '../models/MapLocation.js';
+import MapLocation from "../models/MapLocation.js";
 
-// ---- CRUD for locations ----
+// ------------------------------------------------------------
+// READ
+// ------------------------------------------------------------
+
 export async function listLocations() {
-  // newest first, like original createdAt-based sort
   return MapLocation.find().sort({ createdAt: -1 });
 }
 
@@ -11,106 +13,61 @@ export async function getLocation(id) {
   return MapLocation.findById(id);
 }
 
-export async function createLocation(payload) {
-  // Ensure we only keep the fields we care about
-  const tasks = Array.isArray(payload.tasks)
-    ? payload.tasks.map((t) => ({
-        text: t.text,
-        done: t.done ?? false,
-      }))
-    : [];
+// ------------------------------------------------------------
+// CREATE
+// ------------------------------------------------------------
 
-  const doc = new MapLocation({
+export async function createLocation(payload) {
+  const data = {
     title: payload.title,
     lat: payload.lat,
     lng: payload.lng,
-    note: payload.note,
-    photos: Array.isArray(payload.photos) ? payload.photos : [],
-    tasks,
-  });
+    note: payload.note || "",
+    photos: payload.photos || [],
+  };
 
+  const doc = new MapLocation(data);
   return doc.save();
 }
 
+// ------------------------------------------------------------
+// UPDATE
+// ------------------------------------------------------------
+
 export async function updateLocation(id, patch) {
-  const update = { ...patch };
+  const update = {};
 
-  if (Array.isArray(patch.tasks)) {
-    update.tasks = patch.tasks.map((t) => ({
-      text: t.text,
-      done: t.done ?? false,
-    }));
-  }
+  if (patch.title !== undefined) update.title = patch.title;
+  if (patch.lat !== undefined) update.lat = patch.lat;
+  if (patch.lng !== undefined) update.lng = patch.lng;
+  if (patch.note !== undefined) update.note = patch.note;
+  if (patch.photos !== undefined) update.photos = patch.photos;
 
-  // runValidators ensures numeric lat/lng etc are valid
   return MapLocation.findByIdAndUpdate(id, update, {
     new: true,
     runValidators: true,
   });
 }
 
+// ------------------------------------------------------------
+// DELETE
+// ------------------------------------------------------------
+
 export async function removeLocation(id) {
   const doc = await MapLocation.findByIdAndDelete(id);
   return !!doc;
 }
 
-// ---- Tasks (nested) ----
-export async function addTask(locationId, text) {
+// ------------------------------------------------------------
+// PHOTOS ONLY
+// ------------------------------------------------------------
+
+export async function addPhotos(locationId, photos) {
   const loc = await MapLocation.findById(locationId);
   if (!loc) return null;
 
-  loc.tasks.push({ text: String(text || '').trim(), done: false });
-  await loc.save();
-
-  const task = loc.tasks[loc.tasks.length - 1];
-  return {
-    id: task._id.toString(),
-    text: task.text,
-    done: task.done,
-  };
-}
-
-export async function updateTask(locationId, taskId, patch) {
-  const loc = await MapLocation.findById(locationId);
-  if (!loc) return null;
-
-  const task = loc.tasks.id(taskId);
-  if (!task) return null;
-
-  if (patch.text !== undefined) task.text = String(patch.text || '').trim();
-  if (patch.done !== undefined) task.done = !!patch.done;
-
-  await loc.save();
-
-  return {
-    id: task._id.toString(),
-    text: task.text,
-    done: task.done,
-  };
-}
-
-export async function removeTask(locationId, taskId) {
-  const loc = await MapLocation.findById(locationId);
-  if (!loc) return null;
-
-  const task = loc.tasks.id(taskId);
-  if (!task) return false;
-
-  task.deleteOne(); // mark subdoc for removal
-  await loc.save();
-  return true;
-}
-
-export async function addPhotos(locationId, base64List) {
-  const loc = await MapLocation.findById(locationId);
-  if (!loc) return null;
-
-  const list = Array.isArray(base64List) ? base64List : [];
-  const validPhotos = list.filter(
-    (x) => typeof x === 'string' && x.startsWith('data:image/')
-  );
-
-  loc.photos.push(...validPhotos);
+  const valid = photos.filter((x) => typeof x === "string");
+  loc.photos.push(...valid);
   await loc.save();
 
   return loc.photos;

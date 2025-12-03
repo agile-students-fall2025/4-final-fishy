@@ -1,5 +1,4 @@
 // File: src/pages/MapPage.js
-// Feature: Travel Map connected to backend (GET, POST, PUT, DELETE)
 
 import React, { useState, useEffect, useCallback } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
@@ -10,7 +9,6 @@ import {
   fetchLocations,
   createLocation,
   deleteLocation,
-  addTask,
   addPhotos,
   updateLocation,
 } from "../utils/mapApi";
@@ -21,14 +19,13 @@ const containerStyle = {
   borderRadius: "15px",
 };
 
-const defaultCenter = { lat: 25.276987, lng: 55.296249 }; // Dubai fallback
+const defaultCenter = { lat: 25.276987, lng: 55.296249 };
 
 function MapPage() {
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [markers, setMarkers] = useState([]);
   const [newDestination, setNewDestination] = useState("");
   const [destinations, setDestinations] = useState([]);
-  const [tasks, setTasks] = useState({});
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [tempNote, setTempNote] = useState("");
 
@@ -37,23 +34,17 @@ function MapPage() {
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
   });
 
-  // Load from backend
+  // Load data
   useEffect(() => {
     fetchLocations()
       .then((data) => {
         setDestinations(data);
-        // Create marker objects for map display
-        const loadedMarkers = data.map((loc) => ({
-          id: loc.id,
-          lat: loc.lat,
-          lng: loc.lng,
-        }));
-        setMarkers(loadedMarkers);
+        setMarkers(data.map((loc) => ({ id: loc.id, lat: loc.lat, lng: loc.lng })));
       })
-      .catch((err) => console.error("Error fetching destinations:", err));
+      .catch((err) => console.error("Error loading destinations:", err));
   }, []);
 
-  // Get user location (for centering the map)
+  // Get user location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -62,12 +53,12 @@ function MapPage() {
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           }),
-        () => console.warn("Geolocation permission denied.")
+        () => console.warn("Geolocation denied")
       );
     }
   }, []);
 
-  // Add new destination (POST to backend)
+  // Add destination manually
   const handleAddDestination = async () => {
     if (!newDestination.trim()) return;
     try {
@@ -77,17 +68,14 @@ function MapPage() {
         lng: mapCenter.lng,
       });
       setDestinations((prev) => [...prev, newDest]);
-      setMarkers((prev) => [
-        ...prev,
-        { id: newDest.id, lat: newDest.lat, lng: newDest.lng },
-      ]);
+      setMarkers((prev) => [...prev, { id: newDest.id, lat: newDest.lat, lng: newDest.lng }]);
       setNewDestination("");
     } catch (err) {
-      console.error("Add destination failed:", err);
+      console.error("Failed:", err);
     }
   };
 
-  // Add marker manually by clicking on map
+  // Add destination by clicking map
   const handleMapClick = useCallback(async (event) => {
     try {
       const lat = event.latLng.lat();
@@ -100,45 +88,17 @@ function MapPage() {
       setDestinations((prev) => [...prev, newDest]);
       setMarkers((prev) => [...prev, { id: newDest.id, lat, lng }]);
     } catch (err) {
-      console.error("Map click add failed:", err);
+      console.error("Failed:", err);
     }
   }, []);
 
-  // Add task (POST)
-  const handleAddTask = async (destId, newTask) => {
-    if (!newTask.trim()) return;
-    try {
-      const added = await addTask(destId, newTask.trim());
-      setTasks((prev) => ({
-        ...prev,
-        [destId]: [...(prev[destId] || []), added.text],
-      }));
-    } catch (err) {
-      console.error("Task add failed:", err);
-    }
-  };
-
-  // Upload photos (POST)
+  // Upload photos
   const handlePhotoUpload = (destId, files) => {
     const readerPromises = Array.from(files).map(
       (file) =>
         new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = new Image();
-            img.src = e.target.result;
-            img.onload = () => {
-              const canvas = document.createElement("canvas");
-              const MAX_WIDTH = 300;
-              const scaleSize = MAX_WIDTH / img.width;
-              canvas.width = MAX_WIDTH;
-              canvas.height = img.height * scaleSize;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              const compressed = canvas.toDataURL("image/jpeg", 0.7);
-              resolve(compressed);
-            };
-          };
+          reader.onload = (e) => resolve(e.target.result);
           reader.readAsDataURL(file);
         })
     );
@@ -147,10 +107,8 @@ function MapPage() {
       try {
         await addPhotos(destId, base64Photos);
         setDestinations((prev) =>
-          prev.map((dest) =>
-            dest.id === destId
-              ? { ...dest, photos: [...(dest.photos || []), ...base64Photos] }
-              : dest
+          prev.map((d) =>
+            d.id === destId ? { ...d, photos: [...(d.photos || []), ...base64Photos] } : d
           )
         );
       } catch (err) {
@@ -159,21 +117,17 @@ function MapPage() {
     });
   };
 
-  // Add/Edit Note (PUT)
+  // Note editing
   const handleAddNote = (destId) => {
     setEditingNoteId(destId);
-    const currentNote =
-      destinations.find((dest) => dest.id === destId)?.note || "";
-    setTempNote(currentNote);
+    setTempNote(destinations.find((d) => d.id === destId)?.note || "");
   };
 
   const handleSaveNote = async (destId) => {
     try {
       await updateLocation(destId, { note: tempNote });
       setDestinations((prev) =>
-        prev.map((dest) =>
-          dest.id === destId ? { ...dest, note: tempNote } : dest
-        )
+        prev.map((d) => (d.id === destId ? { ...d, note: tempNote } : d))
       );
       setEditingNoteId(null);
       setTempNote("");
@@ -182,26 +136,21 @@ function MapPage() {
     }
   };
 
-  // Delete destination (DELETE)
+  // Delete destination
   const handleDeleteDestination = async (destId) => {
     try {
       await deleteLocation(destId);
       setDestinations((prev) => prev.filter((d) => d.id !== destId));
       setMarkers((prev) => prev.filter((m) => m.id !== destId));
     } catch (err) {
-      console.error("Delete destination failed:", err);
+      console.error("Delete failed:", err);
     }
   };
 
   return (
     <div className="map-page">
-      <div className="welcome-section">
-        <h2>Travel Memories Map</h2>
-        <p>
-          Add destinations, upload photos, and write or edit notes to remember
-          your adventures! (Data now saves on the server 🎯)
-        </p>
-      </div>
+      <h2>Travel Memories Map</h2>
+      <p>Add destinations, upload photos, and write notes!</p>
 
       {/* Add Destination */}
       <div className="add-destination">
@@ -226,14 +175,9 @@ function MapPage() {
             zoom={12}
             onClick={handleMapClick}
           >
-            <Marker
-              position={mapCenter}
-              icon={{
-                url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              }}
-            />
-            {markers.map((marker) => (
-              <Marker key={marker.id} position={marker} />
+            <Marker position={mapCenter} />
+            {markers.map((m) => (
+              <Marker key={m.id} position={m} />
             ))}
           </GoogleMap>
         ) : (
@@ -243,121 +187,55 @@ function MapPage() {
 
       {/* Destination List */}
       <div className="destination-list">
-        {destinations.length === 0 && (
-          <p className="no-data">No destinations yet. Add one above.</p>
-        )}
         {destinations.map((dest) => (
           <div key={dest.id} className="destination-card">
             <div className="destination-header">
-              <h3>{dest.title || dest.name}</h3>
-              <button
-                className="add-destination-btn"
-                onClick={() => handleDeleteDestination(dest.id)}
-              >
+              <h3>{dest.title}</h3>
+              <button onClick={() => handleDeleteDestination(dest.id)} className="add-destination-btn">
                 Delete
               </button>
             </div>
 
             {/* Photo Upload */}
-            <div className="upload-section">
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => handlePhotoUpload(dest.id, e.target.files)}
-              />
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => handlePhotoUpload(dest.id, e.target.files)}
+            />
 
-            {/* Show uploaded photos */}
-            {dest.photos && dest.photos.length > 0 && (
+            {/* Photo Gallery */}
+            {dest.photos?.length > 0 && (
               <div className="photo-gallery">
-                {dest.photos.map((photo, i) => (
-                  <img
-                    key={i}
-                    src={photo}
-                    alt="memory"
-                    className="memory-photo"
-                  />
+                {dest.photos.map((p, i) => (
+                  <img key={i} src={p} alt="" className="memory-photo" />
                 ))}
               </div>
             )}
 
-            {/* Notes Add/Edit */}
-            <div className="note-section">
-              {editingNoteId === dest.id ? (
-                <>
-                  <textarea
-                    className="note-input"
-                    placeholder="Write your travel note..."
-                    value={tempNote}
-                    onChange={(e) => setTempNote(e.target.value)}
-                  />
-                  <button
-                    className="add-destination-btn"
-                    onClick={() => handleSaveNote(dest.id)}
-                  >
-                    Save
-                  </button>
-                </>
-              ) : (
-                <>
-                  {dest.note ? (
-                    <>
-                      <p className="note-text">{dest.note}</p>
-                      <button
-                        className="add-destination-btn"
-                        onClick={() => handleAddNote(dest.id)}
-                      >
-                        Edit Note
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      className="add-destination-btn"
-                      onClick={() => handleAddNote(dest.id)}
-                    >
-                      Add Note
-                    </button>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Task Section */}
-            <ul className="task-list">
-              {(tasks[dest.id] || []).map((task, i) => (
-                <li key={i}>• {task}</li>
-              ))}
-            </ul>
-            <TaskInput destId={dest.id} onAddTask={handleAddTask} />
+            {/* Notes */}
+            {editingNoteId === dest.id ? (
+              <>
+                <textarea
+                  className="note-input"
+                  value={tempNote}
+                  onChange={(e) => setTempNote(e.target.value)}
+                />
+                <button onClick={() => handleSaveNote(dest.id)} className="add-destination-btn">
+                  Save
+                </button>
+              </>
+            ) : (
+              <>
+                {dest.note && <p className="note-text">{dest.note}</p>}
+                <button onClick={() => handleAddNote(dest.id)} className="add-destination-btn">
+                  {dest.note ? "Edit Note" : "Add Note"}
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-// Add Task Subcomponent
-function TaskInput({ destId, onAddTask }) {
-  const [newTask, setNewTask] = useState("");
-
-  const handleAdd = () => {
-    onAddTask(destId, newTask);
-    setNewTask("");
-  };
-
-  return (
-    <div className="add-task-section">
-      <input
-        type="text"
-        placeholder="Add a Memory..."
-        value={newTask}
-        onChange={(e) => setNewTask(e.target.value)}
-        className="destination-input"
-      />
-      <button onClick={handleAdd} className="add-destination-btn">
-        Add Memory
-      </button>
     </div>
   );
 }

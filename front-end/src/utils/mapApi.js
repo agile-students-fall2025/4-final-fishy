@@ -33,29 +33,11 @@ export async function deleteLocation(id) {
   return r.json();
 }
 
-export async function addTask(locationId, text) {
-  const r = await fetch(`${MAP}/locations/${locationId}/tasks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
-  });
-  if (!r.ok) throw new Error("Failed to add task");
-  return r.json();
-}
-
-export async function deleteTask(locationId, taskId) {
-  const r = await fetch(`${MAP}/locations/${locationId}/tasks/${taskId}`, {
-    method: "DELETE",
-  });
-  if (!r.ok) throw new Error("Failed to delete task");
-  return r.json();
-}
-
 export async function addPhotos(locationId, photos) {
   const r = await fetch(`${MAP}/locations/${locationId}/photos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ photos }), // photos = ["data:image/jpeg;base64,..."]
+    body: JSON.stringify({ photos }),
   });
   if (!r.ok) throw new Error("Failed to upload photos");
   return r.json();

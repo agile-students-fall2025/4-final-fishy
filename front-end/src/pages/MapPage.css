@@ -109,7 +109,7 @@
   border: 1px solid rgba(255,255,255,0.3);
 }
 
-/* Notes + tasks */
+/* Notes */
 .note-input {
   width: 100%;
   min-height: 70px;
@@ -123,25 +123,4 @@
 .note-text {
   font-size: 1rem;
   margin: .5rem 0;
-}
-.task-list {
-  list-style: none;
-  padding-left: 1rem;
-  margin-top: .5rem;
-  font-size: 0.95rem;
-}
-.add-task-section {
-  display: flex;
-  gap: 0.4rem;
-  margin-top: .5rem;
-}
-
-/* Inputs inside cards */
-.add-task-section input {
-  flex: 1;
-  padding: 0.6rem 0.8rem;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
 }
