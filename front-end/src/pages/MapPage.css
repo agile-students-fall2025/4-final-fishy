@@ -1,4 +1,4 @@
-/* ==== Travel Map Page Styling ==== */
+/* Travel Map Page Styling */
 .map-page {
   color: #fff;
   padding: 2rem;
@@ -15,7 +15,7 @@
   opacity: 0.9;
 }
 
-/* Map container */
+/* Map container*/
 .map-container {
   width: 100%;
   max-width: 1000px;
