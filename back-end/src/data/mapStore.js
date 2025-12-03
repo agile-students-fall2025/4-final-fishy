@@ -1,9 +1,7 @@
 // back-end/src/data/mapStore.js
 import MapLocation from "../models/MapLocation.js";
 
-// ------------------------------------------------------------
-// READ
-// ------------------------------------------------------------
+// read
 
 export async function listLocations() {
   return MapLocation.find().sort({ createdAt: -1 });
@@ -13,9 +11,7 @@ export async function getLocation(id) {
   return MapLocation.findById(id);
 }
 
-// ------------------------------------------------------------
-// CREATE
-// ------------------------------------------------------------
+// create
 
 export async function createLocation(payload) {
   const data = {
@@ -30,9 +26,7 @@ export async function createLocation(payload) {
   return doc.save();
 }
 
-// ------------------------------------------------------------
-// UPDATE
-// ------------------------------------------------------------
+// update
 
 export async function updateLocation(id, patch) {
   const update = {};
@@ -49,18 +43,14 @@ export async function updateLocation(id, patch) {
   });
 }
 
-// ------------------------------------------------------------
-// DELETE
-// ------------------------------------------------------------
+// delete
 
 export async function removeLocation(id) {
   const doc = await MapLocation.findByIdAndDelete(id);
   return !!doc;
 }
 
-// ------------------------------------------------------------
-// PHOTOS ONLY
-// ------------------------------------------------------------
+// photoes
 
 export async function addPhotos(locationId, photos) {
   const loc = await MapLocation.findById(locationId);

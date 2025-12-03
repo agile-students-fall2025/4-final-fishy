@@ -9,9 +9,7 @@ import {
   addPhotos
 } from "../data/mapStore.js";
 
-// ----------------------------------------------------------------------
-// Validation
-// ----------------------------------------------------------------------
+//validation
 
 const locCreateSchema = Joi.object({
   title: Joi.string().allow("", null),
@@ -29,9 +27,7 @@ const locUpdateSchema = Joi.object({
   photos: Joi.array().items(Joi.string()).optional(),
 }).unknown(true);
 
-// ----------------------------------------------------------------------
-// ROUTES
-// ----------------------------------------------------------------------
+//routes
 
 export async function listAll(req, res) {
   try {
@@ -95,9 +91,7 @@ export async function removeOne(req, res) {
   }
 }
 
-// ----------------------------------------------------------------------
-// PHOTOS ONLY
-// ----------------------------------------------------------------------
+//photoes
 
 export async function addPhotosOne(req, res) {
   try {
