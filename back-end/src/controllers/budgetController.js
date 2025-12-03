@@ -17,20 +17,13 @@ const budgetUpdateSchema = Joi.object({
   endDate: Joi.string().allow(null, '')
 }).min(1);
 
+
 const expenseCreateSchema = Joi.object({
-  amount: Joi.number().min(0).required(),
-  currency: Joi.string().trim().optional(),
-  category: Joi.string().trim().optional(),
-  date: Joi.string().optional(),
-  note: Joi.string().allow('', null).optional()
+  amount: Joi.number().min(0).required()
 });
 
 const expenseUpdateSchema = Joi.object({
-  amount: Joi.number().min(0),
-  currency: Joi.string().trim(),
-  category: Joi.string().trim(),
-  date: Joi.string(),
-  note: Joi.string().allow('', null)
+  amount: Joi.number().min(0)
 }).min(1);
 
 export const getAll = async (_req, res) => {
@@ -38,6 +31,7 @@ export const getAll = async (_req, res) => {
     const budgets = await Budget.find().sort({ createdAt: -1 });
     res.json(budgets);
   } catch (err) {
+    console.error('getAll error:', err);
     res.status(500).json({ error: 'Failed to load budgets' });
   }
 };
@@ -48,29 +42,45 @@ export const getOne = async (req, res) => {
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
     res.json(budget);
   } catch (err) {
+    console.error('getOne error:', err);
     res.status(500).json({ error: 'Failed to load budget' });
   }
 };
 
 export const create = async (req, res) => {
   try {
-    const { error, value } = budgetCreateSchema.validate(req.body || {}, { stripUnknown: true });
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { error, value } = budgetCreateSchema.validate(req.body || {}, {
+      stripUnknown: true
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
     const budget = await Budget.create(value);
     res.status(201).json(budget);
   } catch (err) {
+    console.error('create budget error:', err);
     res.status(500).json({ error: 'Failed to create budget' });
   }
 };
 
 export const patch = async (req, res) => {
   try {
-    const { error, value } = budgetUpdateSchema.validate(req.body || {}, { stripUnknown: true });
-    if (error) return res.status(400).json({ error: error.details[0].message });
-    const budget = await Budget.findByIdAndUpdate(req.params.id, value, { new: true, runValidators: true });
+    const { error, value } = budgetUpdateSchema.validate(req.body || {}, {
+      stripUnknown: true
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    const budget = await Budget.findByIdAndUpdate(req.params.id, value, {
+      new: true,
+      runValidators: true
+    });
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
     res.json(budget);
   } catch (err) {
+    console.error('patch budget error:', err);
     res.status(500).json({ error: 'Failed to update budget' });
   }
 };
@@ -81,48 +91,73 @@ export const destroy = async (req, res) => {
     if (!deleted) return res.status(404).json({ error: 'Budget not found' });
     res.status(204).end();
   } catch (err) {
+    console.error('destroy budget error:', err);
     res.status(500).json({ error: 'Failed to delete budget' });
   }
 };
 
 export const addExp = async (req, res) => {
   try {
-    const { error, value } = expenseCreateSchema.validate(req.body || {}, { stripUnknown: true });
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    // Only validate `amount` strictly
+    const { error } = expenseCreateSchema.validate({
+      amount: req.body?.amount
+    });
+
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
     const budget = await Budget.findById(req.params.id);
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
+
+    const value = req.body || {};
+
     const expensePayload = {
-      amount: value.amount,
+      amount: Number(value.amount),
       currency: value.currency || budget.currency || 'USD',
       category: value.category || 'Other',
       date: value.date || new Date().toISOString().slice(0, 10),
       note: value.note || ''
     };
+
     budget.expenses.push(expensePayload);
     await budget.save();
+
     const created = budget.expenses[budget.expenses.length - 1];
     res.status(201).json(created);
   } catch (err) {
+    console.error('addExp error:', err);
     res.status(500).json({ error: 'Failed to add expense' });
   }
 };
 
 export const patchExp = async (req, res) => {
   try {
-    const { error, value } = expenseUpdateSchema.validate(req.body || {}, { stripUnknown: true });
-    if (error) return res.status(400).json({ error: error.details[0].message });
+    const { error } = expenseUpdateSchema.validate(req.body || {}, {
+      stripUnknown: true
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
     const budget = await Budget.findById(req.params.id);
     if (!budget) return res.status(404).json({ error: 'Budget or expense not found' });
+
     const expense = budget.expenses.id(req.params.expenseId);
     if (!expense) return res.status(404).json({ error: 'Budget or expense not found' });
-    if (value.amount !== undefined) expense.amount = value.amount;
+
+    const value = req.body || {};
+
+    if (value.amount !== undefined) expense.amount = Number(value.amount);
     if (value.currency !== undefined) expense.currency = value.currency;
     if (value.category !== undefined) expense.category = value.category;
     if (value.date !== undefined) expense.date = value.date;
     if (value.note !== undefined) expense.note = value.note;
+
     await budget.save();
     res.json(expense);
   } catch (err) {
+    console.error('patchExp error:', err);
     res.status(500).json({ error: 'Failed to update expense' });
   }
 };
@@ -131,12 +166,15 @@ export const destroyExp = async (req, res) => {
   try {
     const budget = await Budget.findById(req.params.id);
     if (!budget) return res.status(404).json({ error: 'Budget or expense not found' });
+
     const expense = budget.expenses.id(req.params.expenseId);
     if (!expense) return res.status(404).json({ error: 'Budget or expense not found' });
+
     expense.deleteOne();
     await budget.save();
     res.status(204).end();
   } catch (err) {
+    console.error('destroyExp error:', err);
     res.status(500).json({ error: 'Failed to delete expense' });
   }
 };
