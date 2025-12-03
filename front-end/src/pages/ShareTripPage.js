@@ -1,24 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { useTrips } from '../context/TripContext';
 import { generateTripPDF } from '../utils/pdfGenerator';
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 export default function ShareTripPage({ tripId }) {
-  const { trips, loading } = useTrips();
   const [trip, setTrip] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (tripId && trips.length > 0) {
-      const foundTrip = trips.find(t => t.id === tripId);
-      if (foundTrip) {
-        setTrip(foundTrip);
-      } else {
+    const fetchTrip = async () => {
+      if (!tripId) {
         setNotFound(true);
+        setLoading(false);
+        return;
       }
-    } else if (tripId && !loading && trips.length === 0) {
-      setNotFound(true);
-    }
-  }, [tripId, trips, loading]);
+
+      try {
+        setLoading(true);
+        const r = await fetch(`${API}/api/trips/public/${tripId}`);
+        if (!r.ok) {
+          if (r.status === 404) {
+            setNotFound(true);
+          } else {
+            throw new Error('Failed to load trip');
+          }
+        } else {
+          const data = await r.json();
+          setTrip(data);
+        }
+      } catch (err) {
+        console.error('Error fetching shared trip:', err);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrip();
+  }, [tripId]);
 
   if (loading) {
     return (

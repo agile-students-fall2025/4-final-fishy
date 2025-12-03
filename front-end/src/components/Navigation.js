@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-function Navigation({ currentPage, onPageChange, onNavigate, user }) {
+function Navigation({ currentPage, onPageChange, onNavigate }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const handleNavClick = (pageId) => {
     if (onNavigate) {

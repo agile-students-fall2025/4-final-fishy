@@ -32,8 +32,8 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
         return;
       }
 
-      // Registration successful
-      onRegister?.(data.user);
+      // Registration successful - pass both user and token
+      onRegister?.({ user: data.user, token: data.token });
       alert('Account created successfully!');
     } catch (err) {
       console.error(err);

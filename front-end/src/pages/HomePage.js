@@ -3,6 +3,7 @@ import { searchUnsplashPhoto } from '../utils/api';
 import { useTrips } from '../context/TripContext';
 import { useBudgets } from '../context/BudgetContext';
 import { useReminders } from '../context/RemindersContext';
+import { formatPrettyDate } from '../utils/helpers';
 
 function HomePage({ onNavigate }) {
   const { trips, loading: tripsLoading } = useTrips();
@@ -10,34 +11,43 @@ function HomePage({ onNavigate }) {
   const { highPriorityReminders, upcomingReminders } = useReminders();
   const [tripImages, setTripImages] = useState({});
 
-  // Match trips with budgets by destination name or date range
+
+  // Match trips with budgets by tripId (direct link)
   const matchTripWithBudget = (trip) => {
-    // First try to match by destination name
-    let budget = budgets.find(b => 
-      b.name && trip.destination && 
-      b.name.toLowerCase().trim() === trip.destination.toLowerCase().trim()
-    );
-
-    // If no match by name, try to match by overlapping date range
-    if (!budget && trip.startDate && trip.endDate) {
-      budget = budgets.find(b => {
-        if (!b.startDate || !b.endDate) return false;
-        const tripStart = new Date(trip.startDate);
-        const tripEnd = new Date(trip.endDate);
-        const budgetStart = new Date(b.startDate);
-        const budgetEnd = new Date(b.endDate);
-        
-        // Check if date ranges overlap
-        return (tripStart <= budgetEnd && tripEnd >= budgetStart);
-      });
-    }
-
+    if (!trip || !trip.id || !budgets || budgets.length === 0) return null;
+    
+    // Match by tripId - budgets are now directly linked to trips
+    // Ensure both are strings for comparison
+    const tripId = String(trip.id).trim();
+    
+    // Try to find matching budget
+    const budget = budgets.find(b => {
+      if (!b || !b.tripId) {
+        // Budget without tripId - likely created before tripId requirement
+        return false;
+      }
+      const budgetTripId = String(b.tripId).trim();
+      return budgetTripId === tripId;
+    });
+    
     return budget || null;
   };
 
   // Combine trips with budget data
   const tripsWithBudget = useMemo(() => {
-    return trips.map(trip => {
+    if (!trips || trips.length === 0) return [];
+    if (!budgets || budgets.length === 0) {
+      // If no budgets, return trips without budget data
+      return trips.map(trip => ({
+        ...trip,
+        budget: 0,
+        spent: 0,
+        budgetId: null,
+        image: tripImages[trip.id] || null
+      }));
+    }
+    
+      return trips.map(trip => {
       const budget = matchTripWithBudget(trip);
       const spent = budget ? getTotalSpent(budget) : 0;
       const budgetLimit = budget ? budget.limit : 0;
@@ -210,9 +220,9 @@ function HomePage({ onNavigate }) {
                   <div className="trip-info">
                     <h4 className="trip-destination">{trip.destination || 'Untitled trip'}</h4>
                     <p className="trip-dates">
-                      {trip.startDate || '—'} {trip.endDate ? ` - ${trip.endDate}` : ''}
+                      {formatPrettyDate(trip.startDate) || '—'} {trip.endDate ? ` - ${formatPrettyDate(trip.endDate)}` : ''}
                     </p>
-                    {trip.budget > 0 && (
+                    {trip.budget > 0 ? (
                       <>
                         <div className="budget-info">
                           <span className="spent">${trip.spent.toLocaleString()}</span>
@@ -225,8 +235,7 @@ function HomePage({ onNavigate }) {
                           ></div>
                         </div>
                       </>
-                    )}
-                    {trip.budget === 0 && trip.spent === 0 && (
+                    ) : (
                       <div className="budget-info">
                         <span className="budget">No budget set</span>
                       </div>
@@ -267,11 +276,12 @@ function HomePage({ onNavigate }) {
                   <div className="trip-info">
                     <h4 className="trip-destination">{trip.destination || 'Untitled trip'}</h4>
                     <p className="trip-dates">
-                      {trip.startDate || '—'} {trip.endDate ? ` - ${trip.endDate}` : ''}
+                      {formatPrettyDate(trip.startDate) || '—'} {trip.endDate ? ` - ${formatPrettyDate(trip.endDate)}` : ''}
                     </p>
                     {trip.budget > 0 ? (
                       <div className="budget-info">
-                        <span className="budget">Budget: ${trip.budget.toLocaleString()}</span>
+                        <span className="spent">${trip.spent.toLocaleString()}</span>
+                        <span className="budget">/ ${trip.budget.toLocaleString()}</span>
                       </div>
                     ) : (
                       <div className="budget-info">

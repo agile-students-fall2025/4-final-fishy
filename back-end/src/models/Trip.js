@@ -13,6 +13,7 @@ const daySchema = new mongoose.Schema(
 
 const tripSchema = new mongoose.Schema(
   {
+    userId: { type: String, required: true, index: true },
     destination: { type: String, default: 'Untitled trip', trim: true },
     startDate: { type: String, default: '' },
     endDate: { type: String, default: '' },

@@ -1,7 +1,14 @@
 import Joi from 'joi';
 import Budget from '../models/Budget.js';
+import Trip from '../models/Trip.js';
+
+// Helper to get userId from request (from auth middleware)
+function getUserId(req) {
+  return req.user?.id || req.user?._id || null;
+}
 
 const budgetCreateSchema = Joi.object({
+  tripId: Joi.string().trim().required(),
   name: Joi.string().trim().min(1).required(),
   currency: Joi.string().trim().default('USD'),
   limit: Joi.number().min(0).required(),
@@ -10,6 +17,7 @@ const budgetCreateSchema = Joi.object({
 });
 
 const budgetUpdateSchema = Joi.object({
+  tripId: Joi.string().trim(),
   name: Joi.string().trim().min(1),
   currency: Joi.string().trim(),
   limit: Joi.number().min(0),
@@ -26,9 +34,19 @@ const expenseUpdateSchema = Joi.object({
   amount: Joi.number().min(0)
 }).min(1);
 
-export const getAll = async (_req, res) => {
+export const getAll = async (req, res) => {
   try {
-    const budgets = await Budget.find().sort({ createdAt: -1 });
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    // Optionally filter by tripId if provided as query parameter
+    const { tripId } = req.query;
+    const query = { userId };
+    if (tripId) {
+      query.tripId = tripId;
+    }
+    const budgets = await Budget.find(query).sort({ createdAt: -1 });
     res.json(budgets);
   } catch (err) {
     console.error('getAll error:', err);
@@ -38,7 +56,11 @@ export const getAll = async (_req, res) => {
 
 export const getOne = async (req, res) => {
   try {
-    const budget = await Budget.findById(req.params.id);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
     res.json(budget);
   } catch (err) {
@@ -49,6 +71,11 @@ export const getOne = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
     const { error, value } = budgetCreateSchema.validate(req.body || {}, {
       stripUnknown: true
     });
@@ -56,16 +83,41 @@ export const create = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const budget = await Budget.create(value);
-    res.status(201).json(budget);
+    // Validate that the trip exists and belongs to the user
+    const trip = await Trip.findOne({ _id: value.tripId, userId });
+    if (!trip) {
+      return res.status(404).json({ error: 'Trip not found or does not belong to you' });
+    }
+
+    // Check if a budget already exists for this trip
+    const existingBudget = await Budget.findOne({ tripId: value.tripId, userId });
+    if (existingBudget) {
+      return res.status(409).json({ error: 'A budget already exists for this trip' });
+    }
+
+    const budget = await Budget.create({ ...value, userId });
+    // Log to verify tripId was saved
+    console.log('Budget created - Document tripId:', budget.tripId, 'Expected tripId:', value.tripId);
+    // Convert to JSON to ensure transform is applied
+    const budgetJson = budget.toJSON();
+    console.log('Budget JSON - tripId:', budgetJson.tripId);
+    res.status(201).json(budgetJson);
   } catch (err) {
     console.error('create budget error:', err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     res.status(500).json({ error: 'Failed to create budget' });
   }
 };
 
 export const patch = async (req, res) => {
   try {
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
     const { error, value } = budgetUpdateSchema.validate(req.body || {}, {
       stripUnknown: true
     });
@@ -73,21 +125,51 @@ export const patch = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const budget = await Budget.findByIdAndUpdate(req.params.id, value, {
-      new: true,
-      runValidators: true
-    });
+    // If tripId is being updated, validate that the trip exists and belongs to the user
+    if (value.tripId) {
+      const trip = await Trip.findOne({ _id: value.tripId, userId });
+      if (!trip) {
+        return res.status(404).json({ error: 'Trip not found or does not belong to you' });
+      }
+      
+      // Check if another budget already exists for this trip
+      const existingBudget = await Budget.findOne({ 
+        tripId: value.tripId, 
+        userId,
+        _id: { $ne: req.params.id } // Exclude current budget
+      });
+      if (existingBudget) {
+        return res.status(409).json({ error: 'A budget already exists for this trip' });
+      }
+    }
+
+    const budget = await Budget.findOneAndUpdate(
+      { _id: req.params.id, userId },
+      value,
+      {
+        new: true,
+        runValidators: true
+      }
+    );
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
     res.json(budget);
   } catch (err) {
     console.error('patch budget error:', err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     res.status(500).json({ error: 'Failed to update budget' });
   }
 };
 
 export const destroy = async (req, res) => {
   try {
-    const deleted = await Budget.findByIdAndDelete(req.params.id);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const deleted = await Budget.findOneAndDelete({ _id: req.params.id, userId });
     if (!deleted) return res.status(404).json({ error: 'Budget not found' });
     res.status(204).end();
   } catch (err) {
@@ -98,6 +180,11 @@ export const destroy = async (req, res) => {
 
 export const addExp = async (req, res) => {
   try {
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
     // Only validate `amount` strictly
     const { error } = expenseCreateSchema.validate({
       amount: req.body?.amount
@@ -107,7 +194,7 @@ export const addExp = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const budget = await Budget.findById(req.params.id);
+    const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
 
     const value = req.body || {};
@@ -133,6 +220,11 @@ export const addExp = async (req, res) => {
 
 export const patchExp = async (req, res) => {
   try {
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
     const { error } = expenseUpdateSchema.validate(req.body || {}, {
       stripUnknown: true
     });
@@ -140,7 +232,7 @@ export const patchExp = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    const budget = await Budget.findById(req.params.id);
+    const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget or expense not found' });
 
     const expense = budget.expenses.id(req.params.expenseId);
@@ -164,7 +256,12 @@ export const patchExp = async (req, res) => {
 
 export const destroyExp = async (req, res) => {
   try {
-    const budget = await Budget.findById(req.params.id);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget or expense not found' });
 
     const expense = budget.expenses.id(req.params.expenseId);

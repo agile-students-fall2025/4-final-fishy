@@ -1,6 +1,12 @@
 // back-end/src/controllers/tripController.js
 import Joi from 'joi';
 import { getAll, getById, create, update, remove } from '../data/tripStore.js';
+import Budget from '../models/Budget.js';
+
+// Helper to get userId from request (from auth middleware)
+function getUserId(req) {
+  return req.user?.id || req.user?._id || null;
+}
 
 // Payload schema (lenient so blank dates/activities don't break)
 const tripSchema = Joi.object({
@@ -20,9 +26,13 @@ const tripSchema = Joi.object({
     .default([]),
 });
 
-export async function listTrips(_req, res) {
+export async function listTrips(req, res) {
   try {
-    const trips = await getAll();
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const trips = await getAll(userId);
     res.json(trips);
   } catch (e) {
     res.status(500).json({ error: 'Failed to fetch trips', details: e.message });
@@ -31,7 +41,11 @@ export async function listTrips(_req, res) {
 
 export async function getTrip(req, res) {
   try {
-    const doc = await getById(req.params.id);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const doc = await getById(req.params.id, userId);
     if (!doc) return res.status(404).json({ error: 'Not found' });
     res.json(doc);
   } catch (e) {
@@ -58,8 +72,13 @@ export async function createTrip(req, res) {
       })),
     };
 
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
     console.log('Creating trip with payload:', JSON.stringify(payload, null, 2));
-    const doc = await create(payload);
+    const doc = await create(payload, userId);
     console.log('Trip created successfully:', doc.id, doc.destination);
     return res.status(201).json(doc);
   } catch (e) {
@@ -94,7 +113,12 @@ export async function updateTrip(req, res) {
       }),
     };
 
-    const doc = await update(req.params.id, patch);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const doc = await update(req.params.id, patch, userId);
     if (!doc) return res.status(404).json({ error: 'Not found' });
     res.json(doc);
   } catch (e) {
@@ -104,10 +128,31 @@ export async function updateTrip(req, res) {
 
 export async function deleteTrip(req, res) {
   try {
-    const ok = await remove(req.params.id);
+    const userId = getUserId(req);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const tripId = req.params.id;
+    
+    // Delete associated budgets (cascade delete)
+    await Budget.deleteMany({ tripId, userId });
+    
+    const ok = await remove(tripId, userId);
     if (!ok) return res.status(404).json({ error: 'Not found' });
     res.json({ ok: true });
   } catch (e) {
     res.status(500).json({ error: 'Failed to delete trip', details: e.message });
+  }
+}
+
+// Public endpoint for shared trips (no auth required)
+export async function getPublicTrip(req, res) {
+  try {
+    const doc = await getById(req.params.id, null); // Pass null to skip userId check
+    if (!doc) return res.status(404).json({ error: 'Not found' });
+    res.json(doc);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to fetch trip', details: e.message });
   }
 }

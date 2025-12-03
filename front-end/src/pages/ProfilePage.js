@@ -1,7 +1,10 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
-function ProfilePage({ user, onClose, onLogout }) {
-    if (!user) {
+function ProfilePage({ onClose, onLogout }) {
+  const { user } = useAuth();
+  
+  if (!user) {
     return (
       <div className="profile-page">
         <div className="profile-card">

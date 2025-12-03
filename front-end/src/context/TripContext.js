@@ -13,6 +13,7 @@ import {
   updateTripById,
   deleteTripById,
 } from '../utils/api';
+import { useAuth } from './AuthContext';
 
 const normalizeDay = (d = {}) => ({
   date: d.date || '',
@@ -31,11 +32,18 @@ const normalizeTrip = (t = {}) => ({
 const TripsContext = createContext(null);
 
 export function TripsProvider({ children }) {
+  const { isAuthenticated } = useAuth();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const reload = useCallback(async () => {
+    if (!isAuthenticated) {
+      setTrips([]);
+      setError(null);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     try {
@@ -44,14 +52,26 @@ export function TripsProvider({ children }) {
       setTrips(normalized);
     } catch (err) {
       setError(err?.message || 'Failed to load trips');
+      // Clear trips on auth error
+      if (err?.message?.includes('Unauthorized')) {
+        setTrips([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     reload();
   }, [reload]);
+
+  // Clear trips when user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setTrips([]);
+      setError(null);
+    }
+  }, [isAuthenticated]);
 
   // CRUD operations
   const createTrip = useCallback(async (payload) => {
