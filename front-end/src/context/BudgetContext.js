@@ -15,6 +15,7 @@ import {
   updateExpenseAPI,
   deleteExpenseAPI,
 } from '../utils/api';
+import { useAuth } from './AuthContext';
 
 const normalizeExpense = (e = {}) => ({
   id: e.id ?? e._id ?? String(e.id || e._id || crypto.randomUUID()),
@@ -24,19 +25,31 @@ const normalizeExpense = (e = {}) => ({
   note: e.note || '',
 });
 
-const normalizeBudget = (b = {}) => ({
-  id: b.id ?? b._id ?? String(b.id || b._id || crypto.randomUUID()),
-  name: b.name || '',
-  currency: b.currency || 'USD',
-  limit: Number(b.limit ?? 0),
-  startDate: b.startDate || null,
-  endDate: b.endDate || null,
-  expenses: Array.isArray(b.expenses) ? b.expenses.map(normalizeExpense) : [],
-});
+const normalizeBudget = (b = {}) => {
+  // Normalize tripId - handle both string and ObjectId formats
+  let tripId = null;
+  if (b.tripId) {
+    tripId = String(b.tripId).trim();
+  } else if (b.tripId === null || b.tripId === undefined) {
+    tripId = null;
+  }
+  
+  return {
+    id: b.id ?? b._id ?? String(b.id || b._id || crypto.randomUUID()),
+    tripId: tripId,
+    name: b.name || '',
+    currency: b.currency || 'USD',
+    limit: Number(b.limit ?? 0),
+    startDate: b.startDate || null,
+    endDate: b.endDate || null,
+    expenses: Array.isArray(b.expenses) ? b.expenses.map(normalizeExpense) : [],
+  };
+};
 
 const BudgetContext = createContext(null);
 
 export function BudgetProvider({ children }) {
+  const { isAuthenticated } = useAuth();
   const [budgets, setBudgets] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -65,27 +78,59 @@ export function BudgetProvider({ children }) {
   );
 
   const reload = useCallback(async () => {
+    if (!isAuthenticated) {
+      setBudgets([]);
+      setError(null);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
     try {
       const data = await fetchBudgets();
       const normalized = Array.isArray(data) ? data.map(normalizeBudget) : [];
+      console.log('BudgetContext: Loaded budgets:', normalized.map(b => ({ 
+        id: b.id, 
+        tripId: b.tripId, 
+        name: b.name,
+        limit: b.limit 
+      })));
       setBudgets(normalized);
     } catch (err) {
       setError(err?.message || 'Failed to load budgets');
+      // Clear budgets on auth error
+      if (err?.message?.includes('Unauthorized')) {
+        setBudgets([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     reload();
   }, [reload]);
 
+  // Clear budgets when user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setBudgets([]);
+      setError(null);
+      setActiveBudgetId(null);
+    }
+  }, [isAuthenticated]);
+
   // CRUD — Budgets
   const createBudget = useCallback(async (payload) => {
+    console.log('BudgetContext: Creating budget with payload:', payload);
     const res = await createBudgetAPI(payload);
+    console.log('BudgetContext: Budget created, response:', res);
     const budget = normalizeBudget(res);
+    console.log('BudgetContext: Normalized budget:', { 
+      id: budget.id, 
+      tripId: budget.tripId, 
+      name: budget.name 
+    });
     setBudgets((prev) => [...prev, budget]);
     return budget;
   }, []);

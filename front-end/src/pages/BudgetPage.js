@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import BudgetOverviewModal from '../components/BudgetOverviewModal';
 import { useBudgets } from '../context/BudgetContext';
+import { useTrips } from '../context/TripContext';
 
 const nf = (n) => new Intl.NumberFormat().format(Number(n || 0));
 
-function BudgetCard({ b, onOpen }) {
+function BudgetCard({ b, trips, onOpen }) {
+  const trip = trips.find(t => t.id === b.tripId);
   return (
     <div className="budget-card">
       <div className="budget-card-body">
@@ -15,6 +17,11 @@ function BudgetCard({ b, onOpen }) {
             <p className="budget-subtle">
               {b.currency} {nf(b.limit)}
             </p>
+            {trip && (
+              <p className="budget-trip-info" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.25rem' }}>
+                Trip: {trip.destination || 'Untitled trip'}
+              </p>
+            )}
           </div>
         </div>
         <div className="budget-card-spacer" />
@@ -41,10 +48,13 @@ export default function BudgetPage() {
     deleteExpense,
   } = useBudgets();
 
+  const { trips } = useTrips();
+
   const [showNewModal, setShowNewModal] = useState(false);
   const [selectedBudgetId, setSelectedBudgetId] = useState(null);
 
   const [form, setForm] = useState({
+    tripId: '',
     name: '',
     currency: 'USD',
     limit: '',
@@ -64,10 +74,18 @@ export default function BudgetPage() {
     e.preventDefault();
     setFormErr('');
     try {
+      if (!form.tripId) throw new Error('Please select a trip');
       if (!form.name?.trim()) throw new Error('Name is required');
       if (form.limit === '' || Number(form.limit) < 0) throw new Error('Limit must be ≥ 0');
 
+      // Check if budget already exists for this trip
+      const existingBudget = budgets.find(b => b.tripId === form.tripId);
+      if (existingBudget) {
+        throw new Error('A budget already exists for this trip');
+      }
+
       const payload = {
+        tripId: form.tripId,
         name: form.name.trim(),
         currency: form.currency || 'USD',
         limit: Number(form.limit),
@@ -76,12 +94,18 @@ export default function BudgetPage() {
       };
 
       await createBudget(payload); 
-      setForm({ name: '', currency: 'USD', limit: '', startDate: '', endDate: '' });
+      setForm({ tripId: '', name: '', currency: 'USD', limit: '', startDate: '', endDate: '' });
       setShowNewModal(false);
     } catch (err) {
       setFormErr(err?.message || 'Create failed');
     }
   };
+
+  // Filter trips that don't already have budgets
+  const availableTrips = useMemo(() => {
+    const tripsWithBudgets = new Set(budgets.map(b => b.tripId));
+    return trips.filter(t => !tripsWithBudgets.has(t.id));
+  }, [trips, budgets]);
 
   const selectedBudget = budgets.find((b) => b.id === selectedBudgetId) || null;
 
@@ -102,7 +126,7 @@ export default function BudgetPage() {
 
       <div className="budget-grid">
         {budgets.map((b) => (
-          <BudgetCard key={b.id} b={b} onOpen={setSelectedBudgetId} />
+          <BudgetCard key={b.id} b={b} trips={trips} onOpen={setSelectedBudgetId} />
         ))}
       </div>
 
@@ -116,6 +140,27 @@ export default function BudgetPage() {
 
             <form className="tm-form" onSubmit={onCreate}>
               {formErr && <div className="budget-empty" style={{marginBottom:'.5rem'}}>{formErr}</div>}
+
+              <label>
+                <span>Trip *</span>
+                <select
+                  value={form.tripId}
+                  onChange={(e) => setForm({ ...form, tripId: e.target.value })}
+                  required
+                >
+                  <option value="">Select a trip...</option>
+                  {availableTrips.map((trip) => (
+                    <option key={trip.id} value={trip.id}>
+                      {trip.destination || 'Untitled trip'} {trip.startDate ? `(${trip.startDate})` : ''}
+                    </option>
+                  ))}
+                </select>
+                {availableTrips.length === 0 && (
+                  <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '0.25rem' }}>
+                    All trips already have budgets. Create a new trip first.
+                  </p>
+                )}
+              </label>
 
               <label>
                 <span>Name</span>

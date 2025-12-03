@@ -3,8 +3,12 @@ import {
   getAll, getOne, create, patch, destroy,
   addExp, patchExp, destroyExp
 } from '../controllers/budgetController.js';
+import { authMiddleware } from '../utils/auth.js';
 
 const router = Router();
+
+// All budget routes require authentication
+router.use(authMiddleware);
 
 router.get('/', getAll);
 router.post('/', create);

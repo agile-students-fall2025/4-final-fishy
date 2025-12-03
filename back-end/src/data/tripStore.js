@@ -2,9 +2,9 @@
 import mongoose from 'mongoose';
 import Trip from '../models/Trip.js';
 
-export async function getAll() {
+export async function getAll(userId) {
   try {
-    const trips = await Trip.find().sort({ createdAt: -1 });
+    const trips = await Trip.find({ userId }).sort({ createdAt: -1 });
     // Transform MongoDB documents to match expected format
     return trips.map(trip => ({
       id: trip._id.toString(),
@@ -20,9 +20,11 @@ export async function getAll() {
   }
 }
 
-export async function getById(id) {
+export async function getById(id, userId) {
   try {
-    const trip = await Trip.findById(id);
+    // If userId is null, fetch without userId filter (for public sharing)
+    const query = userId ? { _id: id, userId } : { _id: id };
+    const trip = await Trip.findOne(query);
     if (!trip) return null;
     return {
       id: trip._id.toString(),
@@ -38,7 +40,7 @@ export async function getById(id) {
   }
 }
 
-export async function create(trip) {
+export async function create(trip, userId) {
   try {
     // Ensure MongoDB connection is ready
     if (mongoose.connection.readyState !== 1) {
@@ -46,6 +48,7 @@ export async function create(trip) {
     }
     
     const doc = await Trip.create({
+      userId,
       destination: trip.destination?.trim() || 'Untitled trip',
       startDate: trip.startDate || '',
       endDate: trip.endDate || '',
@@ -65,10 +68,10 @@ export async function create(trip) {
   }
 }
 
-export async function update(id, patch) {
+export async function update(id, patch, userId) {
   try {
-    const doc = await Trip.findByIdAndUpdate(
-      id,
+    const doc = await Trip.findOneAndUpdate(
+      { _id: id, userId },
       {
         ...(patch.destination !== undefined && { destination: patch.destination }),
         ...(patch.startDate !== undefined && { startDate: patch.startDate }),
@@ -92,9 +95,9 @@ export async function update(id, patch) {
   }
 }
 
-export async function remove(id) {
+export async function remove(id, userId) {
   try {
-    const deleted = await Trip.findByIdAndDelete(id);
+    const deleted = await Trip.findOneAndDelete({ _id: id, userId });
     return !!deleted;
   } catch (error) {
     console.error('Error deleting trip:', error);
