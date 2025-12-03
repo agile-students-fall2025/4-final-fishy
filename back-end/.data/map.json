@@ -1,3 +1,40 @@
 {
-  "locations": []
+  "locations": [
+    {
+      "id": "loc_aa4b5dc3-386c-4b96-8da0-41db067975a6",
+      "title": "ffw",
+      "lat": 40.73119105825626,
+      "lng": -73.98825142223018,
+      "note": "",
+      "photos": [],
+      "tasks": [],
+      "createdAt": 1764742458424
+    },
+    {
+      "id": "loc_3cc276f4-0318-41b1-9e68-e4a1b49e1479",
+      "title": "Pinned Location 1764740958654",
+      "lat": 25.24868172424259,
+      "lng": 55.28649291523563,
+      "note": "fff",
+      "photos": [],
+      "tasks": [
+        {
+          "id": "task_fc3f9bad-bb06-4c12-a75c-3ab21b74509d",
+          "text": "fff",
+          "done": false
+        }
+      ],
+      "createdAt": 1764740959550
+    },
+    {
+      "id": "loc_b82a1534-3a8c-46a7-af02-bbdd2574b021",
+      "title": "Pinned Location 1764740957423",
+      "lat": 25.250544850361088,
+      "lng": 55.28872451313602,
+      "note": "",
+      "photos": [],
+      "tasks": [],
+      "createdAt": 1764740959547
+    }
+  ]
 }
