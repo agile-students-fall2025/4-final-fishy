@@ -10,7 +10,15 @@ import weatherRouter from './routes/weatherRoutes.js';
 import activityRouter from './routes/activityRoutes.js';
 
 const app = express();
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] }));
+// CORS configuration - allow localhost and production domains
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',')
+  : ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
+
+app.use(cors({ 
+  origin: allowedOrigins,
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

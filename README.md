@@ -203,3 +203,36 @@ npm run coverage:mocha
 cd front-end
 npm test
 ```
+
+## Docker Deployment
+
+### Quick Start
+
+1. **Set up environment variables:**
+   ```bash
+   cp back-end/.env.example back-end/.env
+   cp front-end/.env.example front-end/.env
+   # Edit .env files with your API keys
+   ```
+
+2. **Start all services:**
+   ```bash
+   docker-compose up -d
+   ```
+
+3. **Access the application:**
+   - Frontend: http://localhost:3001
+   - Backend API: http://localhost:4001
+   - Health Check: http://localhost:4001/api/health
+
+   **Note:** Ports 3001 and 4001 are used to avoid conflicts with local development servers.
+
+### Common Commands
+
+- **View logs:** `docker-compose logs -f`
+- **Stop services:** `docker-compose down`
+- **Rebuild:** `docker-compose up -d --build`
+
+### Using MongoDB Atlas
+
+To use MongoDB Atlas instead of the local container, update `back-end/.env` with your Atlas connection string and remove the `mongodb` service from `docker-compose.yml`.
