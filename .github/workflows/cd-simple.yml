@@ -1,0 +1,55 @@
+name: CD (Simple)
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Build Docker images
+        run: |
+          docker build -t tripmate-backend:latest ./back-end
+          docker build -t tripmate-frontend:latest \
+            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL || 'http://localhost:4000' }} \
+            --build-arg REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY || '' }} \
+            --build-arg REACT_APP_UNSPLASH_ACCESS_KEY=${{ secrets.REACT_APP_UNSPLASH_ACCESS_KEY || '' }} \
+            ./front-end
+      
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          cp docker-compose.yml deploy/
+          cp -r back-end deploy/
+          cp -r front-end deploy/
+          tar -czf deploy.tar.gz deploy/
+      
+      - name: Upload deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-package
+          path: deploy.tar.gz
+          retention-days: 7
+      
+      - name: Deployment instructions
+        run: |
+          echo "## Deployment Instructions" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the deployment package from artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "2. Upload to your DigitalOcean droplet" >> $GITHUB_STEP_SUMMARY
+          echo "3. Extract and run: docker-compose up -d" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** For automated deployment, configure SSH secrets in repository settings." >> $GITHUB_STEP_SUMMARY
+

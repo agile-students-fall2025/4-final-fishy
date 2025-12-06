@@ -1,0 +1,47 @@
+name: CD
+
+on:
+  push:
+    branches: [ master, main ]
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Build Docker images
+        run: |
+          docker build -t tripmate-backend:latest ./back-end
+          docker build -t tripmate-frontend:latest \
+            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} \
+            --build-arg REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }} \
+            --build-arg REACT_APP_UNSPLASH_ACCESS_KEY=${{ secrets.REACT_APP_UNSPLASH_ACCESS_KEY }} \
+            ./front-end
+      
+      - name: Deploy to DigitalOcean Droplet
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /opt/tripmate || exit 1
+            git pull origin master
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+            docker-compose ps
+            echo "Deployment completed successfully"
+

@@ -236,3 +236,41 @@ npm test
 ### Using MongoDB Atlas
 
 To use MongoDB Atlas instead of the local container, update `back-end/.env` with your Atlas connection string and remove the `mongodb` service from `docker-compose.yml`.
+
+## CI/CD
+
+This project uses GitHub Actions for Continuous Integration and Continuous Deployment.
+
+### Continuous Integration (CI)
+
+The CI workflow (`.github/workflows/ci.yml`) automatically runs on every push and pull request:
+
+- **Backend Tests:** Runs Vitest and Mocha test suites
+- **Frontend Build:** Builds the React application to verify it compiles
+- **Docker Build:** Tests that Docker images build successfully
+
+View CI status in the "Actions" tab on GitHub.
+
+### Continuous Deployment (CD)
+
+The CD workflow (`.github/workflows/cd.yml`) deploys to DigitalOcean when code is pushed to `master` or `main`.
+
+**Setup Requirements:**
+1. Add GitHub Secrets in repository settings:
+   - `DROPLET_HOST` - Your DigitalOcean droplet IP
+   - `DROPLET_USER` - SSH username (usually `root`)
+   - `DROPLET_SSH_KEY` - Private SSH key for authentication
+   - `REACT_APP_API_URL` - Production API URL
+   - `REACT_APP_GOOGLE_MAPS_API_KEY` - Google Maps API key
+   - `REACT_APP_UNSPLASH_ACCESS_KEY` - Unsplash API key (optional)
+
+2. On your DigitalOcean droplet, clone the repository:
+   ```bash
+   git clone <your-repo-url> /opt/tripmate
+   cd /opt/tripmate
+   cp back-end/.env.example back-end/.env
+   cp front-end/.env.example front-end/.env
+   # Edit .env files with production values
+   ```
+
+**Alternative:** Use `cd-simple.yml` for manual deployment - it creates a deployment package you can download and deploy manually.
