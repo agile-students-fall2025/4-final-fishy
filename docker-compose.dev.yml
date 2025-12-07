@@ -1,0 +1,31 @@
+# Development override file
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    # Override to use nodemon for hot reloading
+    volumes:
+      - ./back-end:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "npm install && npm run dev"
+
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    # Override to use development server
+    volumes:
+      - ./front-end:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    # For development, you might want to use the React dev server instead
+    # This would require a different Dockerfile for dev
+

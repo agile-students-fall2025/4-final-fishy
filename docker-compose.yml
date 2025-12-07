@@ -1,0 +1,71 @@
+services:
+  # MongoDB Service (optional - can use MongoDB Atlas instead)
+  mongodb:
+    image: mongo:7
+    container_name: tripmate-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: tripmate
+    networks:
+      - tripmate-network
+
+  # Backend Service
+  backend:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    container_name: tripmate-backend
+    restart: unless-stopped
+    ports:
+      - "4001:4000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongodb:27017/tripmate}
+      - PORT=4000
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - MAP_DATA_FILE=${MAP_DATA_FILE:-}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3001,http://localhost:5173}
+    env_file:
+      - ./back-end/.env
+    depends_on:
+      - mongodb
+    networks:
+      - tripmate-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:4001}
+        - REACT_APP_GOOGLE_MAPS_API_KEY=${REACT_APP_GOOGLE_MAPS_API_KEY}
+        - REACT_APP_UNSPLASH_ACCESS_KEY=${REACT_APP_UNSPLASH_ACCESS_KEY:-}
+    container_name: tripmate-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    networks:
+      - tripmate-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  tripmate-network:
+    driver: bridge
+

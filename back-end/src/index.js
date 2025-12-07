@@ -12,6 +12,11 @@ connectDB()
     });
   })
   .catch((error) => {
-    console.error('Failed to start server:', error);
-    process.exit(1);
+    console.error('⚠️  MongoDB connection failed:', error.message);
+    console.error('⚠️  Server will start but database features may not work.');
+    console.error('⚠️  Please check your MONGODB_URI in .env file.');
+    // Start server anyway so frontend can still work
+    app.listen(PORT, () => {
+      console.log(`API running on http://localhost:${PORT} (without database)`);
+    });
   });
