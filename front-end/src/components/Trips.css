@@ -766,3 +766,405 @@
   color: rgba(255, 255, 255, 0.8);
   font-size: 1.1rem;
 }
+
+/* ===== Mobile Responsive Styles ===== */
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 0 1rem;
+  }
+
+  .trip-page {
+    padding: 1.5rem 0 2rem;
+  }
+
+  .trip-toolbar {
+    margin: 1.5rem 0 1.5rem;
+    padding: 1.5rem 1.25rem;
+    border-radius: 20px;
+    gap: 1rem;
+  }
+
+  .trip-toolbar h1 {
+    font-size: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .trip-toolbar h1::before {
+    font-size: 1.8rem;
+  }
+
+  .trip-toolbar__sub {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .trip-toolbar .tm-btn {
+    align-self: stretch;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .trip-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .tm-card {
+    padding: 1.5rem;
+    border-radius: 20px;
+  }
+
+  .tm-card__title {
+    font-size: 1.4rem;
+  }
+
+  .tm-card__title::before {
+    font-size: 1.2rem;
+  }
+
+  .tm-card__meta {
+    font-size: 0.9rem;
+  }
+
+  .tm-card__stats {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  .tm-chip {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .trip-card__footer {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .tm-link,
+  .tm-link-danger {
+    padding: 0.6rem 0.75rem;
+    width: 100%;
+    text-align: center;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  .tm-link:hover,
+  .tm-link-danger:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  .tm-empty {
+    padding: 3rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 20px;
+  }
+
+  .tm-empty::before {
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Modal adjustments for mobile */
+  .tm-modal {
+    width: min(95vw, 100%);
+    margin: 1rem;
+    padding: 1.25rem 1rem;
+    border-radius: 20px;
+    max-height: 90vh;
+  }
+
+  .tm-modal-lg {
+    width: min(95vw, 100%);
+    max-height: 90vh;
+  }
+
+  .tm-modal__header {
+    margin-bottom: 0.75rem;
+  }
+
+  .tm-modal__title {
+    font-size: 1.3rem;
+  }
+
+  .tm-form {
+    gap: 0.85rem;
+  }
+
+  .tm-label {
+    font-size: 0.9rem;
+  }
+
+  .tm-input {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.95rem;
+  }
+
+  .tm-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tm-col--auto {
+    align-items: stretch;
+  }
+
+  .tm-day {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .tm-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .tm-subtitle {
+    font-size: 1.05rem;
+  }
+
+  .tm-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+  }
+
+  .tm-actions .tm-btn {
+    width: 100%;
+    padding: 0.9rem 1.5rem;
+  }
+
+  .tm-btn.tm-btn--compact {
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+
+  /* Trip detail modal mobile */
+  .trip-detail-modal {
+    width: min(95vw, 100%);
+    padding: 1.25rem 1rem;
+    max-height: 90vh;
+  }
+
+  .trip-detail__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+  }
+
+  .trip-detail__header h2 {
+    font-size: 1.6rem;
+  }
+
+  .trip-detail__header h2::before {
+    font-size: 1.4rem;
+  }
+
+  .trip-detail__meta {
+    font-size: 0.95rem;
+  }
+
+  .trip-detail__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .trip-detail__actions .tm-btn {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+  }
+
+  .trip-detail__body {
+    max-height: calc(90vh - 200px);
+    margin-top: 1rem;
+  }
+
+  .trip-detail__list {
+    gap: 1rem;
+  }
+
+  .trip-detail__list > li {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .trip-day__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .trip-day__header strong {
+    font-size: 1.1rem;
+  }
+
+  .trip-detail__sublist {
+    gap: 0.5rem;
+  }
+
+  .trip-detail__sublist li {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  /* Recommended activities mobile */
+  .recommended-activities {
+    padding: 0.85rem;
+    margin: 0.85rem 0;
+  }
+
+  .recommended-activities__title {
+    font-size: 0.95rem;
+  }
+
+  .recommended-activities__list {
+    gap: 0.4rem;
+  }
+
+  .recommended-activities__item {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.85rem;
+  }
+
+  /* Share modal mobile */
+  .trip-share-modal {
+    width: min(95vw, 100%);
+    padding: 1.25rem 1rem;
+  }
+
+  .share-trip-container {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+
+  .share-trip-header h1 {
+    font-size: 2rem;
+  }
+
+  .share-trip-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .share-trip-day {
+    padding: 1.25rem 1rem;
+  }
+
+  .share-trip-day-header {
+    font-size: 1.15rem;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+
+  .trip-page {
+    padding: 1rem 0 1.5rem;
+  }
+
+  .trip-toolbar {
+    margin: 1rem 0 1.25rem;
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .trip-toolbar h1 {
+    font-size: 1.75rem;
+  }
+
+  .trip-toolbar h1::before {
+    font-size: 1.5rem;
+  }
+
+  .trip-toolbar__sub {
+    font-size: 0.9rem;
+  }
+
+  .trip-grid {
+    gap: 1rem;
+  }
+
+  .tm-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .tm-card__title {
+    font-size: 1.25rem;
+  }
+
+  .tm-card__meta {
+    font-size: 0.85rem;
+  }
+
+  .tm-chip {
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .tm-modal {
+    padding: 1rem 0.85rem;
+    border-radius: 16px;
+  }
+
+  .tm-modal__title {
+    font-size: 1.2rem;
+  }
+
+  .tm-input {
+    padding: 0.7rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .tm-day {
+    padding: 1rem 0.85rem;
+  }
+
+  .trip-detail-modal {
+    padding: 1rem 0.85rem;
+  }
+
+  .trip-detail__header h2 {
+    font-size: 1.4rem;
+  }
+
+  .trip-detail__list > li {
+    padding: 1rem 0.85rem;
+  }
+
+  .tm-empty {
+    padding: 2.5rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .tm-empty::before {
+    font-size: 2.5rem;
+  }
+}
+
+/* Landscape mobile orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+  .trip-detail__body {
+    max-height: calc(90vh - 150px);
+  }
+
+  .tm-modal-body {
+    max-height: calc(90vh - 120px);
+  }
+}

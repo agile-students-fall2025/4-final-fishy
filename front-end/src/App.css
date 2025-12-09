@@ -27,6 +27,18 @@
   margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 0.75rem;
+  }
+}
+
 /* Home Page Styles */
 .home-page {
   color: white;
