@@ -2,7 +2,6 @@ import Joi from 'joi';
 import Budget from '../models/Budget.js';
 import Trip from '../models/Trip.js';
 
-// Helper to get userId from request (from auth middleware)
 function getUserId(req) {
   return req.user?.id || req.user?._id || null;
 }
@@ -40,7 +39,6 @@ export const getAll = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    // Optionally filter by tripId if provided as query parameter
     const { tripId } = req.query;
     const query = { userId };
     if (tripId) {
@@ -83,22 +81,18 @@ export const create = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Validate that the trip exists and belongs to the user
     const trip = await Trip.findOne({ _id: value.tripId, userId });
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found or does not belong to you' });
     }
 
-    // Check if a budget already exists for this trip
     const existingBudget = await Budget.findOne({ tripId: value.tripId, userId });
     if (existingBudget) {
       return res.status(409).json({ error: 'A budget already exists for this trip' });
     }
 
     const budget = await Budget.create({ ...value, userId });
-    // Log to verify tripId was saved
     console.log('Budget created - Document tripId:', budget.tripId, 'Expected tripId:', value.tripId);
-    // Convert to JSON to ensure transform is applied
     const budgetJson = budget.toJSON();
     console.log('Budget JSON - tripId:', budgetJson.tripId);
     res.status(201).json(budgetJson);
@@ -125,14 +119,12 @@ export const patch = async (req, res) => {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // If tripId is being updated, validate that the trip exists and belongs to the user
     if (value.tripId) {
       const trip = await Trip.findOne({ _id: value.tripId, userId });
       if (!trip) {
         return res.status(404).json({ error: 'Trip not found or does not belong to you' });
       }
       
-      // Check if another budget already exists for this trip
       const existingBudget = await Budget.findOne({ 
         tripId: value.tripId, 
         userId,
@@ -185,7 +177,6 @@ export const addExp = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
-    // Only validate `amount` strictly
     const { error } = expenseCreateSchema.validate({
       amount: req.body?.amount
     });
