@@ -1,4 +1,3 @@
-/* ===== Budget Page ===== */
 .container { width: min(1100px, 92vw); margin: 0 auto; }
 
 .budget-toolbar {
@@ -343,7 +342,7 @@
   transition: width .35s ease-in-out;
 }
 
-.bo-badges { display:flex; gap:.5rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.bo-badges { display:flex; gap:.5rem; flex-wrap: wrap; margin-bottom:.8rem; }
 .bo-pill {
   background: #f3f7fb;
   color: #243548;
