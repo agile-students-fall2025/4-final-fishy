@@ -64,7 +64,43 @@ export default function BudgetPage() {
 
   const [formErr, setFormErr] = useState('');
 
-  const currencies = useMemo(() => ['USD', 'EUR', 'AED', 'GBP', 'BDT'], []);
+const currencies = useMemo(
+  () => [
+    "USD", // US Dollar
+    "EUR", // Euro
+    "GBP", // British Pound
+    "CAD", // Canadian Dollar
+    "AUD", // Australian Dollar
+    "JPY", // Japanese Yen
+    "CNY", // Chinese Yuan
+    "INR", // Indian Rupee
+    "BDT", // Bangladeshi Taka
+    "PKR", // Pakistani Rupee
+    "AED", // UAE Dirham
+    "SAR", // Saudi Riyal
+    "QAR", // Qatari Riyal
+    "SGD", // Singapore Dollar
+    "HKD", // Hong Kong Dollar
+    "CHF", // Swiss Franc
+    "SEK", // Swedish Krona
+    "NOK", // Norwegian Krone
+    "DKK", // Danish Krone
+    "ZAR", // South African Rand
+    "THB", // Thai Baht
+    "KRW", // South Korean Won
+    "MYR", // Malaysian Ringgit
+    "IDR", // Indonesian Rupiah
+    "TRY", // Turkish Lira
+    "MXN", // Mexican Peso
+    "BRL", // Brazilian Real
+    "ARS", // Argentine Peso
+    "NZD", // New Zealand Dollar
+    "EGP", // Egyptian Pound
+    "LKR", // Sri Lankan Rupee
+    "NGN", // Nigerian Naira
+  ],
+  []
+);
   const categories = useMemo(
     () => ['Food', 'Transit', 'Lodging', 'Entertainment', 'Shopping', 'Attractions', 'Misc'],
     []
