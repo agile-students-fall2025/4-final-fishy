@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import RecommendedActivities from "./RecommendedActivities";
 
 export default function TripForm({ trip, onSave, onCancel }) {
-  // form state
   const [destination, setDestination] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -10,7 +9,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
 
   const isEditing = Boolean(trip?.id);
 
-  // prefill on edit (or reset on create)
   useEffect(() => {
     if (trip) {
       setDestination(trip.destination || "");
@@ -28,7 +26,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
           : [{ date: "", activities: [""] }]
       );
     } else {
-      // create mode defaults
       setDestination("");
       setStartDate("");
       setEndDate("");
@@ -36,7 +33,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
     }
   }, [trip]);
 
-  // itinerary helpers
   const addDay = () => setDays((d) => [...d, { date: "", activities: [""] }]);
   const removeDay = (i) => setDays((d) => d.filter((_, idx) => idx !== i));
   const setDayDate = (i, value) =>
@@ -73,7 +69,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // strip empty activities and empty days
     const cleanedDays = (days || [])
       .map((d) => ({
         date: d.date || "",
@@ -82,7 +77,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
       .filter((d) => d.date || (d.activities && d.activities.length > 0));
 
     const payload = {
-      // Only include id when editing (MongoDB will generate it for new trips)
       ...(isEditing && { id: trip.id }),
       destination: (destination || "").trim() || "Untitled trip",
       startDate: startDate || "",
@@ -174,7 +168,6 @@ export default function TripForm({ trip, onSave, onCancel }) {
             <RecommendedActivities 
               destination={destination}
               onAddActivity={(dayIdx, activity) => {
-                // Add the recommended activity to this specific day
                 const day = days[dayIdx];
                 if (day && !day.activities.includes(activity)) {
                   setDays((d) =>

@@ -20,7 +20,6 @@ export default function BudgetOverviewModal({
   const pct = budget?.limit ? Math.min(100, (totalSpent / budget.limit) * 100) : 0;
   const remaining = Math.max(0, (budget?.limit || 0) - totalSpent);
 
-  // ---- Budget edit state ----
   const [editBudget, setEditBudget] = useState(false);
   const [bForm, setBForm] = useState({
     name: budget?.name || '',
@@ -30,7 +29,6 @@ export default function BudgetOverviewModal({
     endDate: budget?.endDate || '',
   });
 
-  // ---- Add expense state ----
   const [xForm, setXForm] = useState({
     amount: '',
     category: categories?.[0] || 'Food',
@@ -38,7 +36,6 @@ export default function BudgetOverviewModal({
     note: '',
   });
 
-  // ---- Inline edit expense state ----
   const [editingId, setEditingId] = useState(null);
   const [rowDraft, setRowDraft] = useState({ amount: '', category: '', date: '', note: '' });
 
@@ -114,7 +111,7 @@ export default function BudgetOverviewModal({
 
         {/* BODY (scrollable) */}
         <div className="tm-modal-body budget-ov__body">
-          {/* Progress */}
+          {/* Progress bar */}
           <div className="budget-ov__progress">
             <div className="budget-ov__bar">
               <div className="budget-ov__fill" style={{ width: `${pct}%` }} />
