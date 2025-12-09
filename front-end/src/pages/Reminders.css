@@ -286,20 +286,48 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255,255,255,0.2);
+  margin-bottom: 1rem;
 }
 
 .trip-detail__header h2 {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.trip-detail__header h2::before {
+  content: "🗺️";
+  font-size: 1.8rem;
+  -webkit-text-fill-color: initial;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
 .trip-detail__meta {
-  margin: 0.35rem 0 0;
+  margin: 0.5rem 0 0;
+  font-size: 1.05rem;
+  opacity: 0.9;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trip-detail__meta::before {
+  content: "📅";
   font-size: 1rem;
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .trip-detail__actions {
@@ -309,11 +337,41 @@
   flex-wrap: wrap;
 }
 
+.trip-detail__actions .tm-btn {
+  padding: 0.7rem 1.25rem;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.trip-detail__actions .tm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
 .trip-detail__body {
   margin-top: 1.5rem;
   max-height: 60vh;
   overflow-y: auto;
-  padding-right: 0.35rem;
+  padding-right: 0.5rem;
+}
+
+.trip-detail__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.trip-detail__body::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+}
+
+.trip-detail__body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 10px;
+}
+
+.trip-detail__body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.3);
 }
 
 .trip-detail__list {
@@ -325,13 +383,33 @@
 }
 
 .trip-detail__list > li {
-  border: 1px solid rgba(255,255,255,0.26);
-  border-radius: 16px;
-  background: rgba(0,0,0,0.22);
-  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
+  padding: 1.5rem 1.5rem;
   display: grid;
-  gap: 0.75rem;
-  backdrop-filter: blur(10px);
+  gap: 1rem;
+  backdrop-filter: blur(15px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.trip-detail__list > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  opacity: 0.8;
+}
+
+.trip-detail__list > li:hover {
+  transform: translateX(4px);
+  border-color: rgba(255,255,255,0.4);
+  background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.1) 100%);
 }
 
 .trip-day__header {
@@ -339,17 +417,63 @@
   justify-content: space-between;
   align-items: center;
   gap: 0.75rem;
+  margin-bottom: 0.25rem;
 }
 
 .trip-day__header strong {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trip-day__header strong::before {
+  content: "📆";
   font-size: 1.1rem;
+  opacity: 0.9;
 }
 
 .trip-detail__sublist {
   margin: 0;
-  padding-left: 1.35rem;
+  padding-left: 0;
   display: grid;
-  gap: 0.35rem;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.trip-detail__sublist li {
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  border-left: 3px solid #667eea;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.trip-detail__sublist li::before {
+  content: "✓";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #667eea;
+  font-weight: 700;
+  font-size: 0.9rem;
+  background: rgba(255,255,255,0.2);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #667eea;
+}
+
+.trip-detail__sublist li:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateX(4px);
 }
 
 @media (max-width: 900px) {
