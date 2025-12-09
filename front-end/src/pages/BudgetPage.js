@@ -66,6 +66,15 @@ export default function BudgetPage() {
 
 const currencies = useMemo(
   () => [
+    "USD", // US Dollar
+    "EUR", // Euro
+    "GBP", // British Pound
+    "CAD", // Canadian Dollar
+    "AUD", // Australian Dollar
+    "JPY", // Japanese Yen
+    "CNY", // Chinese Yuan
+    "INR", // Indian Rupee
+    "BDT", // Bangladeshi Taka
     "PKR", // Pakistani Rupee
     "AED", // UAE Dirham
     "SAR", // Saudi Riyal
