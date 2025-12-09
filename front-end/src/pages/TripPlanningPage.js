@@ -90,39 +90,41 @@ export default function TripPlanningPage({ initialTripId }) {
           className="tm-btn primary" 
           onClick={openCreateModal}
           disabled={loading}
+          aria-label="Create new trip"
         >
-          + Create Trip
+          ✨ Create Trip
         </button>
       </header>
 
       {error && (
-        <div className="tm-empty" style={{ color: 'red', marginBottom: '1rem' }}>
-          Error: {String(error)}
+        <div className="tm-empty" style={{ 
+          color: '#ff6b6b', 
+          marginBottom: '1.5rem',
+          background: 'linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,107,107,0.08) 100%)',
+          border: '2px solid rgba(255,107,107,0.4)'
+        }}>
+          <strong>⚠️ Error:</strong> {String(error)}
         </div>
       )}
 
       <section className="trip-grid">
         {loading && trips.length === 0 && (
-          <div className="tm-empty">Loading trips...</div>
+          <div className="tm-empty">
+            <p>Loading trips...</p>
+          </div>
         )}
 
         {!loading && trips.length === 0 && (
           <div className="tm-empty">
-            No trips yet — click <strong>Create Trip</strong> to start.
+            <p>No trips yet — click <strong>Create Trip</strong> to start planning your next adventure!</p>
           </div>
         )}
 
         {trips.map((trip) => (
           <div 
             key={trip.id} 
-            className="trip-grid__item"
+            className={`trip-grid__item ${selected?.id === trip.id ? 'trip-grid__item--selected' : ''}`}
             data-trip-id={trip.id}
-            style={{
-              border: selected?.id === trip.id ? '2px solid #667eea' : 'none',
-              borderRadius: selected?.id === trip.id ? '12px' : '0',
-              padding: selected?.id === trip.id ? '4px' : '0',
-              transition: 'all 0.3s ease'
-            }}
           >
             <TripCard trip={trip} onOpen={setSelected} />
             <div className="trip-card__footer">
@@ -160,17 +162,17 @@ export default function TripPlanningPage({ initialTripId }) {
                 </p>
               </div>
               <div className="trip-detail__actions">
-                <button className="tm-btn ghost" onClick={closeDetails}>
-                  Close
+                <button className="tm-btn ghost" onClick={closeDetails} aria-label="Close trip details">
+                  ✕ Close
                 </button>
-                <button className="tm-btn" onClick={() => setShowShare(true)}>
+                <button className="tm-btn" onClick={() => setShowShare(true)} aria-label="Share trip">
                   📤 Share
                 </button>
-                <button className="tm-btn primary" onClick={() => setIsOpen(true)}>
-                  Edit Trip
+                <button className="tm-btn primary" onClick={() => setIsOpen(true)} aria-label="Edit trip">
+                  ✏️ Edit Trip
                 </button>
-                <button className="tm-btn danger" onClick={() => handleDelete(selected.id)}>
-                  Delete
+                <button className="tm-btn danger" onClick={() => handleDelete(selected.id)} aria-label="Delete trip">
+                  🗑️ Delete
                 </button>
               </div>
             </header>
@@ -214,8 +216,16 @@ export default function TripPlanningPage({ initialTripId }) {
           <div className="tm-modal tm-modal--opaque trip-modal" onClick={(e) => e.stopPropagation()}>
             <div className="tm-modal-body">
               {saveError && (
-                <div className="tm-empty" style={{ color: 'red', marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px' }}>
-                  <strong>Error:</strong> {saveError}
+                <div className="tm-empty" style={{ 
+                  color: '#ff6b6b', 
+                  marginBottom: '1rem', 
+                  padding: '1rem 1.25rem', 
+                  background: 'linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(255,107,107,0.08) 100%)', 
+                  border: '2px solid rgba(255,107,107,0.4)', 
+                  borderRadius: '12px',
+                  fontSize: '0.95rem'
+                }}>
+                  <strong>⚠️ Error:</strong> {saveError}
                 </div>
               )}
               <TripForm
