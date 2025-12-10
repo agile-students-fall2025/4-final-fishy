@@ -1,4 +1,4 @@
-const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const API = process.env.REACT_APP_API_URL || "http://143.198.20.180:3001";
 const TRIPS = `${API}/api/trips`;
 
 // Helper to get auth headers
