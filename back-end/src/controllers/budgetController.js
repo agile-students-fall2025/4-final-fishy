@@ -30,7 +30,11 @@ const expenseCreateSchema = Joi.object({
 });
 
 const expenseUpdateSchema = Joi.object({
-  amount: Joi.number().min(0)
+  amount: Joi.number().min(0),
+  currency: Joi.string().trim(),
+  category: Joi.string().trim(),
+  date: Joi.string().allow(null, ''),
+  note: Joi.string().allow('')
 }).min(1);
 
 export const getAll = async (req, res) => {

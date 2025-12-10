@@ -61,14 +61,34 @@ describe("Map API (Mocha + Chai)", function () {
   });
 
   it("DELETE /api/map/locations/:id/tasks/:taskId -> deletes task", async () => {
+    // Create a fresh location and task for this test since afterEach clears the DB
+    const createLocRes = await request(app)
+      .post("/api/map/locations")
+      .send({ title: "Test Task Delete", lat: 25.2, lng: 55.3 });
+    expect(createLocRes.status).to.equal(201);
+    const locId = createLocRes.body.id;
+    
+    const createTaskRes = await request(app)
+      .post(`/api/map/locations/${locId}/tasks`)
+      .send({ text: "Test task" });
+    expect(createTaskRes.status).to.equal(201);
+    const testTaskId = createTaskRes.body.id;
+    
     const res = await request(app).delete(
-      `/api/map/locations/${createdId}/tasks/${taskId}`
+      `/api/map/locations/${locId}/tasks/${testTaskId}`
     );
     expect(res.status).to.equal(200);
   });
 
   it("DELETE /api/map/locations/:id -> deletes location", async () => {
-    const res = await request(app).delete(`/api/map/locations/${createdId}`);
+    // Create a fresh location for this test since afterEach clears the DB
+    const createRes = await request(app)
+      .post("/api/map/locations")
+      .send({ title: "Test Delete", lat: 25.2, lng: 55.3 });
+    expect(createRes.status).to.equal(201);
+    const deleteId = createRes.body.id;
+    
+    const res = await request(app).delete(`/api/map/locations/${deleteId}`);
     expect(res.status).to.equal(200);
   });
 });

@@ -5,12 +5,14 @@ const { Schema } = mongoose;
 
 const mapLocationSchema = new Schema(
   {
+    userId: { type: String, required: true, index: true }, 
     title: { type: String, default: 'Untitled', trim: true },
     lat: { type: Number, required: true },
     lng: { type: Number, required: true },
     note: { type: String, default: '' },
     photos: { type: [String], default: [] }, // base64 images
   },
+
   {
     timestamps: true,
     toJSON: {

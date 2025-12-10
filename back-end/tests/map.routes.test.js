@@ -2,6 +2,17 @@
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
 
+// Mock auth middleware to bypass authentication in tests
+vi.mock('../src/utils/auth.js', () => {
+  return {
+    authMiddleware: (req, res, next) => {
+      // Set a mock user for testing
+      req.user = { id: 'test-user-id', email: 'test@example.com' };
+      next();
+    }
+  };
+});
+
 // --- Module mock for ../src/data/mapStore.js ---
 let state = { locations: [] };
 

@@ -9,6 +9,15 @@ export default defineConfig({
       'dist/**',
       '.git/**'
     ],
-    environment: 'node'
+    environment: 'node',
+    setupFiles: ['./tests/setup.js'],
+    testTimeout: 10000,
+    // Run tests sequentially to avoid database conflicts
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true
+      }
+    }
   }
 });

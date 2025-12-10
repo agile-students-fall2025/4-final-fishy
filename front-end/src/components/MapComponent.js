@@ -1,3 +1,4 @@
+//front-end/src/components/MapComponents.js
 import React, { useEffect, useState, useMemo } from "react";
 import {
   fetchLocations,
