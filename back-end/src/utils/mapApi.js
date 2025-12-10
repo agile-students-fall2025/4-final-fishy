@@ -2,8 +2,21 @@
 const API = process.env.REACT_APP_API_URL || 'http://localhost:4000';
 const MAP = `${API}/api/map`;
 
+// Try both common keys so it works with your existing auth logic
+function authHeaders() {
+  const token =
+    localStorage.getItem('authToken') ||   // some apps use this
+    localStorage.getItem('token');         // others use this
+
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function fetchLocations() {
-  const r = await fetch(`${MAP}/locations`);
+  const r = await fetch(`${MAP}/locations`, {
+    headers: {
+      ...authHeaders(),
+    },
+  });
   if (!r.ok) throw new Error('Failed to load locations');
   return r.json();
 }
@@ -11,7 +24,10 @@ export async function fetchLocations() {
 export async function createLocation(payload) {
   const r = await fetch(`${MAP}/locations`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify(payload),
   });
   if (!r.ok) throw new Error('Failed to create location');
@@ -21,7 +37,10 @@ export async function createLocation(payload) {
 export async function updateLocation(id, patch) {
   const r = await fetch(`${MAP}/locations/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify(patch),
   });
   if (!r.ok) throw new Error('Failed to update location');
@@ -29,7 +48,12 @@ export async function updateLocation(id, patch) {
 }
 
 export async function deleteLocation(id) {
-  const r = await fetch(`${MAP}/locations/${id}`, { method: 'DELETE' });
+  const r = await fetch(`${MAP}/locations/${id}`, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders(),
+    },
+  });
   if (!r.ok) throw new Error('Failed to delete location');
   return r.json();
 }
@@ -37,7 +61,10 @@ export async function deleteLocation(id) {
 export async function addTask(id, text) {
   const r = await fetch(`${MAP}/locations/${id}/tasks`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify({ text }),
   });
   if (!r.ok) throw new Error('Failed to add task');
@@ -47,7 +74,10 @@ export async function addTask(id, text) {
 export async function updateTask(locationId, taskId, patch) {
   const r = await fetch(`${MAP}/locations/${locationId}/tasks/${taskId}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify(patch),
   });
   if (!r.ok) throw new Error('Failed to update task');
@@ -55,7 +85,12 @@ export async function updateTask(locationId, taskId, patch) {
 }
 
 export async function deleteTask(locationId, taskId) {
-  const r = await fetch(`${MAP}/locations/${locationId}/tasks/${taskId}`, { method: 'DELETE' });
+  const r = await fetch(`${MAP}/locations/${locationId}/tasks/${taskId}`, {
+    method: 'DELETE',
+    headers: {
+      ...authHeaders(),
+    },
+  });
   if (!r.ok) throw new Error('Failed to delete task');
   return r.json();
 }
@@ -63,7 +98,10 @@ export async function deleteTask(locationId, taskId) {
 export async function addPhotos(locationId, base64Array) {
   const r = await fetch(`${MAP}/locations/${locationId}/photos`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...authHeaders(),
+    },
     body: JSON.stringify({ photos: base64Array }),
   });
   if (!r.ok) throw new Error('Failed to add photos');

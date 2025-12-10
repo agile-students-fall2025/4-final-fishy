@@ -2,7 +2,7 @@ const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
 const TRIPS = `${API}/api/trips`;
 
 // Helper to get auth headers
-function getAuthHeaders() {
+export function getAuthHeaders() {
   const token = localStorage.getItem('token');
   const headers = { "Content-Type": "application/json" };
   if (token) {
@@ -10,6 +10,7 @@ function getAuthHeaders() {
   }
   return headers;
 }
+
 
 export async function fetchTrips() {
   const r = await fetch(TRIPS, {
