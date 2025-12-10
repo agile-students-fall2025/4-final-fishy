@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import "../App.css";
 import "./MapPage.css";
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 import {
   fetchLocations,
@@ -59,17 +60,27 @@ function MapPage() {
   }, []);
 
   // Add destination manually
-  const handleAddDestination = async () => {
-    if (!newDestination.trim()) return;
+  const handleAddDestination = async (placeData = null) => {
+    const destinationTitle = placeData?.name || newDestination.trim();
+    if (!destinationTitle) return;
+    
     try {
+      const lat = placeData?.lat || mapCenter.lat;
+      const lng = placeData?.lng || mapCenter.lng;
+      
       const newDest = await createLocation({
-        title: newDestination.trim(),
-        lat: mapCenter.lat,
-        lng: mapCenter.lng,
+        title: destinationTitle,
+        lat: lat,
+        lng: lng,
       });
       setDestinations((prev) => [...prev, newDest]);
       setMarkers((prev) => [...prev, { id: newDest.id, lat: newDest.lat, lng: newDest.lng }]);
       setNewDestination("");
+      
+      // Center map on new location if we have coordinates
+      if (placeData?.lat && placeData?.lng) {
+        setMapCenter({ lat: lat, lng: lng });
+      }
     } catch (err) {
       console.error("Failed:", err);
     }
@@ -154,14 +165,16 @@ function MapPage() {
 
       {/* Add Destination */}
       <div className="add-destination">
-        <input
-          type="text"
+        <LocationAutocomplete
           placeholder="Add destination..."
           value={newDestination}
           onChange={(e) => setNewDestination(e.target.value)}
+          onPlaceSelect={(placeData) => {
+            handleAddDestination(placeData);
+          }}
           className="destination-input"
         />
-        <button onClick={handleAddDestination} className="add-destination-btn">
+        <button onClick={() => handleAddDestination()} className="add-destination-btn">
           Add
         </button>
       </div>

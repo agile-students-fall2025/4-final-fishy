@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import RecommendedActivities from "./RecommendedActivities";
+import LocationAutocomplete from "./LocationAutocomplete";
 
 export default function TripForm({ trip, onSave, onCancel }) {
   const [destination, setDestination] = useState("");
@@ -104,7 +105,7 @@ export default function TripForm({ trip, onSave, onCancel }) {
       </header>
 
       <label className="tm-label">Destination</label>
-      <input
+      <LocationAutocomplete
         className="tm-input"
         placeholder="e.g., Paris, France"
         value={destination}
