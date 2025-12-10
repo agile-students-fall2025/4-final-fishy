@@ -6,104 +6,128 @@ import {
   createLocation,
   updateLocation,
   removeLocation,
-  addPhotos
+  addPhotos,
 } from "../data/mapStore.js";
 
-//validation
-
+// Validation schemas
 const locCreateSchema = Joi.object({
   title: Joi.string().allow("", null),
   lat: Joi.number().required(),
   lng: Joi.number().required(),
   note: Joi.string().allow("", null),
   photos: Joi.array().items(Joi.string()).default([]),
-}).unknown(true);
+});
 
 const locUpdateSchema = Joi.object({
   title: Joi.string().allow("", null),
-  lat: Joi.number().optional(),
-  lng: Joi.number().optional(),
+  lat: Joi.number(),
+  lng: Joi.number(),
   note: Joi.string().allow("", null),
-  photos: Joi.array().items(Joi.string()).optional(),
-}).unknown(true);
+  photos: Joi.array().items(Joi.string()),
+}).min(1);
 
-//routes
-
+// GET /api/map/locations
 export async function listAll(req, res) {
   try {
-    const docs = await listLocations();
+    const userId = req.user.id;
+    const docs = await listLocations(userId);
     return res.json(docs);
   } catch (err) {
+    console.error("listAll error:", err);
     return res.status(500).json({ error: "Failed to list locations" });
   }
 }
 
+// GET /api/map/locations/:id
 export async function getOne(req, res) {
   try {
-    const doc = await getLocation(req.params.id);
+    const userId = req.user.id;
+    const doc = await getLocation(req.params.id, userId);
     if (!doc) return res.status(404).json({ error: "Location not found" });
     return res.json(doc);
   } catch (err) {
+    console.error("getOne error:", err);
     return res.status(500).json({ error: "Failed to fetch location" });
   }
 }
 
+// POST /api/map/locations
 export async function createOne(req, res) {
   try {
     const { value, error } = locCreateSchema.validate(req.body || {}, {
-      abortEarly: false
+      abortEarly: false,
     });
 
-    if (error) return res.status(400).json({ error: error.message });
+    if (error) {
+      return res.status(400).json({
+        error: "Validation failed",
+        details: error.details.map((d) => d.message),
+      });
+    }
 
-    const doc = await createLocation(value);
+    const userId = req.user.id;
+    const doc = await createLocation(value, userId);
     return res.status(201).json(doc);
   } catch (err) {
+    console.error("createOne error:", err);
     return res.status(500).json({ error: "Failed to create location" });
   }
 }
 
+// PUT /api/map/locations/:id
 export async function updateOne(req, res) {
   try {
     const { value, error } = locUpdateSchema.validate(req.body || {}, {
-      abortEarly: false
+      abortEarly: false,
     });
 
-    if (error) return res.status(400).json({ error: error.message });
+    if (error) {
+      return res.status(400).json({
+        error: "Validation failed",
+        details: error.details.map((d) => d.message),
+      });
+    }
 
-    const doc = await updateLocation(req.params.id, value);
+    const userId = req.user.id;
+    const doc = await updateLocation(req.params.id, value, userId);
     if (!doc) return res.status(404).json({ error: "Location not found" });
 
     return res.json(doc);
   } catch (err) {
+    console.error("updateOne error:", err);
     return res.status(500).json({ error: "Failed to update location" });
   }
 }
 
+// DELETE /api/map/locations/:id
 export async function removeOne(req, res) {
   try {
-    const ok = await removeLocation(req.params.id);
+    const userId = req.user.id;
+    const ok = await removeLocation(req.params.id, userId);
     if (!ok) return res.status(404).json({ error: "Location not found" });
 
     return res.json({ message: "Location deleted" });
   } catch (err) {
+    console.error("removeOne error:", err);
     return res.status(500).json({ error: "Failed to delete location" });
   }
 }
 
-//photoes
-
+// POST /api/map/locations/:id/photos
 export async function addPhotosOne(req, res) {
   try {
     const { photos } = req.body;
-    if (!Array.isArray(photos))
+    if (!Array.isArray(photos)) {
       return res.status(400).json({ error: "Photos must be array" });
+    }
 
-    const out = await addPhotos(req.params.id, photos);
+    const userId = req.user.id;
+    const out = await addPhotos(req.params.id, photos, userId);
     if (!out) return res.status(404).json({ error: "Location not found" });
 
     return res.json({ photos: out });
   } catch (err) {
+    console.error("addPhotosOne error:", err);
     return res.status(500).json({ error: "Failed to add photos" });
   }
 }

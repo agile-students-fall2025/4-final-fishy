@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { fetchWeather } from '../utils/api.js';
+import LocationAutocomplete from '../components/LocationAutocomplete';
 
 function WeatherPage() {
   const [selectedLocation, setSelectedLocation] = useState('Tokyo');
   const [weatherData, setWeatherData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [locationInputValue, setLocationInputValue] = useState('');
 
   // Fetch weather data when location changes
   useEffect(() => {
@@ -30,10 +32,16 @@ function WeatherPage() {
 
   const handleLocationSubmit = (e) => {
     e.preventDefault();
-    const input = e.target.elements.locationInput;
-    if (input && input.value.trim()) {
-      setSelectedLocation(input.value.trim());
-      input.value = '';
+    if (locationInputValue && locationInputValue.trim()) {
+      setSelectedLocation(locationInputValue.trim());
+      setLocationInputValue('');
+    }
+  };
+
+  const handleLocationSelect = (placeData) => {
+    if (placeData?.name) {
+      setSelectedLocation(placeData.name);
+      setLocationInputValue('');
     }
   };
 
@@ -51,12 +59,14 @@ function WeatherPage() {
           <form onSubmit={handleLocationSubmit} className="weather-search-form">
             <div className="search-input-wrapper">
               <span className="search-icon">🔍</span>
-              <input 
+              <LocationAutocomplete
                 id="location-input"
                 name="locationInput"
-                type="text"
                 placeholder="Search for a city..."
                 className="weather-search-input"
+                value={locationInputValue}
+                onChange={(e) => setLocationInputValue(e.target.value)}
+                onPlaceSelect={handleLocationSelect}
               />
               <button type="submit" className="weather-search-btn">
                 Search
