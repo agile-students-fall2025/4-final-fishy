@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import "./Auth.css";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 function LoginPage({ onLogin, onNavigateRegister }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +14,7 @@ function LoginPage({ onLogin, onNavigateRegister }) {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:4000/api/users/login', {
+      const res = await fetch(`${API}/api/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
