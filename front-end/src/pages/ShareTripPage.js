@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { generateTripPDF } from '../utils/pdfGenerator';
 
-const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const API = process.env.REACT_APP_API_URL || "http://143.198.20.180:3001";
 
 export default function ShareTripPage({ tripId }) {
   const [trip, setTrip] = useState(null);
