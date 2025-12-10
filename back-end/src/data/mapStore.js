@@ -3,18 +3,19 @@ import MapLocation from "../models/MapLocation.js";
 
 // read
 
-export async function listLocations() {
-  return MapLocation.find().sort({ createdAt: -1 });
+export async function listLocations(userId) {
+  return MapLocation.find({ userId }).sort({ createdAt: -1 });
 }
 
-export async function getLocation(id) {
-  return MapLocation.findById(id);
+export async function getLocation(id, userId) {
+  return MapLocation.findOne({ _id: id, userId });
 }
 
 // create
 
-export async function createLocation(payload) {
+export async function createLocation(payload, userId) {
   const data = {
+    userId,                               
     title: payload.title,
     lat: payload.lat,
     lng: payload.lng,
@@ -28,7 +29,7 @@ export async function createLocation(payload) {
 
 // update
 
-export async function updateLocation(id, patch) {
+export async function updateLocation(id, patch, userId) {
   const update = {};
 
   if (patch.title !== undefined) update.title = patch.title;
@@ -37,23 +38,24 @@ export async function updateLocation(id, patch) {
   if (patch.note !== undefined) update.note = patch.note;
   if (patch.photos !== undefined) update.photos = patch.photos;
 
-  return MapLocation.findByIdAndUpdate(id, update, {
-    new: true,
-    runValidators: true,
-  });
+  return MapLocation.findOneAndUpdate(
+    { _id: id, userId },                  // 👈 filter by user
+    update,
+    { new: true, runValidators: true }
+  );
 }
 
 // delete
 
-export async function removeLocation(id) {
-  const doc = await MapLocation.findByIdAndDelete(id);
+export async function removeLocation(id, userId) {
+  const doc = await MapLocation.findOneAndDelete({ _id: id, userId });
   return !!doc;
 }
 
-// photoes
+// photos
 
-export async function addPhotos(locationId, photos) {
-  const loc = await MapLocation.findById(locationId);
+export async function addPhotos(locationId, photos, userId) {
+  const loc = await MapLocation.findOne({ _id: locationId, userId });
   if (!loc) return null;
 
   const valid = photos.filter((x) => typeof x === "string");
