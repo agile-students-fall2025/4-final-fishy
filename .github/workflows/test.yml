@@ -12,10 +12,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
       
@@ -33,6 +33,8 @@ jobs:
         env:
           JWT_SECRET: test-secret-key-for-ci
           NODE_ENV: test
+          MONGODB_URI: mongodb://localhost:27017/test
+          OPENWEATHER_API_KEY: test-api-key
       
       - name: Run Mocha tests
         working-directory: ./back-end
@@ -40,16 +42,18 @@ jobs:
         env:
           JWT_SECRET: test-secret-key-for-ci
           NODE_ENV: test
+          MONGODB_URI: mongodb://localhost:27017/test
+          OPENWEATHER_API_KEY: test-api-key
 
   test-frontend:
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
       
