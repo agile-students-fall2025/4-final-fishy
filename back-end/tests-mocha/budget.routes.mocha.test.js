@@ -38,6 +38,9 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('PATCH /api/budgets/:id -> 200 updated', async () => {
+    if (!createdId) {
+      throw new Error('createdId is not set - POST test must have run first');
+    }
     const res = await request(app)
       .patch(`/api/budgets/${createdId}`)
       .set('Authorization', authHeader)
@@ -47,6 +50,9 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('POST /api/budgets/:id/expenses -> 201 expense created', async () => {
+    if (!createdId) {
+      throw new Error('createdId is not set - POST test must have run first');
+    }
     const res = await request(app)
       .post(`/api/budgets/${createdId}/expenses`)
       .set('Authorization', authHeader)
@@ -56,6 +62,9 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('DELETE /api/budgets/:id -> 204', async () => {
+    if (!createdId) {
+      throw new Error('createdId is not set - POST test must have run first');
+    }
     const res = await request(app).delete(`/api/budgets/${createdId}`).set('Authorization', authHeader);
     expect(res.status).to.equal(204);
   });

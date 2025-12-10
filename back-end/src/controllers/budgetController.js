@@ -62,11 +62,18 @@ export const getOne = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
+    }
     const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget not found' });
     res.json(budget);
   } catch (err) {
     console.error('getOne error:', err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid budget ID format' });
+    }
     res.status(500).json({ error: 'Failed to load budget' });
   }
 };
@@ -114,6 +121,11 @@ export const patch = async (req, res) => {
     const userId = getUserId(req);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
     }
     
     const { error, value } = budgetUpdateSchema.validate(req.body || {}, {
@@ -165,11 +177,19 @@ export const destroy = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
+    }
+    
     const deleted = await Budget.findOneAndDelete({ _id: req.params.id, userId });
     if (!deleted) return res.status(404).json({ error: 'Budget not found' });
     res.status(204).end();
   } catch (err) {
     console.error('destroy budget error:', err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid budget ID format' });
+    }
     res.status(500).json({ error: 'Failed to delete budget' });
   }
 };
@@ -179,6 +199,11 @@ export const addExp = async (req, res) => {
     const userId = getUserId(req);
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
     }
     
     const { error } = expenseCreateSchema.validate({
@@ -220,6 +245,14 @@ export const patchExp = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
+    // Validate ID parameters
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
+    }
+    if (!req.params.expenseId || req.params.expenseId === 'undefined') {
+      return res.status(400).json({ error: 'Invalid expense ID' });
+    }
+    
     const { error } = expenseUpdateSchema.validate(req.body || {}, {
       stripUnknown: true
     });
@@ -256,6 +289,14 @@ export const destroyExp = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
+    // Validate ID parameters
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid budget ID' });
+    }
+    if (!req.params.expenseId || req.params.expenseId === 'undefined') {
+      return res.status(400).json({ error: 'Invalid expense ID' });
+    }
+
     const budget = await Budget.findOne({ _id: req.params.id, userId });
     if (!budget) return res.status(404).json({ error: 'Budget or expense not found' });
 
