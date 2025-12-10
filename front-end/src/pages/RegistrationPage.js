@@ -1,4 +1,6 @@
+//src/pages/RegistrationPage.js
 import React, { useState } from 'react';
+import "./Auth.css";
 
 function RegistrationPage({ onRegister, onNavigateLogin }) {
   const [name, setName] = useState('');

@@ -1,0 +1,127 @@
+/* ===== Authentication Page Container ===== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 2rem;
+}
+
+/* ===== Card ===== */
+.login-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 2.5rem 3rem;
+  width: 100%;
+  max-width: 420px;
+  color: white;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.login-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.login-subtitle {
+  text-align: center;
+  opacity: 0.85;
+  margin-bottom: 1.5rem;
+}
+
+/* ===== Form Styles ===== */
+.tm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.tm-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.tm-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.3s ease;
+}
+
+.tm-input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.tm-input:focus {
+  background: rgba(255,255,255,0.35);
+}
+
+/* ===== Buttons ===== */
+.tm-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tm-btn {
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: 0.3s ease;
+}
+
+.tm-btn--primary {
+  background: #ffffff;
+  color: #5a67d8;
+  box-shadow: 0 4px 12px rgba(255,255,255,0.3);
+}
+
+.tm-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,255,255,0.4);
+}
+
+/* ===== Page Switch (Login <-> Register) ===== */
+.signup-hint {
+  margin-top: 1.5rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.signup-link {
+  color: #fff;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.signup-link:hover {
+  opacity: 1;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
