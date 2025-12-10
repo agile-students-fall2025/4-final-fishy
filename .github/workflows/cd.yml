@@ -1,0 +1,65 @@
+name: CD
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build Docker images
+        run: |
+          docker build -t tripmate-backend:latest ./back-end
+          docker build -t tripmate-frontend:latest \
+            --build-arg REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL || 'http://localhost:4001' }} \
+            --build-arg REACT_APP_GOOGLE_MAPS_API_KEY=${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY || '' }} \
+            --build-arg REACT_APP_UNSPLASH_ACCESS_KEY=${{ secrets.REACT_APP_UNSPLASH_ACCESS_KEY || '' }} \
+            ./front-end
+      
+      - name: Deploy to DigitalOcean Droplet
+        if: ${{ secrets.DROPLET_HOST != '' }}
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USER || 'root' }}
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /opt/tripmate || (git clone ${{ github.repositoryUrl }} /opt/tripmate && cd /opt/tripmate)
+            git fetch origin
+            git checkout master
+            git pull origin master
+            docker-compose down || true
+            docker-compose pull || true
+            docker-compose up -d --build
+            docker-compose ps
+            echo "✅ Deployment completed successfully"
+      
+      - name: Deployment instructions
+        if: ${{ secrets.DROPLET_HOST == '' }}
+        run: |
+          echo "## ⚠️ Deployment Skipped" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To enable automated deployment, configure the following secrets in GitHub:" >> $GITHUB_STEP_SUMMARY
+          echo "- \`DROPLET_HOST\` - Your DigitalOcean droplet IP address" >> $GITHUB_STEP_SUMMARY
+          echo "- \`DROPLET_USER\` - SSH username (usually 'root')" >> $GITHUB_STEP_SUMMARY
+          echo "- \`DROPLET_SSH_KEY\` - Private SSH key for authentication" >> $GITHUB_STEP_SUMMARY
+          echo "- \`REACT_APP_API_URL\` - Production API URL" >> $GITHUB_STEP_SUMMARY
+          echo "- \`REACT_APP_GOOGLE_MAPS_API_KEY\` - Google Maps API key" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** Images were built successfully. You can deploy manually using docker-compose." >> $GITHUB_STEP_SUMMARY
+
