@@ -23,7 +23,11 @@ jobs:
       
       - name: Install dependencies
         working-directory: ./back-end
-        run: npm ci
+        run: npm install
+      
+      - name: Install mongodb-memory-server for tests
+        working-directory: ./back-end
+        run: npm install --save-dev mongodb-memory-server || true
       
       - name: Run Vitest tests
         working-directory: ./back-end
@@ -55,7 +59,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: ./front-end
-        run: npm ci
+        run: npm install
       
       - name: Run tests
         working-directory: ./front-end
