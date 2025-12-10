@@ -1,6 +1,7 @@
 // back-end/tests/trips.routes.test.js
 import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import jwt from 'jsonwebtoken';
 
 // --- Module mock for ../src/data/tripStore.js ---
 let DB = [];
@@ -29,7 +30,18 @@ vi.mock('../src/data/tripStore.js', () => {
   };
 });
 
-// import the app AFTER the mock, so it wires the mocked store
+// Mock auth middleware to bypass authentication in tests
+vi.mock('../src/utils/auth.js', () => {
+  return {
+    authMiddleware: (req, res, next) => {
+      // Set a mock user for testing
+      req.user = { id: 'test-user-id', email: 'test@example.com' };
+      next();
+    }
+  };
+});
+
+// import the app AFTER the mocks, so it wires the mocked modules
 import app from '../src/app.js';
 
 describe('Trips API', () => {
