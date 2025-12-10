@@ -33,7 +33,7 @@
    npm start
    ```
 
-   The backend will start on `http://localhost:4000`
+   The backend will start on `http://143.198.20.180:3001`
 
 ### Frontend Setup
 
@@ -78,7 +78,7 @@ npm start
 
 ### Base URL
 ```
-http://localhost:4000
+http://143.198.20.180:3001
 ```
 
 ### API Endpoints
