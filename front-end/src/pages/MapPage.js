@@ -31,9 +31,11 @@ function MapPage() {
   const [tempNote, setTempNote] = useState("");
 
   const { isLoaded } = useJsApiLoader({
-    id: "google-map-script",
+    id: "google-map-autocomplete",
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
   });
+
 
   // Load data
   useEffect(() => {
