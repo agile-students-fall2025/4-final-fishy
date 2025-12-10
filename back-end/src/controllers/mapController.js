@@ -41,12 +41,19 @@ export async function listAll(req, res) {
 // GET /api/map/locations/:id
 export async function getOne(req, res) {
   try {
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid location ID' });
+    }
     const userId = req.user.id;
     const doc = await getLocation(req.params.id, userId);
     if (!doc) return res.status(404).json({ error: "Location not found" });
     return res.json(doc);
   } catch (err) {
     console.error("getOne error:", err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid location ID format' });
+    }
     return res.status(500).json({ error: "Failed to fetch location" });
   }
 }
@@ -77,6 +84,11 @@ export async function createOne(req, res) {
 // PUT /api/map/locations/:id
 export async function updateOne(req, res) {
   try {
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid location ID' });
+    }
+    
     const { value, error } = locUpdateSchema.validate(req.body || {}, {
       abortEarly: false,
     });
@@ -95,6 +107,9 @@ export async function updateOne(req, res) {
     return res.json(doc);
   } catch (err) {
     console.error("updateOne error:", err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid location ID format' });
+    }
     return res.status(500).json({ error: "Failed to update location" });
   }
 }
@@ -102,6 +117,10 @@ export async function updateOne(req, res) {
 // DELETE /api/map/locations/:id
 export async function removeOne(req, res) {
   try {
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid location ID' });
+    }
     const userId = req.user.id;
     const ok = await removeLocation(req.params.id, userId);
     if (!ok) return res.status(404).json({ error: "Location not found" });
@@ -109,6 +128,9 @@ export async function removeOne(req, res) {
     return res.json({ message: "Location deleted" });
   } catch (err) {
     console.error("removeOne error:", err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid location ID format' });
+    }
     return res.status(500).json({ error: "Failed to delete location" });
   }
 }
@@ -116,6 +138,11 @@ export async function removeOne(req, res) {
 // POST /api/map/locations/:id/photos
 export async function addPhotosOne(req, res) {
   try {
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid location ID' });
+    }
+    
     const { photos } = req.body;
     if (!Array.isArray(photos)) {
       return res.status(400).json({ error: "Photos must be array" });
@@ -128,6 +155,9 @@ export async function addPhotosOne(req, res) {
     return res.json({ photos: out });
   } catch (err) {
     console.error("addPhotosOne error:", err);
+    if (err.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid location ID format' });
+    }
     return res.status(500).json({ error: "Failed to add photos" });
   }
 }

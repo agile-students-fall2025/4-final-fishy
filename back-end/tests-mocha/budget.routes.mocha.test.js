@@ -9,11 +9,12 @@ const authHeader = getAuthHeader();
 describe('Budget routes (Mocha)', () => {
   let createdId;
   let testTripId;
+  const TEST_USER_ID = 'test-user-id';
 
-  before(async () => {
-    // Create a test trip that the budget can reference
+  beforeEach(async () => {
+    // Create a test trip that the budget can reference (beforeEach ensures it exists for each test)
     const testTrip = await Trip.create({
-      userId: 'test-user-id',
+      userId: TEST_USER_ID,
       destination: 'Test Destination',
       startDate: '2026-01-01',
       endDate: '2026-01-07',
@@ -38,8 +39,16 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('PATCH /api/budgets/:id -> 200 updated', async () => {
+    // Create a fresh budget for this test since afterEach clears the DB
+    const createRes = await request(app)
+      .post('/api/budgets')
+      .set('Authorization', authHeader)
+      .send({ name: 'Test Update', currency: 'USD', limit: 500, tripId: testTripId });
+    expect(createRes.status).to.equal(201);
+    const updateId = createRes.body.id;
+    
     const res = await request(app)
-      .patch(`/api/budgets/${createdId}`)
+      .patch(`/api/budgets/${updateId}`)
       .set('Authorization', authHeader)
       .send({ limit: 900 });
     expect(res.status).to.equal(200);
@@ -47,8 +56,16 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('POST /api/budgets/:id/expenses -> 201 expense created', async () => {
+    // Create a fresh budget for this test since afterEach clears the DB
+    const createRes = await request(app)
+      .post('/api/budgets')
+      .set('Authorization', authHeader)
+      .send({ name: 'Test Expenses', currency: 'USD', limit: 500, tripId: testTripId });
+    expect(createRes.status).to.equal(201);
+    const expenseBudgetId = createRes.body.id;
+    
     const res = await request(app)
-      .post(`/api/budgets/${createdId}/expenses`)
+      .post(`/api/budgets/${expenseBudgetId}/expenses`)
       .set('Authorization', authHeader)
       .send({ amount: 12, category: 'Food', note: 'Snack' });
     expect(res.status).to.equal(201);
@@ -56,7 +73,15 @@ describe('Budget routes (Mocha)', () => {
   });
 
   it('DELETE /api/budgets/:id -> 204', async () => {
-    const res = await request(app).delete(`/api/budgets/${createdId}`).set('Authorization', authHeader);
+    // Create a fresh budget for this test since afterEach clears the DB
+    const createRes = await request(app)
+      .post('/api/budgets')
+      .set('Authorization', authHeader)
+      .send({ name: 'Test Delete', currency: 'USD', limit: 500, tripId: testTripId });
+    expect(createRes.status).to.equal(201);
+    const deleteId = createRes.body.id;
+    
+    const res = await request(app).delete(`/api/budgets/${deleteId}`).set('Authorization', authHeader);
     expect(res.status).to.equal(204);
   });
 });

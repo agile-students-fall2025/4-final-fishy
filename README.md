@@ -275,3 +275,15 @@ The CD workflow (`.github/workflows/cd.yml`) automatically deploys to DigitalOce
    ```
 
 **Note:** If secrets are not configured, the CD workflow will build images but skip deployment, providing instructions for manual setup.
+
+## Deployment
+
+TripMate is deployed on DigitalOcean
+
+### Live Application
+
+🌐 **Frontend**: http://143.198.20.180:3001
+
+🔌 **Backend API**: http://143.198.20.180:4001
+- Health Check: http://143.198.20.180:4001/api/health
+

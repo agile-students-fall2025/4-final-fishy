@@ -45,10 +45,17 @@ export async function getTrip(req, res) {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid trip ID' });
+    }
     const doc = await getById(req.params.id, userId);
     if (!doc) return res.status(404).json({ error: 'Not found' });
     res.json(doc);
   } catch (e) {
+    if (e.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     res.status(500).json({ error: 'Failed to fetch trip', details: e.message });
   }
 }
@@ -118,10 +125,18 @@ export async function updateTrip(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid trip ID' });
+    }
+    
     const doc = await update(req.params.id, patch, userId);
     if (!doc) return res.status(404).json({ error: 'Not found' });
     res.json(doc);
   } catch (e) {
+    if (e.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     return res.status(500).json({ error: 'Failed to update trip', details: e.message });
   }
 }
@@ -133,6 +148,11 @@ export async function deleteTrip(req, res) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid trip ID' });
+    }
+    
     const tripId = req.params.id;
     
     // Delete associated budgets (cascade delete)
@@ -142,6 +162,9 @@ export async function deleteTrip(req, res) {
     if (!ok) return res.status(404).json({ error: 'Not found' });
     res.json({ ok: true });
   } catch (e) {
+    if (e.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     res.status(500).json({ error: 'Failed to delete trip', details: e.message });
   }
 }
@@ -149,10 +172,17 @@ export async function deleteTrip(req, res) {
 // Public endpoint for shared trips (no auth required)
 export async function getPublicTrip(req, res) {
   try {
+    // Validate ID parameter
+    if (!req.params.id || req.params.id === 'undefined') {
+      return res.status(400).json({ error: 'Invalid trip ID' });
+    }
     const doc = await getById(req.params.id, null); // Pass null to skip userId check
     if (!doc) return res.status(404).json({ error: 'Not found' });
     res.json(doc);
   } catch (e) {
+    if (e.name === 'CastError') {
+      return res.status(400).json({ error: 'Invalid trip ID format' });
+    }
     res.status(500).json({ error: 'Failed to fetch trip', details: e.message });
   }
 }

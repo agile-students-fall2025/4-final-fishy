@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import "./Auth.css";
 
+const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
+
 function RegistrationPage({ onRegister, onNavigateLogin }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,7 +19,7 @@ function RegistrationPage({ onRegister, onNavigateLogin }) {
     }
 
     try {
-      const res = await fetch('http://localhost:4000/api/users/register', {
+      const res = await fetch(`${API}/api/users/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
