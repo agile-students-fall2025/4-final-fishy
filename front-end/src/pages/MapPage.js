@@ -1,4 +1,4 @@
-// File: src/pages/MapPage.js
+//src/pages/MapPage.js
 
 import React, { useState, useEffect, useCallback } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
