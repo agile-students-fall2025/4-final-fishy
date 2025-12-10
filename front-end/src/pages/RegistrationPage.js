@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import "./Auth.css";
 
+// API URL from environment variable
 const API = process.env.REACT_APP_API_URL || "http://localhost:4000";
 
 function RegistrationPage({ onRegister, onNavigateLogin }) {
