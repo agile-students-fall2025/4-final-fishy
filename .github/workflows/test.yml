@@ -1,0 +1,65 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: back-end/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./back-end
+        run: npm ci
+      
+      - name: Run Vitest tests
+        working-directory: ./back-end
+        run: npm test
+        env:
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+      
+      - name: Run Mocha tests
+        working-directory: ./back-end
+        run: npm run test:mocha
+        env:
+          JWT_SECRET: test-secret-key-for-ci
+          NODE_ENV: test
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: front-end/package-lock.json
+      
+      - name: Install dependencies
+        working-directory: ./front-end
+        run: npm ci
+      
+      - name: Run tests
+        working-directory: ./front-end
+        run: npm test -- --watchAll=false --ci
+        env:
+          CI: true
+

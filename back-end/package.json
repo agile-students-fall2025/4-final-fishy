@@ -8,7 +8,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "test:cov": "vitest run --coverage",
-        "test:mocha": "NODE_ENV=test mocha \"tests-mocha/**/*.test.js\" --timeout 8000 --require dotenv/config",
+        "test:mocha": "NODE_ENV=test mocha \"tests-mocha/**/*.test.js\" --timeout 8000 --require dotenv/config --file tests-mocha/setup.js",
         "test:mocha:watch": "NODE_ENV=test mocha \"tests-mocha/**/*.test.js\" --watch --timeout 8000 --require dotenv/config",
         "coverage:mocha": "c8 -r text -r html -r lcov npm run test:mocha"
     },
@@ -27,6 +27,7 @@
         "c8": "^10.1.3",
         "chai": "^6.2.1",
         "mocha": "^11.7.5",
+        "mongodb-memory-server": "^10.1.3",
         "nodemon": "^3.1.11",
         "sinon": "^21.0.0",
         "supertest": "^7.1.4",

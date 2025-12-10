@@ -1,10 +1,10 @@
+// Setup file for Mocha tests - sets up in-memory MongoDB
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { beforeAll, afterEach, afterAll } from 'vitest';
 
 let mongo;
 
-beforeAll(async () => {
+before(async () => {
   mongo = await MongoMemoryServer.create();
   await mongoose.connect(mongo.getUri());
 });
@@ -14,7 +14,8 @@ afterEach(async () => {
   await Promise.all(collections.map((c) => c.deleteMany({})));
 });
 
-afterAll(async () => {
+after(async () => {
   await mongoose.connection.close();
   await mongo.stop();
 });
+
