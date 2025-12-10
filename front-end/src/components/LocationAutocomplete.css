@@ -1,0 +1,56 @@
+.location-autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.location-autocomplete-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0 0;
+}
+
+.location-autocomplete-suggestions li {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.location-autocomplete-suggestions li:last-child {
+  border-bottom: none;
+}
+
+.location-autocomplete-suggestions li:hover,
+.location-autocomplete-suggestions li.selected {
+  background-color: #f0f0f0;
+}
+
+.location-autocomplete-suggestions li .main-text {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.location-autocomplete-suggestions li .secondary-text {
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Ensure the input takes full width */
+.location-autocomplete-wrapper input {
+  width: 100%;
+}
+
